@@ -27,8 +27,9 @@ import java.util.Map;
  * Map.Value 表示表分区中一分区的信息
  * 
  * @author      ZhengWei(HY)
- * @version     v1.0  
  * @createDate  2013-06-17
+ * @version     v1.0 
+ *              v1.1  2017-01-25  修正：i_RowID 只判断是否为 null ，对于空字符串不再判断为非法的。
  */
 public class TablePartitionRID<P ,R> extends Hashtable<P ,Map<String ,R>> implements Map<P ,Map<String ,R>>
 {
@@ -218,7 +219,7 @@ public class TablePartitionRID<P ,R> extends Hashtable<P ,Map<String ,R>> implem
 		{
 			throw new java.lang.NullPointerException("Partition is null.");
 		}
-		if ( Help.isNull(i_RowID) )
+		if ( i_RowID == null )
 		{
 			throw new java.lang.NullPointerException("RowID is null.");
 		}
@@ -258,7 +259,7 @@ public class TablePartitionRID<P ,R> extends Hashtable<P ,Map<String ,R>> implem
 		{
 			throw new java.lang.NullPointerException("Partition is null.");
 		}
-        if ( Help.isNull(i_RowID) )
+        if ( i_RowID == null )
         {
             throw new java.lang.NullPointerException("RowID is null.");
         }

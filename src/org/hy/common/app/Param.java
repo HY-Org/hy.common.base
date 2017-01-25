@@ -1,5 +1,6 @@
 package org.hy.common.app;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 
 import org.hy.common.ChangeEvent;
@@ -19,10 +20,14 @@ import org.hy.common.TriggerEvent;
  *           v2.0  2015-11-02  添加：是否为只读状态，当为只读状态时，this.value只能被设置一次。默认为只读状态
  *                             添加：this.value 的数值改变事
  */
-public class Param 
+public class Param implements Serializable
 {
 	
-	private String       name;
+    private static final long serialVersionUID = 6011553944173663382L;
+    
+    
+
+    private String       name;
 	
 	private String       value;
 	
