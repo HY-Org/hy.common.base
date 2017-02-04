@@ -12,12 +12,13 @@ package org.hy.common;
  * 3. value不再为final，即变的
  * 4. 支持 java.lang.Boolean 类的对比及比较功能。
  * 5. 默认实例化为: false
- * 6. 所有setter方法有返回值，并且为this
+ * 6. 所有setter方法均有返回值，并且为this
  * 
  * @author      ZhengWei(HY)
  * @createDate  2013-10-28
  * @version     v1.0
- * @version     v2.0  2015-02-06  添加异常对象属性exception
+ * @version     v2.0  2015-02-06  添加：异常对象属性exception
+ * @version     v3.0  2017-02-04  添加：标准的setter、getter方法。
  */
 public class Return<O> implements java.io.Serializable ,Comparable<Object>
 {
@@ -452,6 +453,125 @@ public class Return<O> implements java.io.Serializable ,Comparable<Object>
 
 
     
+    /**
+     * 获取：The value of the Boolean.
+     * 
+     * @serial
+     */
+    public boolean isValue()
+    {
+        return value;
+    }
+
+    
+    
+    /**
+     * 设置：The value of the Boolean.
+     * 
+     * @serial
+     * 
+     * @param value 
+     */
+    public Return<O> setValue(boolean value)
+    {
+        this.value = value;
+        return this;
+    }
+
+
+    
+    /**
+     * 获取：Int可选参数
+     */
+    public int getParamInt()
+    {
+        return paramInt;
+    }
+
+
+    
+    /**
+     * 设置：Int可选参数
+     * 
+     * @param paramInt 
+     */
+    public Return<O> setParamInt(int paramInt)
+    {
+        this.paramInt = paramInt;
+        return this;
+    }
+
+
+    
+    /**
+     * 获取：字符串可选参数
+     */
+    public String getParamStr()
+    {
+        return paramStr;
+    }
+
+
+    
+    /**
+     * 设置：字符串可选参数
+     * 
+     * @param paramStr 
+     */
+    public Return<O> setParamStr(String paramStr)
+    {
+        this.paramStr = paramStr;
+        return this;
+    }
+
+
+    
+    /**
+     * 获取：对象可选参数
+     */
+    public O getParamObj()
+    {
+        return paramObj;
+    }
+
+
+    
+    /**
+     * 设置：对象可选参数
+     * 
+     * @param paramObj 
+     */
+    public Return<O> setParamObj(O paramObj)
+    {
+        this.paramObj = paramObj;
+        return this;
+    }
+
+
+    
+    /**
+     * 获取：异常对象
+     */
+    public Exception getException()
+    {
+        return exception;
+    }
+
+
+    
+    /**
+     * 设置：异常对象
+     * 
+     * @param exception 
+     */
+    public Return<O> setException(Exception exception)
+    {
+        this.exception = exception;
+        return this;
+    }
+
+
+
     private static boolean toBoolean(String name)
     {
         return ((name != null) && name.equalsIgnoreCase("true"));
