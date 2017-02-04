@@ -61,7 +61,7 @@ public class MethodInfo implements Serializable
     
     
     /**
-     * 将本类集合还原为Java自还的 java.lang.reflect.Method 的集合
+     * 将本类集合还原为Java自带的 java.lang.reflect.Method 的集合
      * 
      * @author      ZhengWei(HY)
      * @createDate  2017-01-15
@@ -79,7 +79,7 @@ public class MethodInfo implements Serializable
     
     
     /**
-     * 将本类集合还原为Java自还的 java.lang.reflect.Method 的集合
+     * 将本类集合还原为Java自带的 java.lang.reflect.Method 的集合
      * 
      * @author      ZhengWei(HY)
      * @createDate  2017-01-15
@@ -131,7 +131,7 @@ public class MethodInfo implements Serializable
     
     
     /**
-     * 将本类还原为Java自还的 java.lang.reflect.Method
+     * 将本类还原为Java自带的 java.lang.reflect.Method
      * 
      * @author      ZhengWei(HY)
      * @createDate  2017-01-15
@@ -148,7 +148,7 @@ public class MethodInfo implements Serializable
     
     
     /**
-     * 将本类还原为Java自还的 java.lang.reflect.Method
+     * 将本类还原为Java自带的 java.lang.reflect.Method
      * 
      * @author      ZhengWei(HY)
      * @createDate  2017-01-15
