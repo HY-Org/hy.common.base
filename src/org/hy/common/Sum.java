@@ -96,16 +96,16 @@ public class Sum<K> extends ListMap<K ,Double> implements Map<K ,Double>
      */
     public synchronized Double set(K i_Key ,Double i_AddValue)
     {
-        Double v_AddValue = i_AddValue;
+        double v_AddValue = 0D;
         
-        if ( v_AddValue == null )
+        if ( i_AddValue != null )
         {
-            v_AddValue = 0D;
+            v_AddValue = i_AddValue.doubleValue();
         }
         
         sumValue += v_AddValue;
         
-        Double v_Ret = super.put(i_Key ,v_AddValue);
+        Double v_Ret = super.put(i_Key ,Double.valueOf(v_AddValue));
         
         if ( this.maxSize >= 1 && this.size() == this.maxSize )
         {
@@ -173,20 +173,21 @@ public class Sum<K> extends ListMap<K ,Double> implements Map<K ,Double>
     @Override
     public synchronized Double put(K i_Key ,Double i_AddValue)
     {
-        Double v_AddValue = i_AddValue;
-        if ( v_AddValue == null )
+        double v_AddValue = 0D;
+        
+        if ( i_AddValue != null )
         {
-            v_AddValue = 0D;
+            v_AddValue = i_AddValue.doubleValue();
         }
         
         sumValue += v_AddValue;
         
         if ( this.containsKey(i_Key) )
         {
-            v_AddValue = v_AddValue + super.get(i_Key);
+            v_AddValue = v_AddValue + super.get(i_Key).doubleValue();
         }
         
-        Double v_Ret = super.put(i_Key ,v_AddValue);
+        Double v_Ret = super.put(i_Key ,Double.valueOf(v_AddValue));
         
         if ( this.maxSize >= 1 && this.size() > this.maxSize )
         {

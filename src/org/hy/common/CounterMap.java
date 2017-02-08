@@ -55,26 +55,25 @@ public class CounterMap<K> extends InterconnectMap<K ,Long>
      */
     public synchronized Long set(K i_Key ,Long i_Count)
     {
-        Long v_Count = i_Count;
-        
-        if ( v_Count == null )
+        long v_Count = 0L;
+        if ( i_Count != null )
         {
-            v_Count = 0L;
+            v_Count = i_Count.longValue();
         }
         
         sumValue += v_Count;
                 
-        if ( minValue > v_Count.intValue() )
+        if ( minValue > v_Count )
         {
             minValue = v_Count;
         }
         
-        if ( maxValue < v_Count.intValue() )
+        if ( maxValue < v_Count )
         {
             maxValue = v_Count;
         }
         
-        Long v_Ret = super.put(i_Key ,v_Count);
+        Long v_Ret = super.put(i_Key ,Long.valueOf(v_Count));
         return v_Ret == null ? 0L : v_Ret;
     }
     
@@ -116,34 +115,30 @@ public class CounterMap<K> extends InterconnectMap<K ,Long>
     @Override
     public synchronized Long put(K i_Key ,Long i_Count)
     {
-        Long v_Count = i_Count;
-        if ( v_Count == null )
+        long v_Count = 0L;
+        if ( i_Count != null )
         {
-            v_Count = 0L;
+            v_Count = i_Count.longValue();
         }
         
         sumValue += v_Count;
         
         if ( this.containsKey(i_Key) )
         {
-            // 这个判断是有用的。如果去取除，会影响Jobs的轮询，原因我忘记了。2016-07-15
-            if ( v_Count > 0 )
-            {
-                v_Count = v_Count + super.get(i_Key);
-            }
+            v_Count = v_Count + super.get(i_Key).longValue();
         }
         
-        if ( minValue > v_Count.intValue() )
+        if ( minValue > v_Count )
         {
             minValue = v_Count;
         }
         
-        if ( maxValue < v_Count.intValue() )
+        if ( maxValue < v_Count )
         {
             maxValue = v_Count;
         }
         
-        Long v_Ret = super.put(i_Key ,v_Count);
+        Long v_Ret = super.put(i_Key ,Long.valueOf(v_Count));
         return v_Ret;
     }
     

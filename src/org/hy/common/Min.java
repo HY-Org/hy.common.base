@@ -92,19 +92,18 @@ public class Min<K> extends Hashtable<K ,Double>
      */
     public synchronized Double set(K i_Key ,Double i_Min)
     {
-        Double v_Min = i_Min;
-        
-        if ( v_Min == null )
+        double v_Min = 0D;
+        if ( i_Min != null )
         {
-            v_Min = 0D;
+            v_Min = i_Min.doubleValue();
         }
         
-        if ( minValue > v_Min.doubleValue() )
+        if ( minValue > v_Min )
         {
             minValue = v_Min;
         }
         
-        Double v_Ret = super.put(i_Key ,v_Min);
+        Double v_Ret = super.put(i_Key ,Double.valueOf(v_Min));
         return v_Ret == null ? 0D : v_Ret;
     }
     
@@ -146,22 +145,21 @@ public class Min<K> extends Hashtable<K ,Double>
     @Override
     public synchronized Double put(K i_Key ,Double i_Min)
     {
-        Double v_Min = i_Min;
-        
-        if ( v_Min == null )
+        double v_Min = 0D;
+        if ( i_Min != null )
         {
-            v_Min = 0D;
+            v_Min = i_Min.doubleValue();
         }
         
-        if ( minValue > v_Min.doubleValue() )
+        if ( minValue > v_Min )
         {
             minValue = v_Min;
         }
         
         Double v_OldValue = super.get(i_Key);
-        if ( v_OldValue == null || v_OldValue > v_Min )
+        if ( v_OldValue == null || v_OldValue.doubleValue() > v_Min )
         {
-            return super.put(i_Key ,v_Min);
+            return super.put(i_Key ,Double.valueOf(v_Min));
         }
         else
         {

@@ -92,19 +92,18 @@ public class Max<K> extends Hashtable<K ,Double>
      */
     public synchronized Double set(K i_Key ,Double i_Max)
     {
-        Double v_Max = i_Max;
-        
-        if ( v_Max == null )
+        double v_Max = 0D;
+        if ( i_Max != null )
         {
-            v_Max = 0D;
+            v_Max = i_Max.doubleValue();
         }
         
-        if ( maxValue < v_Max.doubleValue() )
+        if ( maxValue < v_Max )
         {
             maxValue = v_Max;
         }
         
-        Double v_Ret = super.put(i_Key ,i_Max);
+        Double v_Ret = super.put(i_Key ,Double.valueOf(i_Max));
         return v_Ret == null ? 0D : v_Ret;
     }
     
@@ -146,22 +145,21 @@ public class Max<K> extends Hashtable<K ,Double>
     @Override
     public synchronized Double put(K i_Key ,Double i_Max)
     {
-        Double v_Max = i_Max;
-        
-        if ( v_Max == null )
+        double v_Max = 0D;
+        if ( i_Max != null )
         {
-            v_Max = 0D;
+            v_Max = i_Max.doubleValue();
         }
         
-        if ( maxValue < v_Max.doubleValue() )
+        if ( maxValue < v_Max )
         {
             maxValue = v_Max;
         }
         
         Double v_OldValue = super.get(i_Key);
-        if ( v_OldValue == null || v_OldValue < v_Max )
+        if ( v_OldValue == null || v_OldValue.doubleValue() < v_Max )
         {
-            return super.put(i_Key ,v_Max);
+            return super.put(i_Key ,Double.valueOf(v_Max));
         }
         else
         {
