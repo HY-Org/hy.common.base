@@ -33,9 +33,16 @@ import java.util.regex.Pattern;
  *                                添加：向数据库表插入数据时，通过Java生成主键的功能。与SQL占位符配合使用。
  *              v4.0  2016-07-30  添加：getMapValue()方法，从Map集合中取值。实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的解释
  *              v4.1  2017-01-21  修正：isExtendImplement()方法对接口继承的接口与要作判定。
+ *              v4.2  2017-02-15  添加：将"GET"、"SET"两个分区关键字对外公开。
  */
 public class MethodReflect
 {
+    
+    /** Getter、is方法的分区关键字。主用于 getGetSetMethods() 方法的返回值：分区结构 */
+    public static final String $Partition_GET         = "GET";
+    
+    /** Setter方法的分区关键字。主用于 getGetSetMethods() 方法的返回值：分区结构 */
+    public static final String $Partition_SET         = "SET";
     
     /**
      * 正则表达式对：方法名称的识别
@@ -683,7 +690,7 @@ public class MethodReflect
      */
     public static Map<String ,Method> getGetMethodsMS(Class<?> i_Class)
     {
-        return getGetSetMethods(i_Class).get("GET");
+        return getGetSetMethods(i_Class).get($Partition_GET);
     }
     
     
@@ -699,7 +706,7 @@ public class MethodReflect
      */
     public static Map<String ,Method> getSetMethodsMG(Class<?> i_Class)
     {
-        return getGetSetMethods(i_Class).get("SET");
+        return getGetSetMethods(i_Class).get($Partition_SET);
     }
     
     
@@ -710,7 +717,7 @@ public class MethodReflect
      * 返回结果是按方法名称排序的。
      * 
      * @param i_Class
-     * @return         TablePartitionRID.key    只有两种值GET或SET
+     * @return         TablePartitionRID.key    只有两种值GET或SET。is开头的方法，也在GET分区中。
      *                 TablePartitionRID.index  为方法的短名称
      *                 TablePartitionRID.value  为方法对象
      */
@@ -718,8 +725,6 @@ public class MethodReflect
     {
         TablePartitionRID<String ,Method> v_Ret     = new TablePartitionRID<String ,Method>(2);
         Method []                         v_Methods = i_Class.getMethods();
-        final String                      v_GET     = "GET";
-        final String                      v_SET     = "SET";
         
         Arrays.sort(v_Methods ,MethodComparator.getInstance());
         
@@ -732,11 +737,11 @@ public class MethodReflect
             {
                 if ( v_Method.getName().startsWith("get") )
                 {
-                    v_Ret.putRow(v_GET ,v_Method.getName().substring(3) ,v_Method);
+                    v_Ret.putRow($Partition_GET ,v_Method.getName().substring(3) ,v_Method);
                 }
                 else if ( v_Method.getName().startsWith("is") )
                 {
-                    v_Ret.putRow(v_GET ,v_Method.getName().substring(2) ,v_Method);
+                    v_Ret.putRow($Partition_GET ,v_Method.getName().substring(2) ,v_Method);
                 }
             }
         }
@@ -751,13 +756,13 @@ public class MethodReflect
                 if ( v_Method.getName().startsWith("set") )
                 {
                     String v_ShortName = v_Method.getName().substring(3);
-                    Method v_Getter    = v_Ret.getRow(v_GET ,v_ShortName);
+                    Method v_Getter    = v_Ret.getRow($Partition_GET ,v_ShortName);
                     
                     if ( v_Getter != null )
                     {
                         if ( v_Method.getParameterTypes()[0] == v_Getter.getReturnType() )
                         {
-                            v_Ret.putRow(v_SET ,v_ShortName ,v_Method);
+                            v_Ret.putRow($Partition_SET ,v_ShortName ,v_Method);
                         }
                     }
                 }
@@ -765,12 +770,12 @@ public class MethodReflect
         }
         
         // 核对是否成对出现
-        List<String> v_ShortNames = Help.toListKeys(v_Ret.get(v_GET));
+        List<String> v_ShortNames = Help.toListKeys(v_Ret.get($Partition_GET));
         for (String v_ShortName : v_ShortNames)
         {
-            if ( v_Ret.getRow(v_SET ,v_ShortName) == null )
+            if ( v_Ret.getRow($Partition_SET ,v_ShortName) == null )
             {
-                v_Ret.removeRow(v_GET ,v_ShortName);
+                v_Ret.removeRow($Partition_GET ,v_ShortName);
             }
         }
         
