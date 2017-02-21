@@ -103,7 +103,7 @@ public class Max<K> extends Hashtable<K ,Double>
             maxValue = v_Max;
         }
         
-        Double v_Ret = super.put(i_Key ,Double.valueOf(i_Max));
+        Double v_Ret = super.put(i_Key ,Double.valueOf(v_Max));
         return v_Ret == null ? 0D : v_Ret;
     }
     

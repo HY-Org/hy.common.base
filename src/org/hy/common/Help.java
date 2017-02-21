@@ -3631,6 +3631,7 @@ public class Help
      * @param i_Values
      * @return
      */
+    @SafeVarargs
     public final static <T extends Comparable<? super T>> List<T> toSort(T ... i_Values)
     {
         if ( Help.isNull(i_Values) )
@@ -3680,6 +3681,7 @@ public class Help
      * @param i_Values
      * @return
      */
+    @SafeVarargs
     public final static <T extends Comparable<? super T>> List<T> toReverse(T ... i_Values)
     {
         if ( Help.isNull(i_Values) )
@@ -3974,6 +3976,7 @@ public class Help
      * @param i_Values
      * @return
      */
+    @SafeVarargs
     public final static <T extends Comparable<? super T>> List<T> toDistinct(T ... i_Values)
     {
         List<T> v_Datas = Help.toSort(i_Values);

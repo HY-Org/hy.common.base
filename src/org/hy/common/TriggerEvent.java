@@ -1,5 +1,6 @@
 package org.hy.common;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -21,9 +22,11 @@ import java.util.Map;
  * @createDate  2015-11-02
  * @version     v1.0
  */
-public class TriggerEvent
+public class TriggerEvent implements Serializable
 {
     
+    private static final long serialVersionUID = 1346902346791010314L;
+
     /** 事件监听者的集合 */
     private Collection<EventListener>            eventListeners;
     
