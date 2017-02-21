@@ -243,7 +243,7 @@ public class Queue<O>
     @Override
     public String toString()
     {
-        return this.toArray().toString();
+        return this.linkedList.toString();
     }
 
     

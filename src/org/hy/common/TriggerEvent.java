@@ -39,7 +39,7 @@ public class TriggerEvent implements Serializable
      * map.key    为方法的名称(全大写)
      * map.value  为方法对象 
      */
-    private Map<String ,Method>                  eventListenerMethods;
+    private Map<String ,MethodInfo>              eventListenerMethods;
     
     /** 
      * 是否允许中断功能(默认启用中断)
@@ -60,7 +60,7 @@ public class TriggerEvent implements Serializable
     public TriggerEvent(Class<? extends EventListener> i_EventListenerClass)
     {
         this.eventListeners       = new HashSet<EventListener>();
-        this.eventListenerMethods = new Hashtable<String ,Method>();
+        this.eventListenerMethods = new Hashtable<String ,MethodInfo>();
         this.isAllowBreak         = true;
         this.setEventListenerClass(i_EventListenerClass);
     }
@@ -146,7 +146,7 @@ public class TriggerEvent implements Serializable
             throw new NullPointerException("Method name is null.");
         }
         
-        Method v_ActionMehod = this.eventListenerMethods.get(i_MethodName.trim().toUpperCase());
+        MethodInfo v_ActionMehod = this.eventListenerMethods.get(i_MethodName.trim().toUpperCase());
         if (  v_ActionMehod == null )
         {
             throw new NullPointerException("Method[" + i_MethodName + "] is not find.");
@@ -158,7 +158,7 @@ public class TriggerEvent implements Serializable
         while ( v_IsContinue && v_Iter.hasNext() ) 
         {
             EventListener v_EventListener = v_Iter.next();
-            Object        v_ActionRet     = v_ActionMehod.invoke(v_EventListener ,i_MethodArgs);
+            Object        v_ActionRet     = v_ActionMehod.toMethod(v_EventListener).invoke(v_EventListener ,i_MethodArgs);
             
             if ( this.isAllowBreak )
             {
@@ -201,7 +201,7 @@ public class TriggerEvent implements Serializable
             this.eventListenerMethods.clear();
             for (Method v_Method : v_Methods)
             {
-                this.eventListenerMethods.put(v_Method.getName().toUpperCase() ,v_Method);
+                this.eventListenerMethods.put(v_Method.getName().toUpperCase() ,new MethodInfo(v_Method));
             }
         }
     }
