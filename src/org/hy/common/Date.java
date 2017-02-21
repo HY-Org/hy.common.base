@@ -49,9 +49,9 @@ public final class Date extends java.util.Date
 	/** 一周的第一天，按星期一为第一天 */
 	public  static final int                  WEEK_FIRST_CN  = 1;
 	
-	/** 月份最后一天是多少 */
-	private static final int []               MONTH_LASTDAY  = {31 ,28 ,31 ,30 ,31 ,30 ,31 ,31 ,30 ,31 ,30 ,31}; 
-	
+    /** 月份最后一天是多少 */
+    private static final int []               MONTH_LASTDAY  = {31 ,28 ,31 ,30 ,31 ,30 ,31 ,31 ,30 ,31 ,30 ,31};
+    
 	
 	
 	static
