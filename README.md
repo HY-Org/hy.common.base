@@ -3,7 +3,7 @@
 
 
 <ul>
-    <li><p>[Help 常用操作][Help_Goto]</p></li>
+    <li><p>[Help 常用操作][gotohelp]</p></li>
     <li><p>[StringHelp 字符串操作](#src/org/hy/common/StringHelp.java)</p></li>
     <li><p>[ByteHelp 字节操作](src/org/hy/common/ByteHelp.java)</p></li>
     <li><p>[Date 时间操作](src/org/hy/common/Date.java)</p></li>
@@ -43,4 +43,4 @@
 
 
 
-[Help_Goto]:src/org/hy/common/Help.java ""
+[gotohelp]:https://github.com/HY-ZhengWei/hy.common.base/tree/master/src/org/hy/common/Help.java "ert"
