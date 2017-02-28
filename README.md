@@ -1,7 +1,8 @@
 # hy.common.base
 
 
-
+[Help 常用操作][gotohelp]
+[StringHelp 字符串操作](#src/org/hy/common/StringHelp.java)
 <ul>
     <li><p>[Help 常用操作][gotohelp]</p></li>
     <li><p>[StringHelp 字符串操作](#src/org/hy/common/StringHelp.java)</p></li>
