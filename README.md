@@ -1,7 +1,7 @@
 # hy.common.base
 
 
-[id]: http://example.com/  "Optional Title Here"
+[StringHelp]: http://example.com/  "Optional Title Here"
 
 <ul>
     <li><p>[Help 常用操作][id]</p></li>
