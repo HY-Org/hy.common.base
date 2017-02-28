@@ -8,6 +8,7 @@
 * [Date 时间操作](src/org/hy/common/Date.java)
 * [Execute 线程反射方式执行动作](src/org/hy/common/Execute.java)
 * [Serializable 有扩展的序列化接口](src/org/hy/common/Serializable.java)
+* [Return 使方法能返回多个值的通过对象](src/org/hy/common/Return.java)
 * 反射
 	* [MethodReflect 方法的反射](src/org/hy/common/MethodReflect.java)
 	* [ClassReflect 类的反射](src/org/hy/common/ClassReflect.java)
@@ -22,6 +23,7 @@
     * [InterconnectMap 互联互通Map。可像普通Map一样用Key找到Value。也可用Value找到指向它的所有Key](src/org/hy/common/InterconnectMap.java)
     * [ListMap Map与List的融合体。即有关键字找值的功能，又有按编号找值](src/org/hy/common/ListMap.java)
     * [OrderByList 排序集合](src/org/hy/common/OrderByList.java)
+    * [RelationList 表达式关系集合](src/org/hy/common/RelationList.java)
 	* 统计类的集合
 	    * [Counter 计数器](src/org/hy/common/Counter.java)
 	    * [CounterMap 计数器Map -- 互联互通Map的子类](src/org/hy/common/CounterMap.java)
