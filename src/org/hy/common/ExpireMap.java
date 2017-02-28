@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author      ZhengWei(HY)
  * @createDate  2016-02-24
  * @version     v1.0
+ *              v2.0  2017-02-28 添加：元素首次加入集合的创建时间
  */
 public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneable
 {
@@ -208,15 +209,26 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      */
     public synchronized Expire<K ,V> putMilli(K i_Key ,V i_Value ,long i_Millisecond)
     {
-        ExpireElement<K ,V> v_Data = new ExpireElement<K ,V>(i_Key ,i_Value);
+        ExpireElement<K ,V> v_OldData = this.datas.get(i_Key);
+        ExpireElement<K ,V> v_NewData = null;
         
-        this.datas    .put(i_Key ,v_Data);
+        if ( v_OldData != null )
+        {
+            v_NewData = v_OldData;
+            v_NewData.setValue(i_Value);
+        }
+        else
+        {
+            v_NewData = new ExpireElement<K ,V>(i_Key ,i_Value);
+            this.datas.put(i_Key ,v_NewData);
+        }
+        
         this.datasSame.put(i_Key ,i_Value);
         
         if ( i_Millisecond > 0 )
         {
             long v_Time = Date.getNowTime().getTime() + i_Millisecond;
-            v_Data.time = v_Time;
+            v_NewData.time = v_Time;
             
             if ( this.minTime == 0 || v_Time < this.minTime )
             {
@@ -224,7 +236,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
             }
         }
         
-        return v_Data;
+        return v_NewData;
     }
     
     
@@ -390,6 +402,33 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
         if ( null != v_Data )
         {
             return v_Data.checkExpire() == null ? null : v_Data.getValue();
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    
+    
+    /**
+     * 只返回 Map.key 在有效期内的 Map.value 的创建时间。
+     * 过期的 Map.key 返回 null
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-02-28
+     * @version     v1.0
+     *
+     * @param i_Key
+     * @return
+     */
+    public synchronized Date getCreateTime(Object i_Key)
+    {
+        ExpireElement<K ,V> v_Data = this.datas.get(i_Key);
+        
+        if ( null != v_Data )
+        {
+            return v_Data.checkExpire() == null ? null : v_Data.getCreateTime();
         }
         else
         {
@@ -652,6 +691,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @author      ZhengWei(HY)
      * @createDate  2016-02-25
      * @version     v1.0
+     *              v2.0  2017-02-28 添加：创建时间
      */
     public interface Expire<K ,V> extends Map.Entry<K ,V>
     {
@@ -660,6 +700,19 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
          * 获取：时间戳。保存期满时间。0表示永远有效
          */
         public long getTime();
+        
+        
+        
+        /**
+         * 创建时间(首次将Key添加到集合时的时间)
+         * 
+         * @author      ZhengWei(HY)
+         * @createDate  2017-02-28
+         * @version     v1.0
+         *
+         * @return
+         */
+        public Date getCreateTime();
         
     }
     
@@ -675,6 +728,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @author      ZhengWei(HY)
      * @createDate  2016-02-24
      * @version     v1.0
+     *              v2.0  2017-02-28 添加：创建时间
      * @param <EK>  它是ExpireMap的<K>，只是Java编码时，无法重复定义，所以写成了<EK>，其实就是同一个对象。
      * @param <EV>  它是ExpireMap的<V>，只是Java编码时，无法重复定义，所以写成了<EV>，其实就是同一个对象。
      */
@@ -687,20 +741,38 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
         /** 时间戳。保存期满时间。0表示永远有效 */
         private long                           time;
         
+        /** 创建时间(首次将Key添加到集合时的时间) */
+        private Date                           createTime;
+        
         
         
         public ExpireElement(EK i_Key ,EV i_Value)
         {
-            this(i_Key ,i_Value ,0);
+            this(i_Key ,i_Value ,0 ,new Date());
         }
         
         
         
         public ExpireElement(EK i_Key ,EV i_Value ,long i_Time)
         {
-            this.key   = i_Key;
-            this.value = i_Value;
-            this.time  = i_Time;
+            this(i_Key ,i_Value ,i_Time ,new Date());
+        }
+        
+        
+        
+        public ExpireElement(EK i_Key ,EV i_Value ,Date i_CreateTime)
+        {
+            this(i_Key ,i_Value ,0 ,new Date());
+        }
+        
+        
+        
+        public ExpireElement(EK i_Key ,EV i_Value ,long i_Time ,Date i_CreateTime)
+        {
+            this.key        = i_Key;
+            this.value      = i_Value;
+            this.time       = i_Time;
+            this.createTime = i_CreateTime;
         }
         
         
@@ -868,7 +940,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
         @Override
         public ExpireElement<EK ,EV> clone()
         {
-            return new ExpireElement<EK ,EV>(this.key ,this.value ,this.time);
+            return new ExpireElement<EK ,EV>(this.key ,this.value ,this.time ,this.createTime);
         }
 
 
@@ -926,6 +998,22 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
         public long getTime()
         {
             return time;
+        }
+        
+        
+        
+        /**
+         * 创建时间(首次将Key添加到集合时的时间)
+         * 
+         * @author      ZhengWei(HY)
+         * @createDate  2017-02-28
+         * @version     v1.0
+         *
+         * @return
+         */
+        public Date getCreateTime()
+        {
+            return this.createTime;
         }
 
     }
