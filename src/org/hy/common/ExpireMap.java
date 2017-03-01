@@ -693,7 +693,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @version     v1.0
      *              v2.0  2017-02-28 添加：创建时间
      */
-    public interface Expire<K ,V> extends Map.Entry<K ,V>
+    public interface Expire<K ,V> extends Map.Entry<K ,V> ,java.io.Serializable
     {
         
         /**
@@ -734,6 +734,8 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      */
     class ExpireElement<EK ,EV> implements Expire<EK ,EV> ,Cloneable
     {
+        private static final long serialVersionUID = -7996663565815856686L;
+
         private EK                             key;
         
         private EV                             value;
