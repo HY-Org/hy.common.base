@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
  *              v4.0  2016-07-30  添加：getMapValue()方法，从Map集合中取值。实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的解释
  *              v4.1  2017-01-21  修正：isExtendImplement()方法对接口继承的接口与要作判定。
  *              v4.2  2017-02-15  添加：将"GET"、"SET"两个分区关键字对外公开。
+ *              v5.0  2017-03-18  添加：Class<?> 类型对识别方法反射的构造器
  */
 public class MethodReflect
 {
