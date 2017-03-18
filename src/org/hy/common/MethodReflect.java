@@ -83,6 +83,9 @@ public class MethodReflect
 	 **/
 	private int                normType;
 	
+	/** 方法全路径的Mehod返回对象类型的集合 */
+    private List<Class<?>>     classes;
+	
 	/** 方法全路径的Mehod返回对象实例的集合。第一元素为构造器的第一个参数值 */
 	private List<Object>       instances;
 	
@@ -1279,7 +1282,30 @@ public class MethodReflect
      */
     public static Method getMethod(Object i_Instance ,String i_MethodName ,Object [] i_MethodParams)
     {
-        Method []    v_Methods   = i_Instance.getClass().getMethods();
+        return getMethod(i_Instance.getClass() ,i_MethodName ,i_MethodParams);
+    }
+    
+    
+    
+    /**
+     * 根据方法的入参类型，获取某一具体的方法。
+     * 
+     * 支持对重载方法的判定。对每参数类型都进行比较确认惟一的执行方法
+     * 
+     * 从org.hy.common.Execute类中提炼而出。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-01-16
+     * @version     v1.0
+     *
+     * @param i_Class         对象类型 
+     * @param i_MethodName    方法名称（区分大小写）
+     * @param i_MethodParams  方法的入参
+     * @return
+     */
+    public static Method getMethod(Class<?> i_Class ,String i_MethodName ,Object [] i_MethodParams)
+    {
+        Method []    v_Methods   = i_Class.getMethods();
         List<Method> v_OKMethods = new ArrayList<Method>();
         Method       v_Method    = null;
         
@@ -1392,6 +1418,72 @@ public class MethodReflect
             return null;
         }
     }
+    
+    
+    
+    /**
+     * 方法的反射
+     * 
+     * 可实现xxx.yyy.www(或getXxx.getYyy.setWww)全路径的解释
+     * 可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的解释
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-03-17
+     * @version     v1.0
+     * 
+     * @param i_Class       最上层的对象类型
+     * @param i_MethodURL   方法全路径
+     * @param i_IsNorm      方法全路径是否符合规范
+     * @param i_NormType    规范类型
+     * 
+     * @throws SecurityException
+     * @throws IllegalArgumentException
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
+    public MethodReflect(Class<?> i_Class ,String i_MethodURL ,boolean i_IsNorm ,int i_NormType) throws SecurityException, IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
+    {
+        this.classes       = new ArrayList<Class<?>>();
+        this.instances     = null;
+        this.methods       = new ArrayList<List<Method>>();
+        this.methodsParams = new ArrayList<List<String>>();
+        this.methodURL     = i_MethodURL.trim();
+        this.methodNames   = this.methodURL.replace("." ,"@").split("@");
+        this.isNorm        = i_IsNorm;
+        this.normType      = i_NormType;
+        
+        this.classes.add(i_Class);
+        
+        this.parser();
+    }
+    
+    
+    
+    /**
+     * 方法的反射
+     * 
+     * 可实现xxx.yyy.www(或getXxx.getYyy.setWww)全路径的解释
+     * 可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的解释
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-03-17
+     * @version     v1.0
+     * 
+     * @param i_Class       最上层的对象类型
+     * @param i_MethodURL   方法全路径
+     * @param i_NormType    规范类型
+     * 
+     * @throws SecurityException
+     * @throws IllegalArgumentException
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
+    public MethodReflect(Class<?> i_Class ,String i_MethodURL ,int i_NormType) throws SecurityException, IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
+    {
+        this(i_Class ,i_MethodURL ,false ,i_NormType);
+    }
 	
 	
 	
@@ -1414,14 +1506,16 @@ public class MethodReflect
 	 */
 	public MethodReflect(Object i_Instance ,String i_MethodURL ,boolean i_IsNorm ,int i_NormType) throws SecurityException, IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
 	{
+	    this.classes       = new ArrayList<Class<?>>();
 		this.instances     = new ArrayList<Object>();
 		this.methods       = new ArrayList<List<Method>>();
 		this.methodsParams = new ArrayList<List<String>>();
-		this.instances.add(i_Instance);
 		this.methodURL     = i_MethodURL.trim();
 		this.methodNames   = this.methodURL.replace("." ,"@").split("@");
 		this.isNorm        = i_IsNorm;
 		this.normType      = i_NormType;
+		
+		this.instances.add(i_Instance);
 		
 		this.parser();
 	}
@@ -1543,49 +1637,87 @@ public class MethodReflect
 			}
 		}
 		
+		boolean v_IsClass = !Help.isNull(this.classes);
 		
-		for (v_Index = 0; v_Index<this.methodNames.length - 1; v_Index++)
+		if ( v_IsClass )
 		{
-			Class<?>     v_Class         = this.instances.get(v_Index).getClass();
-			List<Method> v_Methods       = getMethods(v_Class ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
-			Object       v_ChildInstance = null;
-			
-			if ( Help.isNull(v_Methods) )
-			{
-			    throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
-			}
-			else if ( v_Methods.size() >= 2 )
-			{
-			    throw new VerifyError("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is more same Method name.");
-			}
-			
-			if ( this.methodsParams.get(v_Index).size() <= 0 )
-			{
-			    v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1));
-			}
-			else
-			{
-			    Object   [] v_ParamObjs  = new Object[this.methodsParams.get(v_Index).size()];
-			    Class<?> [] v_ParamClass = v_Methods.get(0).getParameterTypes(); 
-			    for (int x=0; x<v_ParamClass.length; x++)
-			    {
-			        v_ParamObjs[x] = Help.toObject(v_ParamClass[x] ,this.methodsParams.get(v_Index).get(x));
-			    }
-			    
-			    v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1) ,v_ParamObjs);
-			}
-			
-			this.methods.add(v_Methods);
-			this.instances.add(v_ChildInstance);
+		    for (v_Index = 0; v_Index<this.methodNames.length - 1; v_Index++)
+            {
+                Class<?>     v_Class   = this.classes.get(v_Index);
+                List<Method> v_Methods = getMethods(v_Class ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
+                
+                if ( Help.isNull(v_Methods) )
+                {
+                    throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
+                }
+                else if ( v_Methods.size() >= 2 )
+                {
+                    throw new VerifyError("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is more same Method name.");
+                }
+                
+                if ( this.methodsParams.get(v_Index).size() <= 0 )
+                {
+                    this.methods.add(v_Methods);
+                    this.classes.add(v_Methods.get(0).getReturnType());
+                }
+            }
+		}
+		else
+		{
+		    this.classes.add(this.instances.get(0).getClass());
+		    
+    		for (v_Index = 0; v_Index<this.methodNames.length - 1; v_Index++)
+    		{
+    			Class<?>     v_Class         = this.instances.get(v_Index).getClass();
+    			List<Method> v_Methods       = getMethods(v_Class ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
+    			Object       v_ChildInstance = null;
+    			
+    			if ( Help.isNull(v_Methods) )
+    			{
+    			    throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
+    			}
+    			else if ( v_Methods.size() >= 2 )
+    			{
+    			    throw new VerifyError("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is more same Method name.");
+    			}
+    			
+    			if ( this.methodsParams.get(v_Index).size() <= 0 )
+    			{
+    			    v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1));
+    			}
+    			else
+    			{
+    			    Object   [] v_ParamObjs  = new Object[this.methodsParams.get(v_Index).size()];
+    			    Class<?> [] v_ParamClass = v_Methods.get(0).getParameterTypes(); 
+    			    for (int x=0; x<v_ParamClass.length; x++)
+    			    {
+    			        v_ParamObjs[x] = Help.toObject(v_ParamClass[x] ,this.methodsParams.get(v_Index).get(x));
+    			    }
+    			    
+    			    v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1) ,v_ParamObjs);
+    			}
+    			
+    			this.methods.add(v_Methods);
+    			this.instances.add(v_ChildInstance);
+    			this.classes  .add(v_ChildInstance.getClass());
+    		}
 		}
 		
 		
 		// 解释方法名称的全路径上的最后一个
-		Object v_LastInstance = this.instances.get(v_Index);
+		Class<?> v_LastClass = null;
+		if ( v_IsClass )
+		{
+		    v_LastClass = this.classes.get(v_Index);
+		}
+		else
+		{
+		    v_LastClass = this.instances.get(v_Index).getClass();
+		}
  		
 		if ( this.normType == $NormType_Setter )
 		{
-		    List<Method> v_Methods = getSetMethods(v_LastInstance.getClass() ,this.methodNames[v_Index] ,false);
+		    List<Method> v_Methods = getSetMethods(v_LastClass ,this.methodNames[v_Index] ,false);
 		    
 		    if ( !Help.isNull(v_Methods) )
 		    {
@@ -1599,7 +1731,7 @@ public class MethodReflect
 		}
 		else
 		{
-		    List<Method> v_Methods = getMethods(v_LastInstance.getClass() ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
+		    List<Method> v_Methods = getMethods(v_LastClass ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
 			
 		    if ( Help.isNull(v_Methods) )
             {
@@ -1674,9 +1806,9 @@ public class MethodReflect
             return this.methods.get(v_Index).get(0).getReturnType();
         }
     }
-	
-	
-	
+    
+    
+    
 	/**
 	 * 方法全路径的获取值(Getter)
 	 * 
@@ -1714,6 +1846,54 @@ public class MethodReflect
 		}
 	}
 	
+	
+	
+	/**
+	 * 方法全路径的获取值(Getter)
+	 * 
+	 * @author      ZhengWei(HY)
+	 * @createDate  2017-03-17
+	 * @version     v1.0
+	 *
+	 * @param i_Instance  实例对象
+	 * @return
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
+    public Object invokeForInstance(Object i_Instance) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
+    {
+        if ( this.normType == $NormType_Setter )
+        {
+            return null;
+        }
+        else
+        {
+            Object v_Instance = i_Instance;
+            for (int v_Index=0; v_Index<this.methods.size(); v_Index++)
+            {
+                Method v_Method = this.methods.get(v_Index).get(0);
+                
+                if ( this.methodsParams.get(v_Index).size() <= 0 )
+                {
+                    v_Instance = v_Method.invoke(v_Instance);
+                }
+                else
+                {
+                    Object   [] v_ParamObjs  = new Object[this.methodsParams.get(v_Index).size()];
+                    Class<?> [] v_ParamClass = v_Method.getParameterTypes(); 
+                    for (int x=0; x<v_ParamClass.length; x++)
+                    {
+                        v_ParamObjs[x] = Help.toObject(v_ParamClass[x] ,this.methodsParams.get(v_Index).get(x));
+                    }
+                    
+                    v_Instance = v_Method.invoke(v_Instance ,v_ParamObjs);
+                }
+            }
+            
+            return v_Instance;
+        }
+    }
 	
 	
 	public String getMethodURL()
