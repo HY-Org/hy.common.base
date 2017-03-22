@@ -32,6 +32,7 @@ import java.util.List;
  *                                   将 this.intance.getDeclaredMethods() 改为：this.intance.getClass().getMethods()。
  * @version v5.0  2017-01-19  1.添加：保存动作方法的执行结果。
  *                              添加：执行结果的事件监听功能。
+ *          v5.1  2017-03-22  1.添加：getReturnAwait() 方法在启动线程后，一直等待执行方法的返回结果。
  */
 public class Execute extends Thread
 {
@@ -506,6 +507,27 @@ public class Execute extends Thread
     public Object getResult()
     {
         return result;
+    }
+    
+    
+    
+    /**
+     *  获取：动作方法的执行结果，并一直等待执行结果。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-03-22
+     * @version     v1.0
+     *
+     * @return
+     */
+    public Object getResultAwait()
+    {
+        while ( this.result == null )
+        {
+            Thread.yield();
+        }
+        
+        return this.result;
     }
     
     

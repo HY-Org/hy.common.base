@@ -1638,6 +1638,7 @@ public class MethodReflect
 			}
 		}
 		
+		
 		boolean v_IsClass = !Help.isNull(this.classes);
 		
 		if ( v_IsClass )
@@ -1660,6 +1661,20 @@ public class MethodReflect
                 {
                     this.methods.add(v_Methods);
                     this.classes.add(v_Methods.get(0).getReturnType());
+                }
+                else
+                {
+                    // 当方法的返回值类型为List集合时，进行二次解释  2017-03-22
+                    if ( v_Index >= 1 && MethodReflect.isExtendImplement(this.methods.get(v_Index-1).get(0).getReturnType() ,List.class) )
+                    {
+                        GenericsReturn v_GenericsReturn = MethodReflect.getGenericsReturn(this.methods.get(v_Index-1).get(0));
+                        
+                        if ( v_GenericsReturn.getGenericType() != null )
+                        {
+                            this.methods.add(v_Methods);
+                            this.classes.add(v_GenericsReturn.getGenericType());
+                        }     
+                    }
                 }
             }
 		}
@@ -1715,6 +1730,7 @@ public class MethodReflect
 		{
 		    v_LastClass = this.instances.get(v_Index).getClass();
 		}
+		
  		
 		if ( this.normType == $NormType_Setter )
 		{
@@ -1886,6 +1902,58 @@ public class MethodReflect
                     for (int x=0; x<v_ParamClass.length; x++)
                     {
                         v_ParamObjs[x] = Help.toObject(v_ParamClass[x] ,this.methodsParams.get(v_Index).get(x));
+                    }
+                    
+                    v_Instance = v_Method.invoke(v_Instance ,v_ParamObjs);
+                }
+            }
+            
+            return v_Instance;
+        }
+    }
+    
+    
+    
+    /**
+     * 方法全路径的获取值(Getter)
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-03-22
+     * @version     v1.0
+     *
+     * @param i_Instance  实例对象
+     * @param i_Params    执行参数。
+     *                    Map.key   为 xx.yy(Index).zz 格式中的 Index 参数名称
+     *                    Map.value 为参数的值
+     * @return
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
+    public Object invokeForInstance(Object i_Instance ,Map<String ,Object> i_Params) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
+    {
+        if ( this.normType == $NormType_Setter )
+        {
+            return null;
+        }
+        else
+        {
+            Object v_Instance = i_Instance;
+            for (int v_Index=0; v_Index<this.methods.size(); v_Index++)
+            {
+                Method v_Method = this.methods.get(v_Index).get(0);
+                
+                if ( this.methodsParams.get(v_Index).size() <= 0 )
+                {
+                    v_Instance = v_Method.invoke(v_Instance);
+                }
+                else
+                {
+                    int       v_ParamSize = this.methodsParams.get(v_Index).size();
+                    Object [] v_ParamObjs = new Object[v_ParamSize];
+                    for (int x=0; x<v_ParamSize; x++)
+                    {
+                        v_ParamObjs[x] = i_Params.get(this.methodsParams.get(v_Index).get(x));
                     }
                     
                     v_Instance = v_Method.invoke(v_Instance ,v_ParamObjs);
