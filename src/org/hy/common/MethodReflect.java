@@ -35,6 +35,8 @@ import java.util.regex.Pattern;
  *              v4.1  2017-01-21  修正：isExtendImplement()方法对接口继承的接口与要作判定。
  *              v4.2  2017-02-15  添加：将"GET"、"SET"两个分区关键字对外公开。
  *              v5.0  2017-03-18  添加：Class<?> 类型对识别方法反射的构造器
+ *              v5.1  2017-03-23  添加：xxx.$getYyy.www 全路径中$符号后跟的为完整方法名称的解释功能。
+ *                                     即，全路径中一部是简写方法名称的方式，一部又是方法的完整名称。
  */
 public class MethodReflect
 {
@@ -45,18 +47,29 @@ public class MethodReflect
     /** Setter方法的分区关键字。主用于 getGetSetMethods() 方法的返回值：分区结构 */
     public static final String $Partition_SET         = "SET";
     
+    
+    
+    /**
+     * 类似于Excel单元格中的固定引用单元格的标示符。
+     * 
+     * 当方法的全路径为：xxx.$getYyy.www 时，$符号表示 getYyy 是一个方法的完整名称，无须再添加 "get"、"is" 或 "set" 前缀。
+     * 
+     * 只对 isNorm = true 有效
+     */
+    public final static String $FixedMethodName = "$";
+    
     /**
      * 正则表达式对：方法名称的识别
      * 如：add(row)
      */
-    private final static String $REGEX_METHOD         = "\\w+[\\(]";
+    private final static String $REGEX_METHOD         = "[\\" + $FixedMethodName + "\\w]+[\\(]";
     
     /**
      * 正则表达式对：方法填写有效性的验证。
      * 如：xxx(p1 ,p2 ,... pn)
      * 如：xxx(o1.p1 ,o2.p1 ,... on.pn)
      */
-    private final static String $REGEX_METHOD_VERIFY  = "^\\w+\\( *((\\w+\\.\\w+ *, *)|(\\w+ *, *))*((\\w+\\.\\w+)|(\\w+)) *\\)$";
+    private final static String $REGEX_METHOD_VERIFY  = "^[\\" + $FixedMethodName + "\\w]+\\( *((\\w+\\.\\w+ *, *)|(\\w+ *, *))*((\\w+\\.\\w+)|(\\w+)) *\\)$";
     
     
     
@@ -624,7 +637,14 @@ public class MethodReflect
 		
 		if ( i_IsNorm )
 		{
-			v_SetMethodName = "set" + StringHelp.toUpperCaseByFirst(v_SetMethodName);
+		    if ( v_SetMethodName.startsWith($FixedMethodName) )
+		    {
+		        v_SetMethodName = v_SetMethodName.substring(1);
+		    }
+		    else
+		    {
+		        v_SetMethodName = "set" + StringHelp.toUpperCaseByFirst(v_SetMethodName);
+		    }
 		}
 		
 		Method [] v_Methods = i_Class.getMethods();
@@ -659,9 +679,17 @@ public class MethodReflect
         List<Method> v_Ret           = new ArrayList<Method>();
         String       v_SetMethodName = i_SetMethodName.trim();
         
+        
         if ( i_IsNorm )
         {
-            v_SetMethodName = "set" + StringHelp.toUpperCaseByFirst(v_SetMethodName);
+            if ( v_SetMethodName.startsWith($FixedMethodName) )
+            {
+                v_SetMethodName = v_SetMethodName.substring(1);
+            }
+            else
+            {
+                v_SetMethodName = "set" + StringHelp.toUpperCaseByFirst(v_SetMethodName);
+            }
         }
         
         Method [] v_Methods = i_Class.getMethods();
@@ -803,8 +831,16 @@ public class MethodReflect
 		
 		if ( i_IsNorm )
 		{
-		    v_GetMethodName_Get = "get" + StringHelp.toUpperCaseByFirst(v_GetMethodName_Get);
-		    v_GetMethodName_Is  = "is"  + StringHelp.toUpperCaseByFirst(v_GetMethodName_Is);
+		    if ( v_GetMethodName_Get.startsWith($FixedMethodName) )
+		    {
+		        v_GetMethodName_Get = v_GetMethodName_Get.substring(1);
+                v_GetMethodName_Is  = v_GetMethodName_Is.substring(1);
+		    }
+		    else
+		    {
+		        v_GetMethodName_Get = "get" + StringHelp.toUpperCaseByFirst(v_GetMethodName_Get);
+                v_GetMethodName_Is  = "is"  + StringHelp.toUpperCaseByFirst(v_GetMethodName_Is);
+		    }
 		}
 		
 		Method [] v_Methods = i_Class.getMethods();
@@ -1624,17 +1660,31 @@ public class MethodReflect
 		    // 最后方法名之前的所有方法，都自动采用Getter形式的补全方法
 			for (v_Index = 0; v_Index<this.methodNames.length - 1; v_Index++)
 			{
-				this.methodNames[v_Index] = "get" + StringHelp.toUpperCaseByFirst(this.methodNames[v_Index]);
+			    if ( this.methodNames[v_Index].startsWith($FixedMethodName) )
+			    {
+			        this.methodNames[v_Index] = this.methodNames[v_Index].substring(1);
+			    }
+			    else
+			    {
+			        this.methodNames[v_Index] = "get" + StringHelp.toUpperCaseByFirst(this.methodNames[v_Index]);
+			    }
 			}
 			
 			// 最后一个方法，有可能是Setter方法。
-			if ( this.normType == $NormType_Setter )
+			if ( this.methodNames[v_Index].startsWith($FixedMethodName) )
 			{
-				this.methodNames[v_Index] = "set" + StringHelp.toUpperCaseByFirst(this.methodNames[v_Index]);
+			    this.methodNames[v_Index] = this.methodNames[v_Index].substring(1);
 			}
 			else
 			{
-				this.methodNames[v_Index] = "get" + StringHelp.toUpperCaseByFirst(this.methodNames[v_Index]);
+    			if ( this.normType == $NormType_Setter )
+    			{
+    				this.methodNames[v_Index] = "set" + StringHelp.toUpperCaseByFirst(this.methodNames[v_Index]);
+    			}
+    			else
+    			{
+    				this.methodNames[v_Index] = "get" + StringHelp.toUpperCaseByFirst(this.methodNames[v_Index]);
+    			}
 			}
 		}
 		
@@ -1923,7 +1973,7 @@ public class MethodReflect
      *
      * @param i_Instance  实例对象
      * @param i_Params    执行参数。
-     *                    Map.key   为 xx.yy(Index).zz 格式中的 Index 参数名称
+     *                    Map.key   为 xxx.yyy(Index).www 格式中的 Index 参数名称
      *                    Map.value 为参数的值
      * @return
      * @throws IllegalArgumentException
