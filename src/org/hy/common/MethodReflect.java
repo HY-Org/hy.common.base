@@ -1862,15 +1862,60 @@ public class MethodReflect
 	 */
     public Class<?> getReturnType() 
     {
-        int v_Index = this.instances.size() - 1;
-        
         if ( this.normType == $NormType_Setter )
         {
             return null;
         }
+        
+        boolean v_IsClass = !Help.isNull(this.classes);
+        int     v_Index   = 0;
+        
+        if ( v_IsClass )
+        {
+            v_Index = this.classes.size() - 1;
+            
+            return this.methods.get(v_Index).get(0).getReturnType();
+        }
         else
         {
+            v_Index = this.instances.size() - 1;
+            
             return this.methods.get(v_Index).get(0).getReturnType();
+        }
+    }
+    
+    
+    
+    /**
+     * 方法全路径的返回值的方法对象(最后一个方法)
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-03-27
+     * @version     v1.0
+     *
+     * @return
+     */
+    public Method getReturnMethod() 
+    {
+        if ( this.normType == $NormType_Setter )
+        {
+            return null;
+        }
+        
+        boolean v_IsClass = !Help.isNull(this.classes);
+        int     v_Index   = 0;
+        
+        if ( v_IsClass )
+        {
+            v_Index = this.classes.size() - 1;
+            
+            return this.methods.get(v_Index).get(0);
+        }
+        else
+        {
+            v_Index = this.instances.size() - 1;
+            
+            return this.methods.get(v_Index).get(0);
         }
     }
     
