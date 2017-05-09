@@ -2058,6 +2058,67 @@ public class MethodReflect
             return v_Instance;
         }
     }
+    
+    
+    
+    /**
+     * 方法全路径的填充值(Setter)
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-05-08
+     * @version     v1.0
+     *
+     * @param i_Instance  实例对象
+     * @param i_Value     Setter方法的入参数值
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
+    public void invokeSetForInstance(Object i_Instance ,Object i_Value) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
+    {
+        if ( this.normType == $NormType_Getter )
+        {
+            return;
+        }
+        else
+        {
+            Object v_Instance = i_Instance;
+            int    v_Index    = 0;
+                    
+            for (; v_Index<this.methods.size()-1; v_Index++)
+            {
+                Method v_Method = this.methods.get(v_Index).get(0);
+                
+                if ( this.methodsParams.get(v_Index).size() <= 0 )
+                {
+                    v_Instance = v_Method.invoke(v_Instance);
+                }
+                else
+                {
+                    Object   [] v_ParamObjs  = new Object[this.methodsParams.get(v_Index).size()];
+                    Class<?> [] v_ParamClass = v_Method.getParameterTypes(); 
+                    for (int x=0; x<v_ParamClass.length; x++)
+                    {
+                        v_ParamObjs[x] = Help.toObject(v_ParamClass[x] ,this.methodsParams.get(v_Index).get(x));
+                    }
+                    
+                    v_Instance = v_Method.invoke(v_Instance ,v_ParamObjs);
+                }
+            }
+            
+            Method v_Method = this.methods.get(v_Index).get(0);
+            
+            if ( MethodReflect.isExtendImplement(v_Method.getParameterTypes()[0] ,i_Value.getClass()) )
+            {
+                v_Method.invoke(i_Instance ,i_Value);
+            }
+            else
+            {
+                v_Method.invoke(i_Instance ,Help.toObject(v_Method.getParameterTypes()[0] ,i_Value.toString()));
+            }
+        }
+    }
+    
 	
 	
 	public String getMethodURL()
