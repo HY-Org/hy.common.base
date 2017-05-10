@@ -1301,6 +1301,23 @@ public class Help
     }
     
     
+    
+    /**
+     * 获取当前实例对象的class目录位置。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-05-10
+     * @version     v1.0
+     *
+     * @param i_Obj
+     * @return
+     */
+    public final static String getClassPath(Object i_Obj)
+    {
+        return i_Obj.getClass().getResource(".").getFile().toString();
+    }
+    
+    
     /**
      * 获取class目录位置。
      * 如 C:/xx/bin/
