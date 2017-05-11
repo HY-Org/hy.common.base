@@ -1314,7 +1314,7 @@ public class Help
      */
     public final static String getClassPath(Object i_Obj)
     {
-        return i_Obj.getClass().getResource(".").getFile().toString();
+        return i_Obj.getClass().getResource("").getFile().toString();
     }
     
     
