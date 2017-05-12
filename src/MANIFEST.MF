@@ -1,4 +1,4 @@
 Manifest-Version: 1.0.96
 Created-By: HY.ZhengWei@qq.com  2008
-Specification-Version: 1.0.96  2017-05-10
+Specification-Version: 1.0.96  2017-05-12
 SourceCode: https://github.com/HY-ZhengWei/hy.common.base

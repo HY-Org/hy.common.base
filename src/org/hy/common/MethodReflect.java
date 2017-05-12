@@ -2073,8 +2073,9 @@ public class MethodReflect
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      * @throws InvocationTargetException
+     * @throws InstantiationException 
      */
-    public void invokeSetForInstance(Object i_Instance ,Object i_Value) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
+    public void invokeSetForInstance(Object i_Instance ,Object i_Value) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException
     {
         if ( this.normType == $NormType_Getter )
         {
@@ -2082,13 +2083,16 @@ public class MethodReflect
         }
         else
         {
-            Object v_Instance = i_Instance;
-            int    v_Index    = 0;
+            Object v_Instance    = i_Instance;
+            Object v_InstanceOld = null;
+            int    v_Index       = 0;
                     
             for (; v_Index<this.methods.size()-1; v_Index++)
             {
                 Method v_Method = this.methods.get(v_Index).get(0);
                 
+                v_InstanceOld = v_Instance;
+                        
                 if ( this.methodsParams.get(v_Index).size() <= 0 )
                 {
                     v_Instance = v_Method.invoke(v_Instance);
@@ -2104,17 +2108,43 @@ public class MethodReflect
                     
                     v_Instance = v_Method.invoke(v_Instance ,v_ParamObjs);
                 }
+                
+                if ( null == v_Instance )
+                {
+                    String v_MethodName = v_Method.getName();
+                    
+                    if ( v_MethodName.startsWith("is") )
+                    {
+                        v_MethodName = v_MethodName.substring(2);
+                    }
+                    else if ( v_MethodName.startsWith("get") )
+                    {
+                        v_MethodName = v_MethodName.substring(3);
+                    }
+                    
+                    Method v_SetMethod = MethodReflect.getSetMethod(v_InstanceOld.getClass() ,v_MethodName ,true);
+                    
+                    if ( null != v_SetMethod )
+                    {
+                        v_Instance = v_Method.getReturnType().newInstance();
+                        v_SetMethod.invoke(v_InstanceOld ,v_Instance);
+                    }
+                    else
+                    {
+                        throw new NullPointerException("Method[" + v_Method.getName() + "] return is null.");
+                    }
+                }
             }
             
             Method v_Method = this.methods.get(v_Index).get(0);
             
             if ( MethodReflect.isExtendImplement(v_Method.getParameterTypes()[0] ,i_Value.getClass()) )
             {
-                v_Method.invoke(i_Instance ,i_Value);
+                v_Method.invoke(v_Instance ,i_Value);
             }
             else
             {
-                v_Method.invoke(i_Instance ,Help.toObject(v_Method.getParameterTypes()[0] ,i_Value.toString()));
+                v_Method.invoke(v_Instance ,Help.toObject(v_Method.getParameterTypes()[0] ,i_Value.toString()));
             }
         }
     }

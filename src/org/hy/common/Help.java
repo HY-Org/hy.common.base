@@ -2214,6 +2214,32 @@ public class Help
     
     
     /**
+     * Map集合转为占位符对象
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-05-12
+     * @version     v1.0
+     *
+     * @param i_Map              
+     * @param i_PlaceholderBegin  占位符前缀
+     * @param i_PlaceholderEnd    占位符后缀
+     * @return
+     */
+    public final static Map<String ,?> toPlaceholders(Map<String ,?> i_Map ,String i_PlaceholderBegin ,String i_PlaceholderEnd)
+    {
+        Map<String ,Object> v_Ret = new HashMap<String ,Object>();
+        
+        for (Map.Entry<String ,?> v_Item : i_Map.entrySet())
+        {
+            v_Ret.put(i_PlaceholderBegin + v_Item.getKey() + i_PlaceholderEnd ,v_Item.getValue());
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
      * 将对象转为Map集合。
      * 
      * Map.key   为对象的属性名称(不包含get、set、is前缀)

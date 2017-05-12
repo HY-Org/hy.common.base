@@ -164,6 +164,23 @@ public final class StringHelp
 	
 	
 	
+	public final static String getUUIDNum()
+	{
+	    String []     v_UUIDArr = UUID.randomUUID().toString().split("-");
+	    StringBuilder v_Buffer  = new StringBuilder();
+	    
+	    for (String v_UUID : v_UUIDArr)
+	    {
+	        long v_Value = Long.parseLong(v_UUID ,16);
+	        
+	        v_Buffer.append(v_Value);
+	    }
+	    
+	    return v_Buffer.toString();
+	}
+	
+	
+	
 	/**
 	 * 字符空，则取默认值
 	 * 
