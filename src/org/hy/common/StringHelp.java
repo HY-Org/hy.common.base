@@ -403,7 +403,7 @@ public final class StringHelp
      *                    内部对i_Replaces有降序排序顺序的动作，并形成有有顺序的LinkedMap。用于解决 :A、:AA 同时存在时的混乱
      * @return
      */
-    public final static String replaceAll(final String i_Info ,final Map<String ,String> i_Replaces)
+    public final static String replaceAll(final String i_Info ,final Map<String ,?> i_Replaces)
     {
         return StringHelp.replaceAll(i_Info ,i_Replaces ,true);
     }
@@ -431,14 +431,14 @@ public final class StringHelp
 	 * @param i_OrderBy   是否降序排序顺序
 	 * @return
 	 */
-	public final static String replaceAll(final String i_Info ,final Map<String ,String> i_Replaces ,boolean i_OrderBy)
+	public final static String replaceAll(final String i_Info ,final Map<String ,?> i_Replaces ,boolean i_OrderBy)
     {
         if ( Help.isNull(i_Replaces) )
         {
             return i_Info;
         }
         
-        Map<String ,String> v_RRS = null;
+        Map<String ,?> v_RRS = null;
         if ( i_OrderBy )
         {
             v_RRS = Help.toReverse(i_Replaces);
@@ -449,9 +449,16 @@ public final class StringHelp
         }
 
         String v_Ret = i_Info;
-        for (Map.Entry<String, String> v_RR : v_RRS.entrySet())
+        for (Map.Entry<String, ?> v_RR : v_RRS.entrySet())
         {
-            v_Ret = StringHelp.replaceAll(v_Ret ,v_RR.getKey() ,Help.NVL(v_RR.getValue()));
+            if ( v_RR.getValue() == null )
+            {
+                v_Ret = StringHelp.replaceAll(v_Ret ,v_RR.getKey() ,"");
+            }
+            else
+            {
+                v_Ret = StringHelp.replaceAll(v_Ret ,v_RR.getKey() ,Help.NVL(v_RR.getValue().toString()));
+            }
         }
         
         return v_Ret;
