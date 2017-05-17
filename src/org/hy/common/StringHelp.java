@@ -30,6 +30,7 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.1  2014-08-18   1.Split分割的系统方法
  *                                 2.xor字符串的异或运算
  *                                 3.解释关系
+ *              v1.2  2017-05-17   1.修复toABC26()方法的26生成AA的算法。
  * @createDate  2009-08-21
  */
 public final class StringHelp 
@@ -1412,7 +1413,7 @@ public final class StringHelp
     		
     		v_Ret = $ABC.substring(v_Mod ,v_Mod + 1) + v_Ret;
     		
-    		v_Value = v_Value / 26;
+    		v_Value = v_Value / 26 - 1;
     	}
     	
     	return $ABC.substring(v_Value ,v_Value + 1) + v_Ret;
@@ -1437,7 +1438,7 @@ public final class StringHelp
     	
     	for ( ; v_Index<v_Len - 1; v_Index++)
     	{
-    		v_Ret += (v_Value.charAt(v_Index) - 65) * Math.pow(26 ,v_Len - v_Index - 1);
+    		v_Ret += (v_Value.charAt(v_Index) - 65 + 1) * Math.pow(26 ,v_Len - v_Index - 1);
     	}
     	
     	return v_Ret + (v_Value.charAt(v_Index) - 65);
