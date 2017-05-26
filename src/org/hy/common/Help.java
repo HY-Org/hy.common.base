@@ -1339,6 +1339,7 @@ public class Help
      */
     public final static String getWebClassPath()
     {
+        // Thread.currentThread().getContextClassLoader().getResource("").getFile().toString()
         return Help.class.getResource("/").getFile().toString();
     }
     

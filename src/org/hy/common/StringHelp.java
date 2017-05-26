@@ -1947,7 +1947,7 @@ public final class StringHelp
                 return true;
             }
             
-            Integer.parseInt(str);
+            Double.parseDouble(str);
             return true;
         } 
         catch(Exception e)
