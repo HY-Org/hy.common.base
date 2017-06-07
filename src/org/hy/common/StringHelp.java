@@ -1935,19 +1935,19 @@ public final class StringHelp
     /**
      * 判断是否为数字
      * 
-     * @param str
+     * @param i_Str
      * @return
      */
-    public final static boolean isNumber(String str)
+    public final static boolean isNumber(String i_Str)
     {
         try
         {
-            if ( str == null || "".equals(str.trim()) )
+            if ( Help.isNull(i_Str) )
             {
-                return true;
+                return false;
             }
             
-            Double.parseDouble(str);
+            Double.parseDouble(i_Str);
             return true;
         } 
         catch(Exception e)

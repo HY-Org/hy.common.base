@@ -1326,7 +1326,7 @@ public class Help
      */
     public final static String getClassHomePath()
     {
-        return Help.class.getResource("/").getFile().toString();
+        return Thread.currentThread().getContextClassLoader().getResource("").getFile().toString();
     }
     
     
@@ -1340,7 +1340,8 @@ public class Help
     public final static String getWebClassPath()
     {
         // Thread.currentThread().getContextClassLoader().getResource("").getFile().toString()
-        return Help.class.getResource("/").getFile().toString();
+        // Help.class.getResource("/").getFile().toString();
+        return Thread.currentThread().getContextClassLoader().getResource("").getFile().toString();
     }
     
     
