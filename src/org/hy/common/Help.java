@@ -42,6 +42,8 @@ import org.hy.common.app.Param;
  * 
  * @author  ZhengWei(HY)
  * @version 1.0  2008-06-17
+ *               2017-06-10  1. division()方法用BigDecimal的除法替换并重新实现
+ *                           2. 同时添加加、减、乘三个BigDecimal实现的加法、减法、乘法
  *
  */
 public class Help
@@ -58,230 +60,308 @@ public class Help
     
     
     /**
-     * 除法运算。
+     * 判断是否为数字
      * 
-     * 防止被除数为零的情况
-     * 
-     * @param i_Divisor   除数
-     * @param i_Dividend  被除数
+     * @param i_Str
      * @return
      */
-    public final static double division(short i_Divisor ,short i_Dividend)
+    public final static boolean isNumber(String i_Str)
     {
-        if ( i_Dividend != 0 )
-        {
-            return ((double)i_Divisor) / ((double)i_Dividend);
-        }
-        else
-        {
-            return 0;
-        }
+        return StringHelp.isNumber(i_Str);
     }
     
     
     
     /**
-     * 除法运算。
+     * 高精度的加法
      * 
-     * 防止被除数为零的情况
-     * 
-     * @param i_Divisor   除数
-     * @param i_Dividend  被除数
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-10
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
      * @return
      */
-    public final static double division(Short i_Divisor ,Short i_Dividend)
+    public final static <N extends Number> double addition(N i_Value01 ,N i_Value02)
     {
-        if ( i_Divisor != null && i_Dividend != null && i_Dividend.shortValue() != 0 )
-        {
-            return i_Divisor.doubleValue() / i_Dividend.doubleValue();
-        }
-        else
-        {
-            return 0;
-        }
+        return addition(i_Value01.toString() ,i_Value02.toString());
     }
     
     
     
     /**
-     * 除法运算。
+     * 高精度的加法
      * 
-     * 防止被除数为零的情况
-     * 
-     * @param i_Divisor   除数
-     * @param i_Dividend  被除数
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-10
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
      * @return
      */
-    public final static double division(int i_Divisor ,int i_Dividend)
+    public final static double addition(String i_Value01 ,String i_Value02)
     {
-        if ( i_Dividend != 0 )
-        {
-            return ((double)i_Divisor) / ((double)i_Dividend);
-        }
-        else
-        {
-            return 0;
-        }
+        BigDecimal v_Decimal01 = new BigDecimal(i_Value01);    
+        BigDecimal v_Decimal02 = new BigDecimal(i_Value02);
+        
+        return v_Decimal01.add(v_Decimal02).doubleValue();    
     }
     
     
     
     /**
-     * 除法运算。
+     * 高精度的减法
      * 
-     * 防止被除数为零的情况
-     * 
-     * @param i_Divisor   除数
-     * @param i_Dividend  被除数
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-10
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
      * @return
      */
-    public final static double division(Integer i_Divisor ,Integer i_Dividend)
+    public final static <N extends Number> double subtract(N i_Value01 ,N i_Value02)
     {
-        if ( i_Divisor != null && i_Dividend != null && i_Dividend.intValue() != 0 )
-        {
-            return i_Divisor.doubleValue() / i_Dividend.doubleValue();
-        }
-        else
-        {
-            return 0;
-        }
+        return subtract(i_Value01.toString() ,i_Value02.toString());
     }
     
     
     
     /**
-     * 除法运算。
+     * 高精度的减法
      * 
-     * 防止被除数为零的情况
-     * 
-     * @param i_Divisor   除数
-     * @param i_Dividend  被除数
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-10
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
      * @return
      */
-    public final static double division(long i_Divisor ,long i_Dividend)
+    public final static double subtract(String i_Value01 ,String i_Value02)
     {
-        if ( i_Dividend != 0 )
-        {
-            return ((double)i_Divisor) / ((double)i_Dividend);
-        }
-        else
-        {
-            return 0;
-        }
+        BigDecimal v_Decimal01 = new BigDecimal(i_Value01);    
+        BigDecimal v_Decimal02 = new BigDecimal(i_Value02);
+        
+        return v_Decimal01.subtract(v_Decimal02).doubleValue();    
     }
     
     
     
     /**
-     * 除法运算。
+     * 高精度的乘法
      * 
-     * 防止被除数为零的情况
-     * 
-     * @param i_Divisor   除数
-     * @param i_Dividend  被除数
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-10
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
      * @return
      */
-    public final static double division(Long i_Divisor ,Long i_Dividend)
+    public final static <N extends Number> double multiply(N i_Value01 ,N i_Value02)
     {
-        if ( i_Divisor != null && i_Dividend != null && i_Dividend.longValue() != 0 )
-        {
-            return i_Divisor.doubleValue() / i_Dividend.doubleValue();
-        }
-        else
-        {
-            return 0;
-        }
+        return multiply(i_Value01.toString() ,i_Value02.toString());
     }
     
     
     
     /**
-     * 除法运算。
+     * 高精度的乘法
      * 
-     * 防止被除数为零的情况
-     * 
-     * @param i_Divisor   除数
-     * @param i_Dividend  被除数
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-10
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
      * @return
      */
-    public final static double division(float i_Divisor ,float i_Dividend)
+    public final static double multiply(String i_Value01 ,String i_Value02)
     {
-        if ( i_Dividend != 0 )
-        {
-            return ((double)i_Divisor) / ((double)i_Dividend);
-        }
-        else
-        {
-            return 0;
-        }
+        BigDecimal v_Decimal01 = new BigDecimal(i_Value01);    
+        BigDecimal v_Decimal02 = new BigDecimal(i_Value02);
+        
+        return v_Decimal01.multiply(v_Decimal02).doubleValue();    
     }
     
     
     
     /**
-     * 除法运算。
+     * 高精度的除法
      * 
      * 防止被除数为零的情况
      * 
-     * @param i_Divisor   除数
-     * @param i_Dividend  被除数
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-10
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
      * @return
      */
-    public final static double division(Float i_Divisor ,Float i_Dividend)
+    public final static <N extends Number> double division(N i_Value01 ,N i_Value02)
     {
-        if ( i_Divisor != null && i_Dividend != null && i_Dividend.floatValue() != 0 )
-        {
-            return i_Divisor.doubleValue() / i_Dividend.doubleValue();
-        }
-        else
-        {
-            return 0;
-        }
+        return division(i_Value01.toString() ,i_Value02.toString());
     }
     
     
     
     /**
-     * 除法运算。
+     * 高精度的除法
      * 
      * 防止被除数为零的情况
      * 
-     * @param i_Divisor   除数
-     * @param i_Dividend  被除数
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-10
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
      * @return
      */
-    public final static double division(double i_Divisor ,double i_Dividend)
+    public final static double division(String i_Value01 ,String i_Value02)
     {
-        if ( i_Dividend != 0 )
-        {
-            return i_Divisor / i_Dividend;
-        }
-        else
-        {
-            return 0;
-        }
+        return division(i_Value01 ,i_Value02 ,9);
     }
     
     
     
     /**
-     * 除法运算。
+     * 高精度的除法
      * 
      * 防止被除数为零的情况
      * 
-     * @param i_Divisor   除数
-     * @param i_Dividend  被除数
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-13
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
      * @return
      */
-    public final static double division(Double i_Divisor ,Double i_Dividend)
+    public final static double division(String i_Value01 ,String i_Value02 ,int i_Scale)
     {
-        if ( i_Divisor != null && i_Dividend != null && i_Dividend.doubleValue() != 0 )
+        BigDecimal v_Decimal01 = new BigDecimal(i_Value01);    
+        BigDecimal v_Decimal02 = new BigDecimal(i_Value02);
+        
+        if ( v_Decimal02.compareTo(BigDecimal.ZERO) == 0 )
         {
-            return i_Divisor.doubleValue() / i_Dividend.doubleValue();
+            return 0;
+        }
+        
+        return v_Decimal01.divide(v_Decimal02 ,i_Scale ,BigDecimal.ROUND_HALF_UP).doubleValue();    
+    }
+    
+    
+    
+    /**
+     * 四舍五入。
+     * 
+     * 解决Java本身无法完全处理四舍五入的问题
+     * 
+     * @param i_Value
+     * @param i_Digit   保留小数位数
+     * @return
+     * @see   org.hy.common.xml.junit.JU_Round
+     */
+    public static <N extends Number> double round(N i_Value ,int i_Digit) 
+    {
+        return round(i_Value.doubleValue() ,i_Digit);
+    }
+    
+    
+    
+    /**
+     * 四舍五入。
+     * 
+     * 解决Java本身无法完全处理四舍五入的问题
+     * 
+     * @param i_Value
+     * @param i_Digit   保留小数位数
+     * @return
+     * @see   org.hy.common.xml.junit.JU_Round
+     */
+    public static double round(double i_Value ,int i_Digit) 
+    {
+        if ( i_Value == 0D )
+        {
+            return 0D;
+        }
+        
+        BigDecimal v_Pow      = new BigDecimal(Math.pow(10d ,i_Digit));
+        BigDecimal v_Big      = (new BigDecimal(String.valueOf(i_Value))).multiply(v_Pow);
+        BigDecimal v_Small    = new BigDecimal(Math.floor(v_Big.doubleValue()));
+        double     v_Subtract = v_Big.subtract(v_Small).doubleValue();
+        
+        if ( v_Subtract >= 0.5d )
+        {
+            v_Small = v_Small.add(new BigDecimal(1d));
+        }
+        
+        v_Small = v_Small.divide(v_Pow);
+        
+        return v_Small.doubleValue();
+        
+        // 下面代码无法解决 4.015 四舍五入2位等于 4.02 的目标
+        // BigDecimal v_BigDecimal = new BigDecimal(String.valueOf(i_Value));
+        // return v_BigDecimal.setScale(i_Digit ,BigDecimal.ROUND_HALF_EVEN).doubleValue();
+    }
+    
+    
+    
+    /**
+     * 生成指定范围的随机数
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2015-03-05
+     * @version     v1.0
+     *
+     * @param i_Max  最大值
+     * @return       生成随机数据范围为：0 <= random <= i_Max
+     */
+    public final static int random(int i_Max)
+    {
+        return random(0 ,i_Max);
+    }
+    
+    
+    
+    /**
+     * 生成指定范围的随机数
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2015-03-05
+     * @version     v1.0
+     *
+     * @param i_Min  最小值
+     * @param i_Max  最大值
+     * @return       生成随机数据范围为：i_Min <= random <= i_Max
+     */
+    public final static int random(int i_Min ,int i_Max)
+    {
+        int    v_Min    = i_Min < 0 ? 0 : i_Min;
+        int    v_Max    = Math.abs(i_Max);
+        Random v_Random = new Random();
+        
+        if ( v_Max == 0 )
+        {
+            v_Max = Integer.MAX_VALUE;
+        }
+        
+        if ( v_Max <= v_Min )
+        {
+            return v_Random.nextInt(v_Max + 1);
+        }
+        else if ( v_Min == 0 )
+        {
+            return v_Random.nextInt(v_Max + 1);
         }
         else
         {
-            return 0;
+            return v_Random.nextInt(v_Max) % (v_Max - v_Min + 1) + v_Min;
         }
     }
     
@@ -4407,116 +4487,6 @@ public class Help
         else
         {
             return "";
-        }
-    }
-    
-    
-    
-    /**
-     * 四舍五入。
-     * 
-     * 解决Java本身无法完全处理四舍五入的问题
-     * 
-     * @param i_Value
-     * @param i_Digit   保留小数位数
-     * @return
-     * @see   org.hy.common.xml.junit.JU_Round
-     */
-    public static <N extends Number> double round(N i_Value ,int i_Digit) 
-    {
-        return round(i_Value.doubleValue() ,i_Digit);
-    }
-    
-    
-    
-    /**
-     * 四舍五入。
-     * 
-     * 解决Java本身无法完全处理四舍五入的问题
-     * 
-     * @param i_Value
-     * @param i_Digit   保留小数位数
-     * @return
-     * @see   org.hy.common.xml.junit.JU_Round
-     */
-    public static double round(double i_Value ,int i_Digit) 
-    {
-        if ( i_Value == 0D )
-        {
-            return 0D;
-        }
-        
-        BigDecimal v_Pow      = new BigDecimal(Math.pow(10d ,i_Digit));
-        BigDecimal v_Big      = (new BigDecimal(String.valueOf(i_Value))).multiply(v_Pow);
-        BigDecimal v_Small    = new BigDecimal(Math.floor(v_Big.doubleValue()));
-        double     v_Subtract = v_Big.subtract(v_Small).doubleValue();
-        
-        if ( v_Subtract >= 0.5d )
-        {
-            v_Small = v_Small.add(new BigDecimal(1d));
-        }
-        
-        v_Small = v_Small.divide(v_Pow);
-        
-        return v_Small.doubleValue();
-        
-        // 下面代码无法解决 4.015 四舍五入2位等于 4.02 的目标
-        // BigDecimal v_BigDecimal = new BigDecimal(String.valueOf(i_Value));
-        // return v_BigDecimal.setScale(i_Digit ,BigDecimal.ROUND_HALF_EVEN).doubleValue();
-    }
-    
-    
-    
-    /**
-     * 生成指定范围的随机数
-     * 
-     * @author      ZhengWei(HY)
-     * @createDate  2015-03-05
-     * @version     v1.0
-     *
-     * @param i_Max  最大值
-     * @return       生成随机数据范围为：0 <= random <= i_Max
-     */
-    public final static int random(int i_Max)
-    {
-        return random(0 ,i_Max);
-    }
-    
-    
-    
-    /**
-     * 生成指定范围的随机数
-     * 
-     * @author      ZhengWei(HY)
-     * @createDate  2015-03-05
-     * @version     v1.0
-     *
-     * @param i_Min  最小值
-     * @param i_Max  最大值
-     * @return       生成随机数据范围为：i_Min <= random <= i_Max
-     */
-    public final static int random(int i_Min ,int i_Max)
-    {
-        int    v_Min    = i_Min < 0 ? 0 : i_Min;
-        int    v_Max    = Math.abs(i_Max);
-        Random v_Random = new Random();
-        
-        if ( v_Max == 0 )
-        {
-            v_Max = Integer.MAX_VALUE;
-        }
-        
-        if ( v_Max <= v_Min )
-        {
-            return v_Random.nextInt(v_Max + 1);
-        }
-        else if ( v_Min == 0 )
-        {
-            return v_Random.nextInt(v_Max + 1);
-        }
-        else
-        {
-            return v_Random.nextInt(v_Max) % (v_Max - v_Min + 1) + v_Min;
         }
     }
     
