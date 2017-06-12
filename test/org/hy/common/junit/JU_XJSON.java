@@ -1,4 +1,6 @@
-package org.hy.common;
+package org.hy.common.junit;
+
+import org.hy.common.Date;
 
 
 

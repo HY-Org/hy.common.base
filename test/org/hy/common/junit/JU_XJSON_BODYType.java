@@ -1,4 +1,4 @@
-package org.hy.common;
+package org.hy.common.junit;
 
 import java.util.Hashtable;
 import java.util.Map;
