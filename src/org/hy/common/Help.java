@@ -2380,7 +2380,7 @@ public class Help
      * @param i_FindKey
      * @return
      */
-    public final static <V> V getValueIgnoreCase(Map<String ,V> i_Map ,String i_FindKey)
+    public final static <V> V getValueIgnoreCase(Map<? ,V> i_Map ,String i_FindKey)
     {
         // 取消非法验证，保证在外部循环调用时的性能
         /*
@@ -2395,11 +2395,11 @@ public class Help
         
         if ( v_Ret == null )
         {
-            for (Entry<String ,V> v_Data : i_Map.entrySet())
+            for (Entry<? ,V> v_Data : i_Map.entrySet())
             {
                 if ( null != v_Data.getKey() )
                 {
-                    if ( v_Data.getKey().equalsIgnoreCase(i_FindKey) )
+                    if ( v_Data.getKey().toString().equalsIgnoreCase(i_FindKey) )
                     {
                         return v_Data.getValue();
                     }
