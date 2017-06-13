@@ -94,6 +94,42 @@ public class Help
      * 高精度的加法
      * 
      * @author      ZhengWei(HY)
+     * @createDate  2017-06-13
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
+     * @return
+     */
+    public final static <N extends Number> double addition(String i_Value01 ,N i_Value02)
+    {
+        return addition(i_Value01 ,i_Value02.toString());
+    }
+    
+    
+    
+    /**
+     * 高精度的加法
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-10
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
+     * @return
+     */
+    public final static <N extends Number> double addition(N i_Value01 ,String i_Value02)
+    {
+        return addition(i_Value01.toString() ,i_Value02);
+    }
+    
+    
+    
+    /**
+     * 高精度的加法
+     * 
+     * @author      ZhengWei(HY)
      * @createDate  2017-06-10
      * @version     v1.0
      *
@@ -125,6 +161,42 @@ public class Help
     public final static <N extends Number> double subtract(N i_Value01 ,N i_Value02)
     {
         return subtract(i_Value01.toString() ,i_Value02.toString());
+    }
+    
+    
+    
+    /**
+     * 高精度的减法
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-13
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
+     * @return
+     */
+    public final static <N extends Number> double subtract(String i_Value01 ,N i_Value02)
+    {
+        return subtract(i_Value01 ,i_Value02.toString());
+    }
+    
+    
+    
+    /**
+     * 高精度的减法
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-13
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
+     * @return
+     */
+    public final static <N extends Number> double subtract(N i_Value01 ,String i_Value02)
+    {
+        return subtract(i_Value01.toString() ,i_Value02);
     }
     
     
@@ -172,6 +244,42 @@ public class Help
      * 高精度的乘法
      * 
      * @author      ZhengWei(HY)
+     * @createDate  2017-06-13
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
+     * @return
+     */
+    public final static <N extends Number> double multiply(String i_Value01 ,N i_Value02)
+    {
+        return multiply(i_Value01 ,i_Value02.toString());
+    }
+    
+    
+    
+    /**
+     * 高精度的乘法
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-13
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
+     * @return
+     */
+    public final static <N extends Number> double multiply(N i_Value01 ,String i_Value02)
+    {
+        return multiply(i_Value01.toString() ,i_Value02);
+    }
+    
+    
+    
+    /**
+     * 高精度的乘法
+     * 
+     * @author      ZhengWei(HY)
      * @createDate  2017-06-10
      * @version     v1.0
      *
@@ -205,6 +313,46 @@ public class Help
     public final static <N extends Number> double division(N i_Value01 ,N i_Value02)
     {
         return division(i_Value01.toString() ,i_Value02.toString());
+    }
+    
+    
+    
+    /**
+     * 高精度的除法
+     * 
+     * 防止被除数为零的情况
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-13
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
+     * @return
+     */
+    public final static <N extends Number> double division(String i_Value01 ,N i_Value02)
+    {
+        return division(i_Value01 ,i_Value02.toString());
+    }
+    
+    
+    
+    /**
+     * 高精度的除法
+     * 
+     * 防止被除数为零的情况
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-13
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_Value02
+     * @return
+     */
+    public final static <N extends Number> double division(N i_Value01 ,String i_Value02)
+    {
+        return division(i_Value01.toString() ,i_Value02);
     }
     
     
@@ -284,15 +432,17 @@ public class Help
      * @return
      * @see   org.hy.common.xml.junit.JU_Round
      */
-    public static double round(double i_Value ,int i_Digit) 
+    public static double round(String i_Value ,int i_Digit) 
     {
-        if ( i_Value == 0D )
+        BigDecimal v_Value = new BigDecimal(String.valueOf(i_Value));
+                
+        if ( v_Value.compareTo(BigDecimal.ZERO) == 0 )
         {
             return 0D;
         }
         
         BigDecimal v_Pow      = new BigDecimal(Math.pow(10d ,i_Digit));
-        BigDecimal v_Big      = (new BigDecimal(String.valueOf(i_Value))).multiply(v_Pow);
+        BigDecimal v_Big      = v_Value.multiply(v_Pow);
         BigDecimal v_Small    = new BigDecimal(Math.floor(v_Big.doubleValue()));
         double     v_Subtract = v_Big.subtract(v_Small).doubleValue();
         
