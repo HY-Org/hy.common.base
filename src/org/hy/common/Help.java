@@ -417,7 +417,7 @@ public class Help
      */
     public static <N extends Number> double round(N i_Value ,int i_Digit) 
     {
-        return round(i_Value.doubleValue() ,i_Digit);
+        return round(i_Value.toString() ,i_Digit);
     }
     
     
