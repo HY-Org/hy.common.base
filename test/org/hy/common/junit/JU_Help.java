@@ -18,6 +18,38 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) 
 public class JU_Help
 {
+    @Test
+    public void test_findSames()
+    {
+        List<String> v_Datas = new ArrayList<String>();
+        List<String> v_Sames = null;
+        
+        for (int i=0; i<10; i++)
+        {
+            v_Datas.add("" + i);
+        }
+        
+        // 生成重复的数据
+        for (int i=0; i<3; i++)
+        {
+            v_Datas.add("" + i);
+        }
+        
+        // 再生成第二次重复的数据
+        for (int i=0; i<3; i++)
+        {
+            v_Datas.add("" + i);
+        }
+        
+        v_Sames = Help.findSames(v_Datas);
+        
+        System.out.println("\n-- 查找重复的元素");
+        Help.print(v_Sames);
+        
+        Assert.assertTrue(v_Sames.size() == 3);
+    }
+    
+    
     
     @Test
     public void test_subtract()

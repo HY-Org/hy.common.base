@@ -42,8 +42,9 @@ import org.hy.common.app.Param;
  * 
  * @author  ZhengWei(HY)
  * @version 1.0  2008-06-17
- *               2017-06-10  1. division()方法用BigDecimal的除法替换并重新实现
- *                           2. 同时添加加、减、乘三个BigDecimal实现的加法、减法、乘法
+ *               2017-06-10  1. 替换：division()方法用BigDecimal的除法替换并重新实现
+ *                           2. 添加：同时添加加、减、乘三个BigDecimal实现的加法、减法、乘法
+ *               2017-06-14  1. 添加：findSames(...)系列方法。用于查找出集合中重复的元素。
  *
  */
 public class Help
@@ -4099,6 +4100,216 @@ public class Help
     
     
     /**
+     * 多维的排序比较后，查找并过滤重复的元素(多维都相等，即为重复)
+     *   1. 支持数据库SQL一样形式的多个属性上不同方向的排序
+     *   2. 支持属性值的类型是String(或其它)，但按数字排序的功能。为空值是，默认填充数字0。
+     *         优点是，不会改变原属性值的保存格式。
+     *   3. 支持只对正确匹配到属性方法的属性名排序。在匹配时，属性名不区分大小写。
+     *   4. 返回且只返回首个重复的元素：（即，返回值中的每个元素不重复）
+     *       4.1 元素0与元素1相同重复时，将元素0添加到返回集合中；
+     *       4.2 当元素2与元素1、元素0相同重复时，只将元素0添加到返回集合中，元素1、元素2不返回。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-14
+     * @version     v1.0
+     *
+     * @param io_Datas             集合数据。会改变集合元素排列的顺序
+     * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
+     *                             没有排序标识的，默认按从小到大排序，即正序 
+     * @return                     返回值中的每个元素不重复
+     */
+    @SuppressWarnings("unchecked")
+    public final static <T> List<T> findSames(List<T> io_Datas ,String ... i_SortPropertyNames)
+    {
+        List<T> v_Sames = new ArrayList<T>();
+        
+        if ( Help.isNull(io_Datas) || Help.isNull(i_SortPropertyNames) )
+        {
+            return v_Sames;
+        }
+        
+        Object v_One = io_Datas.get(0);
+        if ( v_One == null )
+        {
+            return v_Sames;
+        }
+        
+        if ( MethodReflect.isExtendImplement(v_One ,Serializable.class) )
+        {
+            Help.toSortSerializable((List<? extends Serializable>)io_Datas ,i_SortPropertyNames);
+            
+            SerializableComparator v_Comparator = new SerializableComparator((Serializable)v_One ,i_SortPropertyNames);
+            
+            int v_SameIndex = -1; // 上次相同重复的索引下标
+            for (int v_Index=1; v_Index<io_Datas.size(); v_Index++)
+            {
+                int v_Ret = v_Comparator.compare((Serializable)io_Datas.get(v_Index-1) ,(Serializable)io_Datas.get(v_Index));
+                
+                if ( v_Ret == 0 )
+                {
+                    if ( v_Index - 1 > v_SameIndex )
+                    {
+                        v_Sames.add(io_Datas.get(v_Index-1));
+                    }
+                    
+                    v_SameIndex = v_Index;
+                }
+            }
+        }
+        else
+        {
+            Help.toSortObject(io_Datas ,i_SortPropertyNames);
+            
+            ObjectComparator v_Comparator = new ObjectComparator(v_One ,i_SortPropertyNames);
+            
+            int v_SameIndex = -1; // 上次相同重复的索引下标
+            for (int v_Index=1; v_Index<io_Datas.size(); v_Index++)
+            {
+                int v_Ret = v_Comparator.compare(io_Datas.get(v_Index-1) ,io_Datas.get(v_Index));
+                
+                if ( v_Ret == 0 )
+                {
+                    if ( v_Index - 1 > v_SameIndex )
+                    {
+                        v_Sames.add(io_Datas.get(v_Index-1));
+                    }
+                    
+                    v_SameIndex = v_Index;
+                }
+            }
+        }
+        
+        return v_Sames;
+    }
+    
+    
+    
+    /**
+     * 多维的排序比较后，查找并过滤重复的元素(多维都相等，即为重复)
+     *   1. 支持数据库SQL一样形式的多个属性上不同方向的排序
+     *   2. 支持属性值的类型是String(或其它)，但按数字排序的功能。为空值是，默认填充数字0。
+     *         优点是，不会改变原属性值的保存格式。
+     *   3. 支持只对正确匹配到属性方法的属性名排序。在匹配时，属性名不区分大小写。
+     *   4. 返回且只返回首个重复的元素：（即，返回值中的每个元素不重复）
+     *       4.1 元素0与元素1相同重复时，将元素0添加到返回集合中；
+     *       4.2 当元素2与元素1、元素0相同重复时，只将元素0添加到返回集合中，元素1、元素2不返回。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-14
+     * @version     v1.0
+     *
+     * @param io_Datas             集合数据。会改变集合元素排列的顺序
+     * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
+     *                             没有排序标识的，默认按从小到大排序，即正序 
+     * @return                     返回值中的每个元素不重复
+     */
+    public final static <T> List<T> findSames(Set<T> io_Datas ,String ... i_SortPropertyNames)
+    {
+        return findSames(new ArrayList<T>(io_Datas) ,i_SortPropertyNames);
+    }
+    
+    
+    
+    /**
+     * 简单的单维比较后，查找并过滤重复的元素（生成的结果可能还是无序的，因为Set接口除 LinkedHashSet 外，都无顺序）
+     *   1. 返回且只返回首个重复的元素：（即，返回值中的每个元素不重复）
+     *       1.1 元素0与元素1相同重复时，将元素0添加到返回集合中；
+     *       1.2 当元素2与元素1、元素0相同重复时，只将元素0添加到返回集合中，元素1、元素2不返回。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-14
+     * @version     v1.0
+     *
+     * @param io_Datas  集合数据。会改变集合元素排列的顺序
+     * @return          返回值中的每个元素不重复
+     */
+    public final static <T extends Comparable<? super T>> List<T> findSames(Set<T> io_Datas)
+    {
+        return findSames(new ArrayList<T>(io_Datas));
+    }
+    
+    
+    
+    /**
+     * 简单的单维比较后，查找并过滤重复的元素（正序）
+     *   1. 返回且只返回首个重复的元素：（即，返回值中的每个元素不重复）
+     *       1.1 元素0与元素1相同重复时，将元素0添加到返回集合中；
+     *       1.2 当元素2与元素1、元素0相同重复时，只将元素0添加到返回集合中，元素1、元素2不返回。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2016-06-24
+     * @version     v1.0
+     *
+     * @param io_Datas  集合数据。会改变集合元素排列的顺序
+     * @return          返回值中的每个元素不重复
+     */
+    public final static <T extends Comparable<? super T>> List<T> findSames(List<T> io_Datas)
+    {
+        List<T> v_Datas     = Help.toSort(io_Datas);
+        int     v_SameIndex = -1; // 上次相同重复的索引下标
+        List<T> v_Sames     = new ArrayList<T>();
+        
+        for (int v_Index=1; v_Index<io_Datas.size(); v_Index++)
+        {
+            int v_Ret = v_Datas.get(v_Index-1).compareTo(v_Datas.get(v_Index));
+            
+            if ( v_Ret == 0 )
+            {
+                if ( v_Index - 1 > v_SameIndex )
+                {
+                    v_Sames.add(v_Datas.get(v_Index-1));
+                }
+                
+                v_SameIndex = v_Index;
+            }
+        }
+        
+        return v_Sames;
+    }
+    
+    
+    
+    /**
+     * 简单的单维比较后，查找并过滤重复的元素（正序）
+     *   1. 返回且只返回首个重复的元素：（即，返回值中的每个元素不重复）
+     *       1.1 元素0与元素1相同重复时，将元素0添加到返回集合中；
+     *       1.2 当元素2与元素1、元素0相同重复时，只将元素0添加到返回集合中，元素1、元素2不返回。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-06-14
+     * @version     v1.0
+     *
+     * @param i_Values  集合数据
+     * @return          返回值中的每个元素不重复
+     */
+    @SafeVarargs
+    public final static <T extends Comparable<? super T>> List<T> findSames(T ... i_Values)
+    {
+        List<T> v_Datas     = Help.toSort(i_Values);
+        int     v_SameIndex = -1; // 上次相同重复的索引下标
+        List<T> v_Sames     = new ArrayList<T>();
+        
+        for (int v_Index=1; v_Index<v_Datas.size(); v_Index++)
+        {
+            int v_Ret = v_Datas.get(v_Index-1).compareTo(v_Datas.get(v_Index));
+            
+            if ( v_Ret == 0 )
+            {
+                if ( v_Index - 1 > v_SameIndex )
+                {
+                    v_Sames.add(v_Datas.get(v_Index-1));
+                }
+                
+                v_SameIndex = v_Index;
+            }
+        }
+        
+        return v_Datas;
+    }
+    
+    
+    
+    /**
      * 多维的排序比较后，去除重复的元素(多维都相等，即为重复)
      *   1. 支持数据库SQL一样形式的多个属性上不同方向的排序
      *   2. 支持属性值的类型是String(或其它)，但按数字排序的功能。为空值是，默认填充数字0。
@@ -4142,14 +4353,14 @@ public class Help
      *                             没有排序标识的，默认按从小到大排序，即正序 
      */
     @SuppressWarnings("unchecked")
-    public final static void toDistinct(List<?> io_Datas ,String ... i_SortPropertyNames)
+    public final static <T> void toDistinct(List<T> io_Datas ,String ... i_SortPropertyNames)
     {
         if ( Help.isNull(io_Datas) || Help.isNull(i_SortPropertyNames) )
         {
             return;
         }
         
-        Object v_One = io_Datas.get(0);
+        T v_One = io_Datas.get(0);
         if ( v_One == null )
         {
             return;
@@ -4196,19 +4407,19 @@ public class Help
      * @createDate  2016-08-15
      * @version     v1.0
      *
-     * @param i_Values
+     * @param io_Values
      * @return
      */
-    public final static <T extends Comparable<? super T>> Set<T> toDistinct(Set<T> i_Values)
+    public final static <T extends Comparable<? super T>> Set<T> toDistinct(Set<T> io_Values)
     {
-        List<T> v_Ret = new ArrayList<T>(i_Values);
+        List<T> v_Ret = new ArrayList<T>(io_Values);
         
         v_Ret = toDistinct(v_Ret);
         
-        i_Values.clear();
-        i_Values.addAll(v_Ret);
+        io_Values.clear();
+        io_Values.addAll(v_Ret);
         
-        return i_Values;
+        return io_Values;
     }
     
     
@@ -4220,12 +4431,12 @@ public class Help
      * @createDate  2016-06-24
      * @version     v1.0
      *
-     * @param i_Values
+     * @param io_Values
      * @return
      */
-    public final static <T extends Comparable<? super T>> List<T> toDistinct(List<T> i_Values)
+    public final static <T extends Comparable<? super T>> List<T> toDistinct(List<T> io_Values)
     {
-        List<T> v_Datas = Help.toSort(i_Values);
+        List<T> v_Datas = Help.toSort(io_Values);
         
         for (int v_Index=v_Datas.size()-1; v_Index>=1; v_Index--)
         {
