@@ -139,8 +139,8 @@ public class Help
      */
     public final static double addition(String i_Value01 ,String i_Value02)
     {
-        BigDecimal v_Decimal01 = new BigDecimal(i_Value01);    
-        BigDecimal v_Decimal02 = new BigDecimal(i_Value02);
+        BigDecimal v_Decimal01 = new BigDecimal(i_Value01.trim());    
+        BigDecimal v_Decimal02 = new BigDecimal(i_Value02.trim());
         
         return v_Decimal01.add(v_Decimal02).doubleValue();    
     }
@@ -214,8 +214,8 @@ public class Help
      */
     public final static double subtract(String i_Value01 ,String i_Value02)
     {
-        BigDecimal v_Decimal01 = new BigDecimal(i_Value01);    
-        BigDecimal v_Decimal02 = new BigDecimal(i_Value02);
+        BigDecimal v_Decimal01 = new BigDecimal(i_Value01.trim());    
+        BigDecimal v_Decimal02 = new BigDecimal(i_Value02.trim());
         
         return v_Decimal01.subtract(v_Decimal02).doubleValue();    
     }
@@ -289,8 +289,8 @@ public class Help
      */
     public final static double multiply(String i_Value01 ,String i_Value02)
     {
-        BigDecimal v_Decimal01 = new BigDecimal(i_Value01);    
-        BigDecimal v_Decimal02 = new BigDecimal(i_Value02);
+        BigDecimal v_Decimal01 = new BigDecimal(i_Value01.trim());    
+        BigDecimal v_Decimal02 = new BigDecimal(i_Value02.trim());
         
         return v_Decimal01.multiply(v_Decimal02).doubleValue();    
     }
@@ -392,8 +392,8 @@ public class Help
      */
     public final static double division(String i_Value01 ,String i_Value02 ,int i_Scale)
     {
-        BigDecimal v_Decimal01 = new BigDecimal(i_Value01);    
-        BigDecimal v_Decimal02 = new BigDecimal(i_Value02);
+        BigDecimal v_Decimal01 = new BigDecimal(i_Value01.trim());    
+        BigDecimal v_Decimal02 = new BigDecimal(i_Value02.trim());
         
         if ( v_Decimal02.compareTo(BigDecimal.ZERO) == 0 )
         {
@@ -434,7 +434,7 @@ public class Help
      */
     public static double round(String i_Value ,int i_Digit) 
     {
-        BigDecimal v_Value = new BigDecimal(String.valueOf(i_Value));
+        BigDecimal v_Value = new BigDecimal(i_Value.trim());
                 
         if ( v_Value.compareTo(BigDecimal.ZERO) == 0 )
         {
