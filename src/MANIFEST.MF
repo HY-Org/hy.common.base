@@ -1,4 +1,4 @@
-Manifest-Version: 1.0.101
+Manifest-Version: 1.0.102
 Created-By: HY.ZhengWei@qq.com  2008
-Specification-Version: 1.0.101  2017-06-14
+Specification-Version: 1.0.102  2017-06-15
 SourceCode: https://github.com/HY-ZhengWei/hy.common.base

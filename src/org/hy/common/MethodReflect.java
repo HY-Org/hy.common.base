@@ -21,9 +21,9 @@ import java.util.regex.Pattern;
 /**
  * 方法的反射。
  * 
- * 1. 可实现xxx.yyy.www(或getXxx.getYyy.setWww)全路径的解释
- * 2. 可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的解释
- * 3. 可实现xxx(p1).yyy(p1 ,p2).www 方法带参数的全路径的解释
+ * 1. 可实现xxx.yyy.www(或getXxx.getYyy.setWww)全路径的解释。不再区分大小写
+ * 2. 可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的解释。不再区分大小写
+ * 3. 可实现xxx(p1).yyy(p1 ,p2).www 方法带参数的全路径的解释。不再区分大小写
  * 4. 无须反射，只许简单的执行方法就成。应用于：外界已明确了待执行的方法（通常是getter方法）。
  * 
  * @author      ZhengWei(HY)
@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
  *              v5.0  2017-03-18  添加：Class<?> 类型对识别方法反射的构造器
  *              v5.1  2017-03-23  添加：xxx.$getYyy.www 全路径中$符号后跟的为完整方法名称的解释功能。
  *                                     即，全路径中一部是简写方法名称的方式，一部又是方法的完整名称。
+ *              v6.0  2017-06-15  添加：MethodReflect()构造器中入参 "i_MethodURL方法全路径" 中的每个方法名称，不再区分大小写
  */
 public class MethodReflect
 {
@@ -1467,6 +1468,7 @@ public class MethodReflect
      * @author      ZhengWei(HY)
      * @createDate  2017-03-17
      * @version     v1.0
+     *              v2.0  2017-06-15  添加：i_MethodURL方法全路径中的每个方法名称，不再区分大小写
      * 
      * @param i_Class       最上层的对象类型
      * @param i_MethodURL   方法全路径
@@ -1506,6 +1508,7 @@ public class MethodReflect
      * @author      ZhengWei(HY)
      * @createDate  2017-03-17
      * @version     v1.0
+     *              v2.0  2017-06-15  添加：i_MethodURL方法全路径中的每个方法名称，不再区分大小写
      * 
      * @param i_Class       最上层的对象类型
      * @param i_MethodURL   方法全路径
@@ -1529,6 +1532,8 @@ public class MethodReflect
 	 * 
 	 * 可实现xxx.yyy.www(或getXxx.getYyy.setWww)全路径的解释
 	 * 可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的解释
+	 * 
+	 * v2.0  2017-06-15  添加：i_MethodURL方法全路径中的每个方法名称，不再区分大小写
 	 * 
 	 * @param i_Instance    最上层的实例对象实例
 	 * @param i_MethodURL   方法全路径
@@ -1564,6 +1569,8 @@ public class MethodReflect
 	 * 
 	 * 可实现getXxx.getYyy.setWww全路径的解释
 	 * 可实现getXxx.getYyy.getWww全路径的解释
+	 * 
+	 * v2.0  2017-06-15  添加：i_MethodURL方法全路径中的每个方法名称，不再区分大小写
 	 * 
 	 * @param i_Instance    最上层的实例对象实例
 	 * @param i_MethodURL   方法全路径
@@ -1616,6 +1623,8 @@ public class MethodReflect
 	
 	/**
 	 * 解释方法全路径
+	 * 
+	 * 2017-06-15 添加：方法名称不再区分大小写
 	 * 
 	 * @throws SecurityException
 	 * @throws NoSuchMethodException
@@ -1696,7 +1705,7 @@ public class MethodReflect
 		    for (v_Index = 0; v_Index<this.methodNames.length - 1; v_Index++)
             {
                 Class<?>     v_Class   = this.classes.get(v_Index);
-                List<Method> v_Methods = getMethods(v_Class ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
+                List<Method> v_Methods = getMethodsIgnoreCase(v_Class ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
                 
                 if ( Help.isNull(v_Methods) )
                 {
@@ -1735,7 +1744,7 @@ public class MethodReflect
     		for (v_Index = 0; v_Index<this.methodNames.length - 1; v_Index++)
     		{
     			Class<?>     v_Class         = this.instances.get(v_Index).getClass();
-    			List<Method> v_Methods       = getMethods(v_Class ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
+    			List<Method> v_Methods       = getMethodsIgnoreCase(v_Class ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
     			Object       v_ChildInstance = null;
     			
     			if ( Help.isNull(v_Methods) )
@@ -1784,7 +1793,7 @@ public class MethodReflect
  		
 		if ( this.normType == $NormType_Setter )
 		{
-		    List<Method> v_Methods = getSetMethods(v_LastClass ,this.methodNames[v_Index] ,false);
+		    List<Method> v_Methods = getMethodsIgnoreCase(v_LastClass ,this.methodNames[v_Index] ,1);
 		    
 		    if ( !Help.isNull(v_Methods) )
 		    {
@@ -1798,7 +1807,7 @@ public class MethodReflect
 		}
 		else
 		{
-		    List<Method> v_Methods = getMethods(v_LastClass ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
+		    List<Method> v_Methods = getMethodsIgnoreCase(v_LastClass ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
 			
 		    if ( Help.isNull(v_Methods) )
             {

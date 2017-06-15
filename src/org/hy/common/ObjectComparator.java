@@ -1,6 +1,5 @@
 package org.hy.common;
 
-import java.lang.reflect.Method;
 import java.util.Comparator;
 
 import org.hy.common.Help;
@@ -15,10 +14,12 @@ import org.hy.common.Help;
  *   2. 支持属性值的类型是String(或其它)，但按数字排序的功能。为空值是，默认填充数字0。
  *         优点是，不会改变原属性值的保存格式。
  *   3. 支持只对正确匹配到属性方法的属性名排序。在匹配时，属性名不区分大小写。
+ *   4. 支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
  * 
  * @author      ZhengWei(HY)
  * @createDate  2015-12-10
  * @version     v1.0  
+ *              v2.0  2017-06-15  添加：支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
  */
 public class ObjectComparator implements Comparator<Object>
 {
@@ -37,7 +38,7 @@ public class ObjectComparator implements Comparator<Object>
     
     
     /** 属性名称的集合 */
-    private String [] propertyNames; 
+    private String        [] propertyNames; 
     
     /** 
      * 每个属性的排序标记的集合。标记值含意如下：
@@ -46,14 +47,14 @@ public class ObjectComparator implements Comparator<Object>
      *   -2   字符转数字后，按倒序排。
      *    2   字符转数字后，按正序排。
      */
-    private int    [] propertyOrders;
+    private int           [] propertyOrders;
     
     /** 
      * 属性名称对应出在对象中的属性Getter(is)方法的集合
      * 
      * 注意：propertyMethods的大小可能小于上面两个数组，因为它中只是保留正确匹配到属性方法
      */
-    private Method  [] propertyMethods;
+    private MethodReflect [] propertyMethods;
     
     
     
@@ -80,9 +81,9 @@ public class ObjectComparator implements Comparator<Object>
             throw new InstantiationError("SortPropertyNames is null.");
         }
         
-        propertyNames   = new String[i_SortPropertyNames.length];
-        propertyOrders  = new int   [i_SortPropertyNames.length];
-        propertyMethods = new Method[i_SortPropertyNames.length];
+        propertyNames   = new String       [i_SortPropertyNames.length];
+        propertyOrders  = new int          [i_SortPropertyNames.length];
+        propertyMethods = new MethodReflect[i_SortPropertyNames.length];
         for (int v_SNIndex=0; v_SNIndex<i_SortPropertyNames.length; v_SNIndex++)
         {
             String [] v_Temp = i_SortPropertyNames[v_SNIndex].replaceAll("  " ," ").split(" ");
@@ -124,20 +125,25 @@ public class ObjectComparator implements Comparator<Object>
         int v_ValidCount = 0;
         for (int v_SNIndex=0; v_SNIndex<propertyNames.length; v_SNIndex++)
         {
-            Method v_Method = MethodReflect.getGetMethod(i_MetadataObj.getClass() ,propertyNames[v_SNIndex] ,true);
-            if ( v_Method != null )
+            // Method v_Method = MethodReflect.getGetMethod(i_MetadataObj.getClass() ,propertyNames[v_SNIndex] ,true);
+            try
             {
+                MethodReflect v_Method = new MethodReflect(i_MetadataObj.getClass() ,propertyNames[v_SNIndex] ,true ,MethodReflect.$NormType_Getter);
                 propertyMethods[v_SNIndex] = v_Method;
                 v_ValidCount++;
-                break;
+            }
+            catch (Exception exce)
+            {
+                // 没有找到对应的方法
+                // Nothing.
             }
         }
         
         // 去除没有正确匹配到属性方法的
         if ( v_ValidCount != propertyMethods.length )
         {
-            Method [] v_PIndexes   = new Method[v_ValidCount];
-            int       v_ValidIndex = 0;
+            MethodReflect [] v_PIndexes   = new MethodReflect[v_ValidCount];
+            int              v_ValidIndex = 0;
             for (int v_SNIndex=0; v_SNIndex<propertyMethods.length; v_SNIndex++)
             {
                 if ( propertyMethods[v_SNIndex] != null )
@@ -181,7 +187,7 @@ public class ObjectComparator implements Comparator<Object>
                 
                 try
                 {
-                    v_Value01 = propertyMethods[v_PIndex].invoke(i_Obj01);
+                    v_Value01 = propertyMethods[v_PIndex].invokeForInstance(i_Obj01);
                 }
                 catch (Exception exce)
                 {
@@ -190,7 +196,7 @@ public class ObjectComparator implements Comparator<Object>
                 
                 try
                 {
-                    v_Value02 = propertyMethods[v_PIndex].invoke(i_Obj02);
+                    v_Value02 = propertyMethods[v_PIndex].invokeForInstance(i_Obj02);
                 }
                 catch (Exception exce)
                 {

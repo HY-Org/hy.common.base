@@ -117,7 +117,7 @@ public class JU_Help
         v_Datas.add(new JU_XJSON("03" ,"2"   ,5));
         
         System.out.println("\n\n按SID倒序排序");
-        Help.toSort(v_Datas ,"SID Desc");
+        Help.toSort(v_Datas ,"SID Desc" ,"BODY.hyDate Desc");
         Help.print(v_Datas);
         
         System.out.println("\n\n按SID正序排序");

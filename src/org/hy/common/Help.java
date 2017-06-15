@@ -4022,12 +4022,12 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2015-12-10
      * @version     v1.0
+     *              v2.0  2017-06-15  添加：支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
      *
      * @param io_Datas             集合数据
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
      *                             没有排序标识的，默认按从小到大排序，即正序 
      */
-    @SuppressWarnings("unchecked")
     public final static void toSort(List<?> io_Datas ,String ... i_SortPropertyNames)
     {
         if ( Help.isNull(io_Datas) || Help.isNull(i_SortPropertyNames) )
@@ -4041,14 +4041,16 @@ public class Help
             return;
         }
         
+        /*
         if ( MethodReflect.isExtendImplement(v_One ,Serializable.class) )
         {
             toSortSerializable((List<? extends Serializable>)io_Datas ,i_SortPropertyNames);
         }
         else
         {
-            toSortObject(io_Datas ,i_SortPropertyNames);
-        }
+        */
+        
+        toSortObject(io_Datas ,i_SortPropertyNames);
     }
     
     
@@ -4090,7 +4092,10 @@ public class Help
      * @param io_Datas             集合数据
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
      *                             没有排序标识的，默认按从小到大排序，即正序 
+     *                             
+     * 2017-06-15 被 toSortObject() 方法取替，暂时保存不删除此段代码
      */
+    @SuppressWarnings("unused")
     private final static void toSortSerializable(List<? extends Serializable> io_Datas ,String ... i_SortPropertyNames)
     {
         SerializableComparator v_SComparator = new SerializableComparator(io_Datas.get(0) ,i_SortPropertyNames);
@@ -4112,13 +4117,13 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2017-06-14
      * @version     v1.0
+     *              v2.0  2017-06-15  添加：支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
      *
      * @param io_Datas             集合数据。会改变集合元素排列的顺序
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
      *                             没有排序标识的，默认按从小到大排序，即正序 
      * @return                     返回值中的每个元素不重复
      */
-    @SuppressWarnings("unchecked")
     public final static <T> List<T> findSames(List<T> io_Datas ,String ... i_SortPropertyNames)
     {
         List<T> v_Sames = new ArrayList<T>();
@@ -4134,6 +4139,7 @@ public class Help
             return v_Sames;
         }
         
+        /*
         if ( MethodReflect.isExtendImplement(v_One ,Serializable.class) )
         {
             Help.toSortSerializable((List<? extends Serializable>)io_Datas ,i_SortPropertyNames);
@@ -4158,24 +4164,24 @@ public class Help
         }
         else
         {
-            Help.toSortObject(io_Datas ,i_SortPropertyNames);
+        */
+        Help.toSortObject(io_Datas ,i_SortPropertyNames);
+        
+        ObjectComparator v_Comparator = new ObjectComparator(v_One ,i_SortPropertyNames);
+        
+        int v_SameIndex = -1; // 上次相同重复的索引下标
+        for (int v_Index=1; v_Index<io_Datas.size(); v_Index++)
+        {
+            int v_Ret = v_Comparator.compare(io_Datas.get(v_Index-1) ,io_Datas.get(v_Index));
             
-            ObjectComparator v_Comparator = new ObjectComparator(v_One ,i_SortPropertyNames);
-            
-            int v_SameIndex = -1; // 上次相同重复的索引下标
-            for (int v_Index=1; v_Index<io_Datas.size(); v_Index++)
+            if ( v_Ret == 0 )
             {
-                int v_Ret = v_Comparator.compare(io_Datas.get(v_Index-1) ,io_Datas.get(v_Index));
-                
-                if ( v_Ret == 0 )
+                if ( v_Index - 1 > v_SameIndex )
                 {
-                    if ( v_Index - 1 > v_SameIndex )
-                    {
-                        v_Sames.add(io_Datas.get(v_Index-1));
-                    }
-                    
-                    v_SameIndex = v_Index;
+                    v_Sames.add(io_Datas.get(v_Index-1));
                 }
+                
+                v_SameIndex = v_Index;
             }
         }
         
@@ -4347,12 +4353,12 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2015-12-17
      * @version     v1.0
+     *              v2.0  2017-06-15  添加：支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
      *
      * @param io_Datas             集合数据
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
      *                             没有排序标识的，默认按从小到大排序，即正序 
      */
-    @SuppressWarnings("unchecked")
     public final static <T> void toDistinct(List<T> io_Datas ,String ... i_SortPropertyNames)
     {
         if ( Help.isNull(io_Datas) || Help.isNull(i_SortPropertyNames) )
@@ -4366,6 +4372,7 @@ public class Help
             return;
         }
         
+        /*
         if ( MethodReflect.isExtendImplement(v_One ,Serializable.class) )
         {
             Help.toSortSerializable((List<? extends Serializable>)io_Datas ,i_SortPropertyNames);
@@ -4383,17 +4390,17 @@ public class Help
         }
         else
         {
-            Help.toSortObject(io_Datas ,i_SortPropertyNames);
-            
-            ObjectComparator v_Comparator = new ObjectComparator(v_One ,i_SortPropertyNames);
-            
-            for (int v_Index=io_Datas.size()-1; v_Index>=1; v_Index--)
+        */
+        Help.toSortObject(io_Datas ,i_SortPropertyNames);
+        
+        ObjectComparator v_Comparator = new ObjectComparator(v_One ,i_SortPropertyNames);
+        
+        for (int v_Index=io_Datas.size()-1; v_Index>=1; v_Index--)
+        {
+            int v_Ret = v_Comparator.compare(io_Datas.get(v_Index-1) ,io_Datas.get(v_Index));
+            if ( v_Ret == 0 )
             {
-                int v_Ret = v_Comparator.compare(io_Datas.get(v_Index-1) ,io_Datas.get(v_Index));
-                if ( v_Ret == 0 )
-                {
-                    io_Datas.remove(v_Index);
-                }
+                io_Datas.remove(v_Index);
             }
         }
     }

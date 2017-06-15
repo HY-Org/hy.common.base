@@ -47,7 +47,7 @@ public class JU_XJSON_BODYType
         this.channelId  = "1";
         this.staffId    = "KF01016";
         this.serviceNbr = "18066808930";
-        // this.hyDate     = new Date();
+        this.hyDate     = new Date();
     }
     
     
