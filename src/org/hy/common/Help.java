@@ -45,6 +45,9 @@ import org.hy.common.app.Param;
  *               2017-06-10  1. 替换：division()方法用BigDecimal的除法替换并重新实现
  *                           2. 添加：同时添加加、减、乘三个BigDecimal实现的加法、减法、乘法
  *               2017-06-14  1. 添加：findSames(...)系列方法。用于查找出集合中重复的元素。
+ *               2017-06-15  1. 添加：toSort    (? ,String ...)支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
+ *                           2. 添加：findSames (? ,String ...)支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
+ *                           3. 添加：toDistinct(? ,String ...)支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
  *
  */
 public class Help
@@ -3989,6 +3992,7 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2016-05-23
      * @version     v1.0
+     *              v2.0  2017-06-15  添加：支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
      *
      * @param io_Datas             集合数据
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
@@ -4065,6 +4069,7 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2015-12-10
      * @version     v1.0
+     *              v2.0  2017-06-15  添加：支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
      *
      * @param io_Datas             集合数据
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
@@ -4203,6 +4208,7 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2017-06-14
      * @version     v1.0
+     *              v2.0  2017-06-15  添加：支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
      *
      * @param io_Datas             集合数据。会改变集合元素排列的顺序
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
@@ -4326,6 +4332,7 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2016-08-15
      * @version     v1.0
+     *              v2.0  2017-06-15  添加：支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
      *
      * @param io_Datas             集合数据
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
