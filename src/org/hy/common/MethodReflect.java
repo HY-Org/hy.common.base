@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
  *              v5.1  2017-03-23  添加：xxx.$getYyy.www 全路径中$符号后跟的为完整方法名称的解释功能。
  *                                     即，全路径中一部是简写方法名称的方式，一部又是方法的完整名称。
  *              v6.0  2017-06-15  添加：MethodReflect()构造器中入参 "i_MethodURL方法全路径" 中的每个方法名称，不再区分大小写
+ *              v7.0  2017-06-23  修正：三个invokeForInstance(...)方法在中间实现对象为Null的处理。
  */
 public class MethodReflect
 {
@@ -1995,6 +1996,8 @@ public class MethodReflect
             {
                 Method v_Method = this.methods.get(v_Index).get(0);
                 
+                if ( v_Instance == null ){ break; }
+                
                 if ( this.methodsParams.get(v_Index).size() <= 0 )
                 {
                     v_Instance = v_Method.invoke(v_Instance);
@@ -2046,6 +2049,8 @@ public class MethodReflect
             for (int v_Index=0; v_Index<this.methods.size(); v_Index++)
             {
                 Method v_Method = this.methods.get(v_Index).get(0);
+                
+                if ( v_Instance == null ){ break; }
                 
                 if ( this.methodsParams.get(v_Index).size() <= 0 )
                 {
@@ -2100,6 +2105,8 @@ public class MethodReflect
             {
                 Method v_Method = this.methods.get(v_Index).get(0);
                 
+                if ( v_Instance == null ){ break; }
+                
                 v_InstanceOld = v_Instance;
                         
                 if ( this.methodsParams.get(v_Index).size() <= 0 )
@@ -2144,6 +2151,8 @@ public class MethodReflect
                     }
                 }
             }
+            
+            if ( v_Instance == null ){ return; }
             
             Method v_Method = this.methods.get(v_Index).get(0);
             
