@@ -19,6 +19,14 @@ import org.junit.runners.MethodSorters;
 public class JU_Help
 {
     @Test
+    public void test_round()
+    {
+        System.out.println(Help.round(0.00005123 ,4));
+    }
+    
+    
+    
+    @Test
     public void test_findSames()
     {
         List<String> v_Datas = new ArrayList<String>();
