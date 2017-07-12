@@ -39,6 +39,8 @@ import java.util.regex.Pattern;
  *                                     即，全路径中一部是简写方法名称的方式，一部又是方法的完整名称。
  *              v6.0  2017-06-15  添加：MethodReflect()构造器中入参 "i_MethodURL方法全路径" 中的每个方法名称，不再区分大小写
  *              v7.0  2017-06-23  修正：三个invokeForInstance(...)方法在中间实现对象为Null的处理。
+ *              v8.0  2017-07-12  修改：所有方法名称的判定都不再区分大小。
+ *                                修正：当方法名称正的以$开头时($为本类的关键字符，见v5.1)，也要能正确匹配到方法。parser()方法除外。
  */
 public class MethodReflect
 {
@@ -635,13 +637,15 @@ public class MethodReflect
 	 */
 	public static Method getSetMethod(Class<?> i_Class ,String i_SetMethodName ,boolean i_IsNorm)
 	{
-		String v_SetMethodName = i_SetMethodName.trim();
+		String v_SetMethodName      = i_SetMethodName.trim();
+		String v_SetMethodNameFixed = null;
 		
 		if ( i_IsNorm )
 		{
 		    if ( v_SetMethodName.startsWith($FixedMethodName) )
 		    {
-		        v_SetMethodName = v_SetMethodName.substring(1);
+		        v_SetMethodNameFixed = "set" + v_SetMethodName;
+		        v_SetMethodName      = v_SetMethodName.substring(1);
 		    }
 		    else
 		    {
@@ -663,6 +667,21 @@ public class MethodReflect
 			}
 		}
 		
+		// 当方法名称真的是get$xxx()、set$xxx()的形式，也是要尝试查询匹配一次的  2017-07-12
+		if ( v_SetMethodNameFixed != null )
+		{
+    		for (int i=0; i<v_Methods.length; i++)
+            {
+                if ( v_Methods[i].getName().equalsIgnoreCase(v_SetMethodNameFixed) )
+                {
+                    if ( v_Methods[i].getParameterTypes().length == 1 )
+                    {
+                        return v_Methods[i];
+                    }
+                }
+            }
+		}
+		
 		return null;
 	}
 	
@@ -678,15 +697,17 @@ public class MethodReflect
      */
     public static List<Method> getSetMethods(Class<?> i_Class ,String i_SetMethodName ,boolean i_IsNorm)
     {
-        List<Method> v_Ret           = new ArrayList<Method>();
-        String       v_SetMethodName = i_SetMethodName.trim();
+        List<Method> v_Ret                = new ArrayList<Method>();
+        String       v_SetMethodName      = i_SetMethodName.trim();
+        String       v_SetMethodNameFixed = null;
         
         
         if ( i_IsNorm )
         {
             if ( v_SetMethodName.startsWith($FixedMethodName) )
             {
-                v_SetMethodName = v_SetMethodName.substring(1);
+                v_SetMethodNameFixed = "set" + v_SetMethodName;
+                v_SetMethodName      = v_SetMethodName.substring(1);
             }
             else
             {
@@ -696,10 +717,12 @@ public class MethodReflect
         
         Method [] v_Methods = i_Class.getMethods();
         
-        
+        // 当方法名称真的是get$xxx()、set$xxx()的形式，也是要尝试查询匹配一次的  2017-07-12
         for (int i=0; i<v_Methods.length; i++)
         {
-            if ( v_Methods[i].getName().equals(v_SetMethodName) )
+            // 不再区分大小写 2017-07-12
+            if ( v_Methods[i].getName().equalsIgnoreCase(v_SetMethodName)
+              || v_Methods[i].getName().equalsIgnoreCase(v_SetMethodNameFixed) )
             {
                 if ( v_Methods[i].getParameterTypes().length == 1 )
                 {
@@ -828,15 +851,19 @@ public class MethodReflect
 	 */
 	public static Method getGetMethod(Class<?> i_Class ,String i_GetMethodName ,boolean i_IsNorm)
 	{
-		String v_GetMethodName_Get = i_GetMethodName.trim();
-		String v_GetMethodName_Is  = i_GetMethodName.trim();
+		String v_GetMethodName_Get       = i_GetMethodName.trim();
+		String v_GetMethodName_Is        = i_GetMethodName.trim();
+		String v_GetMethodName_Fixed_Get = null;
+        String v_GetMethodName_Fixed_Is  = null;
 		
 		if ( i_IsNorm )
 		{
 		    if ( v_GetMethodName_Get.startsWith($FixedMethodName) )
 		    {
-		        v_GetMethodName_Get = v_GetMethodName_Get.substring(1);
-                v_GetMethodName_Is  = v_GetMethodName_Is.substring(1);
+		        v_GetMethodName_Fixed_Get = "get" + v_GetMethodName_Get;
+		        v_GetMethodName_Fixed_Is  = "is"  + v_GetMethodName_Is;
+		        v_GetMethodName_Get       = v_GetMethodName_Get.substring(1);
+                v_GetMethodName_Is        = v_GetMethodName_Is.substring(1);
 		    }
 		    else
 		    {
@@ -858,6 +885,22 @@ public class MethodReflect
 					return v_Methods[i];
 				}
 			}
+		}
+		
+		// 当方法名称真的是get$xxx()、set$xxx()的形式，也是要尝试查询匹配一次的  2017-07-12
+		if ( v_GetMethodName_Fixed_Get != null )
+		{
+		    for (int i=0; i<v_Methods.length; i++)
+	        {
+	            if ( v_Methods[i].getName().equalsIgnoreCase(v_GetMethodName_Fixed_Get)
+	              || v_Methods[i].getName().equalsIgnoreCase(v_GetMethodName_Fixed_Is) )
+	            {
+	                if ( v_Methods[i].getParameterTypes().length == 0 )
+	                {
+	                    return v_Methods[i];
+	                }
+	            }
+	        }
 		}
 		
 		return null;
@@ -1021,7 +1064,8 @@ public class MethodReflect
 		
 		for (int i=0; i<v_Methods.length; i++)
 		{
-			if ( v_Methods[i].getName().equals(i_MethodName) )
+		    // 不再区分大小写 2017-07-12
+			if ( v_Methods[i].getName().equalsIgnoreCase(i_MethodName) )
 			{
 				v_Ret.add(v_Methods[i]);
 			}
@@ -1179,7 +1223,8 @@ public class MethodReflect
 		
 		for (int i=0; i<v_Methods.length; i++)
 		{
-			if ( v_Methods[i].getName().equals(i_MethodName) )
+		    // 不再区分大小写 2017-07-12
+			if ( v_Methods[i].getName().equalsIgnoreCase(i_MethodName) )
 			{
 				if ( v_Methods[i].getParameterTypes().length == i_ParamSize )
 				{
@@ -1338,7 +1383,7 @@ public class MethodReflect
      * @version     v1.0
      *
      * @param i_Class         对象类型 
-     * @param i_MethodName    方法名称（区分大小写）
+     * @param i_MethodName    方法名称（不区分大小写）
      * @param i_MethodParams  方法的入参
      * @return
      */
@@ -1352,7 +1397,8 @@ public class MethodReflect
         {
             v_Method = v_Methods[i];
             
-            if ( v_Method.getName().equals(i_MethodName) )
+            // 不再区分大小写 2017-07-12
+            if ( v_Method.getName().equalsIgnoreCase(i_MethodName) )
             {
                 if ( v_Method.getParameterTypes().length == i_MethodParams.length )
                 {
