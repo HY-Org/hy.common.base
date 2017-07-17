@@ -3257,6 +3257,10 @@ public class Help
         {
             v_Ret = toListSerializable((List<? extends Serializable>)i_Datas ,v_SelectPropertyNameArr[0]);
         }
+        else if ( MethodReflect.isExtendImplement(v_One ,Map.class) )
+        {
+            v_Ret = toListMap((List<Map<? ,?>>)i_Datas ,v_SelectPropertyNameArr[0]);
+        }
         else
         {
             v_Ret = toListObject(i_Datas ,v_SelectPropertyNameArr[0]);
@@ -3265,6 +3269,38 @@ public class Help
         for (int v_Index=1; v_Index<v_SelectPropertyNameArr.length; v_Index++)
         {
             v_Ret = toList(v_Ret ,v_SelectPropertyNameArr[v_Index]);
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 纵向抽取集合元素中的某一个属性值，形成新的简单集合
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-07-17
+     * @version     v1.0
+     *
+     * @param i_Datas               集合数据
+     * @param i_SelectPropertyName  纵向抽取的属性名称，不区分大小写。
+     * @return                      创建一个新的集合。异常时，返回null。
+     */
+    private final static List<?> toListMap(List<Map<? ,?>> i_Datas ,String i_SelectPropertyName)
+    {
+        // 开始纵向抽取
+        List<Object> v_Ret = new ArrayList<Object>(i_Datas.size());
+        for (int v_Index=0; v_Index<i_Datas.size(); v_Index++)
+        {
+            try
+            {
+                v_Ret.add(i_Datas.get(v_Index).get(i_SelectPropertyName));
+            }
+            catch (Exception exce)
+            {
+                // Nothing.
+            }
         }
         
         return v_Ret;
