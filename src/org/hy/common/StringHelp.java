@@ -1808,6 +1808,37 @@ public final class StringHelp
     
     
     /**
+     * 获取i_FindStr字符串在i_String文本的内容
+     * 
+     * @param i_Text         原文本
+     * @param i_FindStr      要查找到字符串
+     * @return
+     */
+    public final static List<String> getString(String i_String ,String i_FindStr)
+    {
+        if ( Help.isNull(i_String) || i_FindStr == null )
+        {
+            return null;
+        }
+        
+        // 使用Pattern建立匹配模式
+        Pattern v_Pattern = Pattern.compile(i_FindStr);  
+        // 使用Matcher进行各种查找替换操作
+        Matcher v_Matcher = v_Pattern.matcher(i_String);
+        
+        List<String> v_Ret = new ArrayList<String>();
+        
+        while( v_Matcher.find() )
+        {  
+            v_Ret.add(i_String.substring(v_Matcher.start() ,v_Matcher.end()));
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
      * 获取两个字符串间的内容
      * 
      * 可支持，不区分大小写的匹配
