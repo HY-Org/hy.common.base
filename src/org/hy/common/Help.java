@@ -48,6 +48,7 @@ import org.hy.common.app.Param;
  *               2017-06-15  1. 添加：toSort    (? ,String ...)支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
  *                           2. 添加：findSames (? ,String ...)支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
  *                           3. 添加：toDistinct(? ,String ...)支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
+ *               2017-07-23  1. 添加：getMacs() 获取本机全部的Mac
  *
  */
 public class Help
@@ -1770,6 +1771,85 @@ public class Help
         }
         
         return v_Ret.toString().trim();
+    }
+    
+    
+    
+    /**
+     * 获取本机全部的Mac。用;分号分隔
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-07-23
+     * @version     v1.0
+     *
+     * @return
+     */
+    public static String getMacs()
+    {
+        StringBuilder  v_Ret           = new StringBuilder();
+        Enumeration<?> v_NetInterfaces = null;
+        int            v_Count         = 0;
+        
+        try
+        {
+            v_NetInterfaces = NetworkInterface.getNetworkInterfaces();
+        }
+        catch (java.net.SocketException e)
+        {
+            return v_Ret.toString();
+        }
+        
+        while ( v_NetInterfaces.hasMoreElements() )
+        {
+            NetworkInterface v_NetInterface = (NetworkInterface) v_NetInterfaces.nextElement();
+            Enumeration<?>   v_Addresses    = v_NetInterface.getInetAddresses();
+            
+            while ( v_Addresses.hasMoreElements() )
+            {
+                InetAddress v_IP  = (InetAddress) v_Addresses.nextElement();;
+                byte []     v_Mac = null;
+                
+                if ( v_IP != null && v_IP instanceof Inet4Address )
+                {
+                    try
+                    {
+                        v_Mac = NetworkInterface.getByInetAddress(v_IP).getHardwareAddress();
+                    }
+                    catch (Exception exce)
+                    {
+                        return null;
+                    }
+                    
+                    if ( !Help.isNull(v_Mac) )
+                    {
+                        if ( v_Count >= 1 )
+                        {
+                            v_Ret.append(";");
+                        }
+                        
+                        // 把Mac地址拼装成String
+                        for (int i=0; i<v_Mac.length; i++)
+                        {
+                            if ( i != 0 )
+                            {
+                                v_Ret.append("-");
+                            }
+                            
+                            String v_Hex = Integer.toHexString(v_Mac[i] & 0xFF);  // Mac[i] & 0xFF 是为了把byte转化为正整数
+                            if ( v_Hex.length() == 1 )
+                            {
+                                v_Ret.append("0");
+                            }
+                            v_Ret.append(v_Hex.toUpperCase());
+                        }
+                        
+                        v_Count++;
+                    }
+                }
+            }
+        }
+        
+        return v_Ret.toString();
     }
     
     
