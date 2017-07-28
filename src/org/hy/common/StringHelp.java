@@ -2089,6 +2089,24 @@ public final class StringHelp
     
     
     /**
+     * 判定是否包含多个关键字(包含任何一个关键字为true)
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-07-28
+     * @version     v1.0
+     *
+     * @param i_Text            被查询的字符串
+     * @param i_FindKeys        关键字组
+     * @return
+     */
+    public final static boolean isContains(final String i_Text ,final String ... i_FindKeys)
+    {
+        return isContains(i_Text ,false ,i_FindKeys);
+    }
+    
+    
+    
+    /**
      * 判定是否包含多个关键字
      * 
      *   分为两种判定标准
