@@ -1808,6 +1808,37 @@ public final class StringHelp
     
     
     /**
+     * 获取i_FindStr字符串在i_String文本的内容
+     * 
+     * @param i_Text         原文本
+     * @param i_FindStr      要查找到字符串
+     * @return
+     */
+    public final static List<String> getString(String i_String ,String i_FindStr)
+    {
+        if ( Help.isNull(i_String) || i_FindStr == null )
+        {
+            return null;
+        }
+        
+        // 使用Pattern建立匹配模式
+        Pattern v_Pattern = Pattern.compile(i_FindStr);  
+        // 使用Matcher进行各种查找替换操作
+        Matcher v_Matcher = v_Pattern.matcher(i_String);
+        
+        List<String> v_Ret = new ArrayList<String>();
+        
+        while( v_Matcher.find() )
+        {  
+            v_Ret.add(i_String.substring(v_Matcher.start() ,v_Matcher.end()));
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
      * 获取两个字符串间的内容
      * 
      * 可支持，不区分大小写的匹配
@@ -2053,6 +2084,87 @@ public final class StringHelp
         }
         
         return true;
+    }
+    
+    
+    
+    /**
+     * 判定是否包含多个关键字(包含任何一个关键字为true)
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-07-28
+     * @version     v1.0
+     *
+     * @param i_Text            被查询的字符串
+     * @param i_FindKeys        关键字组
+     * @return
+     */
+    public final static boolean isContains(final String i_Text ,final String ... i_FindKeys)
+    {
+        return isContains(i_Text ,false ,i_FindKeys);
+    }
+    
+    
+    
+    /**
+     * 判定是否包含多个关键字
+     * 
+     *   分为两种判定标准
+     *     1. 包含全部关键字为true
+     *     2. 包含任何一个关键字为true
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-07-28
+     * @version     v1.0
+     *
+     * @param i_Text            被查询的字符串
+     * @param i_IsAllContains   是否包含全部关键字为true
+     * @param i_FindKeys        关键字组
+     * @return
+     */
+    public final static boolean isContains(final String i_Text ,boolean i_IsAllContains ,final String ... i_FindKeys)
+    {
+        if ( Help.isNull(i_Text) || Help.isNull(i_FindKeys) )
+        {
+            return false;
+        }
+        
+        if ( i_IsAllContains )
+        {
+            // 包含全部关键字为true
+            for (String v_Key : i_FindKeys)
+            {
+                if ( Help.isNull(v_Key) )
+                {
+                    continue;
+                }
+                
+                if ( i_Text.indexOf(v_Key) < 0 )
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        else
+        {
+            // 包含任何一个关键字为true
+            for (String v_Key : i_FindKeys)
+            {
+                if ( Help.isNull(v_Key) )
+                {
+                    continue;
+                }
+                
+                if ( i_Text.indexOf(v_Key) >= 0 )
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
     }
     
     

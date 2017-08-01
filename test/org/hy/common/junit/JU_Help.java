@@ -27,6 +27,14 @@ public class JU_Help
     
     
     @Test
+    public void test_getMacs()
+    {
+        System.out.println(Help.getMacs());
+    }
+    
+    
+    
+    @Test
     public void test_findSames()
     {
         List<String> v_Datas = new ArrayList<String>();
