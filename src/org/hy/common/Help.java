@@ -1549,7 +1549,16 @@ public class Help
      */
     public final static String getClassPath(Object i_Obj)
     {
-        return i_Obj.getClass().getResource("").getFile().toString();
+        try
+        {
+            return i_Obj.getClass().getResource("").getFile().toString();
+        }
+        catch (Exception exce)
+        {
+            exce.printStackTrace();
+        }
+        
+        return "";
     }
     
     
@@ -1561,7 +1570,16 @@ public class Help
      */
     public final static String getClassHomePath()
     {
-        return Thread.currentThread().getContextClassLoader().getResource("").getFile().toString();
+        try
+        {
+            return Thread.currentThread().getContextClassLoader().getResource("").getFile().toString();
+        }
+        catch (Exception exce)
+        {
+            exce.printStackTrace();
+        }
+        
+        return "";
     }
     
     
@@ -1576,7 +1594,16 @@ public class Help
     {
         // Thread.currentThread().getContextClassLoader().getResource("").getFile().toString()
         // Help.class.getResource("/").getFile().toString();
-        return Thread.currentThread().getContextClassLoader().getResource("").getFile().toString();
+        try
+        {
+            return Thread.currentThread().getContextClassLoader().getResource("").getFile().toString();
+        }
+        catch (Exception exce)
+        {
+            exce.printStackTrace();
+        }
+        
+        return "";
     }
     
     
