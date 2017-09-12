@@ -1555,7 +1555,8 @@ public class Help
         }
         catch (Exception exce)
         {
-            exce.printStackTrace();
+            // 在手机设备上必报错，在电脑上不报错，因此不再输出异常信息
+            // exce.printStackTrace();
         }
         
         return "";
@@ -1576,7 +1577,8 @@ public class Help
         }
         catch (Exception exce)
         {
-            exce.printStackTrace();
+            // 在手机设备上必报错，在电脑上不报错，因此不再输出异常信息
+            // exce.printStackTrace();
         }
         
         return "";
@@ -1600,7 +1602,8 @@ public class Help
         }
         catch (Exception exce)
         {
-            exce.printStackTrace();
+            // 在手机设备上必报错，在电脑上不报错，因此不再输出异常信息
+            // exce.printStackTrace();
         }
         
         return "";
