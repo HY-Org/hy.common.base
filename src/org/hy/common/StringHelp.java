@@ -31,6 +31,9 @@ import org.hy.common.SplitSegment.InfoType;
  *                                 2.xor字符串的异或运算
  *                                 3.解释关系
  *              v1.2  2017-05-17   1.修复toABC26()方法的26生成AA的算法。
+ *              v1.3  2017-09-18   1.添加 isContains()   多关键字包含判定
+ *                                 2.添加 isStartsWith() 多关键字前缀匹配判定
+ *                                 3.添加 isEndsWith()   多关键字后缀匹配判定
  * @createDate  2009-08-21
  */
 public final class StringHelp 
@@ -2158,6 +2161,168 @@ public final class StringHelp
                 }
                 
                 if ( i_Text.indexOf(v_Key) >= 0 )
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+    }
+    
+    
+    
+    /**
+     * 判定是否前缀匹配多个关键字(前缀匹配任何一个关键字为true)
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-09-18
+     * @version     v1.0
+     *
+     * @param i_Text            被查询的字符串
+     * @param i_FindKeys        关键字组
+     * @return
+     */
+    public final static boolean isStartsWith(final String i_Text ,final String ... i_FindKeys)
+    {
+        return isStartsWith(i_Text ,false ,i_FindKeys);
+    }
+    
+    
+    
+    /**
+     * 判定是否前缀匹配多个关键字
+     * 
+     *   分为两种判定标准
+     *     1. 前缀匹配全部关键字为true
+     *     2. 前缀匹配任何一个关键字为true
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-09-18
+     * @version     v1.0
+     *
+     * @param i_Text            被查询的字符串
+     * @param i_IsAllContains   是否包含全部关键字为true
+     * @param i_FindKeys        关键字组
+     * @return
+     */
+    public final static boolean isStartsWith(final String i_Text ,boolean i_IsAllContains ,final String ... i_FindKeys)
+    {
+        if ( Help.isNull(i_Text) || Help.isNull(i_FindKeys) )
+        {
+            return false;
+        }
+        
+        if ( i_IsAllContains )
+        {
+            // 包含全部关键字为true
+            for (String v_Key : i_FindKeys)
+            {
+                if ( Help.isNull(v_Key) )
+                {
+                    continue;
+                }
+                
+                if ( !i_Text.startsWith(v_Key) )
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        else
+        {
+            // 包含任何一个关键字为true
+            for (String v_Key : i_FindKeys)
+            {
+                if ( Help.isNull(v_Key) )
+                {
+                    continue;
+                }
+                
+                if ( i_Text.startsWith(v_Key) )
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+    }
+    
+    
+    
+    /**
+     * 判定是否后缀匹配多个关键字(后缀匹配任何一个关键字为true)
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-09-18
+     * @version     v1.0
+     *
+     * @param i_Text            被查询的字符串
+     * @param i_FindKeys        关键字组
+     * @return
+     */
+    public final static boolean isEndsWith(final String i_Text ,final String ... i_FindKeys)
+    {
+        return isEndsWith(i_Text ,false ,i_FindKeys);
+    }
+    
+    
+    
+    /**
+     * 判定是否后缀匹配多个关键字
+     * 
+     *   分为两种判定标准
+     *     1. 后缀匹配全部关键字为true
+     *     2. 后缀匹配任何一个关键字为true
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-09-18
+     * @version     v1.0
+     *
+     * @param i_Text            被查询的字符串
+     * @param i_IsAllContains   是否包含全部关键字为true
+     * @param i_FindKeys        关键字组
+     * @return
+     */
+    public final static boolean isEndsWith(final String i_Text ,boolean i_IsAllContains ,final String ... i_FindKeys)
+    {
+        if ( Help.isNull(i_Text) || Help.isNull(i_FindKeys) )
+        {
+            return false;
+        }
+        
+        if ( i_IsAllContains )
+        {
+            // 包含全部关键字为true
+            for (String v_Key : i_FindKeys)
+            {
+                if ( Help.isNull(v_Key) )
+                {
+                    continue;
+                }
+                
+                if ( !i_Text.endsWith(v_Key) )
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        else
+        {
+            // 包含任何一个关键字为true
+            for (String v_Key : i_FindKeys)
+            {
+                if ( Help.isNull(v_Key) )
+                {
+                    continue;
+                }
+                
+                if ( i_Text.endsWith(v_Key) )
                 {
                     return true;
                 }
