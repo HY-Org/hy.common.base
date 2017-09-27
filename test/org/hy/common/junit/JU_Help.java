@@ -18,6 +18,37 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) 
 public class JU_Help
 {
+    
+    @Test
+    public void test_toLike()
+    {
+        List<String>   v_Strs  = new ArrayList<String>();
+        List<JU_XJSON> v_Datas = new ArrayList<JU_XJSON>();
+        
+        for (int i=1; i<=100; i++)
+        {
+            JU_XJSON v_Data = new JU_XJSON();
+            
+            v_Data.setBODY(new JU_XJSON_BODYType());
+            v_Data.setSID("" + i);
+            v_Data.getBODY().setStaffId("" + i);
+            
+            v_Datas.add(v_Data);
+            v_Strs .add("" + i);
+        }
+        
+        System.out.println();
+        Help.print(Help.toLike(v_Datas ,"body.staffid" ,true ,"1"));
+        
+        System.out.println();
+        Help.print(Help.toLike(v_Datas ,"sid" ,true ,"1" ,"2"));
+        
+        System.out.println();
+        Help.print(Help.toLike(v_Strs ,true ,"0" ,"2"));
+    }
+    
+    
+    
     @Test
     public void test_round()
     {

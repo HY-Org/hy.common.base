@@ -3632,6 +3632,175 @@ public class Help
     
     
     /**
+     * 纵向比较集合元素中的某一个属性值是否包含多个关键字，并形成新的集合。新集合与原集合结构相同。
+     * 
+     * 模拟SQL语句中的like查询。
+     * 
+     * (包含任何一个关键字为true)
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-09-27
+     * @version     v1.0
+     * 
+     * @param i_Datas               集合数据
+     * @param i_SelectPropertyName  纵向比较的属性名称，不区分大小写。支持属性名称的多级获取 xxx.yyy.zzz
+     * @param i_IsAllContains       是否包含全部关键字为true
+     * @param i_FindKeys            关键字组
+     * 
+     * @return                      创建一个新的集合。异常时，返回null
+     */
+    public final static List<?> toLike(List<?> i_Datas ,String i_SelectPropertyName ,String ... i_FindKeys)
+    {
+        return toLike(i_Datas ,i_SelectPropertyName ,false ,i_FindKeys);
+    }
+    
+    
+    
+    /**
+     * 纵向比较集合元素中的某一个属性值是否包含多个关键字，并形成新的集合。新集合与原集合结构相同。
+     * 
+     * 模拟SQL语句中的like查询
+     * 
+     *   分为两种判定标准
+     *     1. 包含全部关键字为true
+     *     2. 包含任何一个关键字为true
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-09-27
+     * @version     v1.0
+     * 
+     * @param i_Datas               集合数据
+     * @param i_SelectPropertyName  纵向比较的属性名称，不区分大小写。支持属性名称的多级获取 xxx.yyy.zzz
+     * @param i_IsAllContains       是否包含全部关键字为true
+     * @param i_FindKeys            关键字组
+     * 
+     * @return                      创建一个新的集合。异常时，返回null
+     */
+    public final static List<?> toLike(List<?> i_Datas ,String i_SelectPropertyName ,boolean i_IsAllContains ,String ... i_FindKeys)
+    {
+        if ( Help.isNull(i_Datas) || Help.isNull(i_SelectPropertyName) )
+        {
+            return null;
+        }
+        
+        Object v_One = i_Datas.get(0);
+        if ( v_One == null )
+        {
+            return null;
+        }
+        
+        List<Object> v_Ret = new ArrayList<Object>();
+        
+        try
+        {
+            MethodReflect v_MethodReflect = new MethodReflect(v_One ,i_SelectPropertyName ,true ,MethodReflect.$NormType_Getter);
+            
+            for (int v_Index=0; v_Index<i_Datas.size(); v_Index++)
+            {
+                Object v_Item  = i_Datas.get(v_Index);
+                Object v_Value = v_MethodReflect.invokeForInstance(v_Item);
+                
+                if ( v_Value != null 
+                  && StringHelp.isContains(v_Value.toString() ,i_IsAllContains ,i_FindKeys) )
+                {
+                    v_Ret.add(v_Item);
+                }
+            }
+        }
+        catch (Exception exce)
+        {
+            exce.printStackTrace();
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 比较集合元素中的某一个属性值是否包含多个关键字，并形成新的集合。新集合与原集合结构相同。
+     * 
+     * 模拟SQL语句中的like查询
+     * 
+     *   分为两种判定标准
+     *     1. 包含全部关键字为true
+     *     2. 包含任何一个关键字为true
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-09-27
+     * @version     v1.0
+     * 
+     * @param i_Datas               集合数据
+     * @param i_IsAllContains       是否包含全部关键字为true
+     * @param i_FindKeys            关键字组
+     * 
+     * @return                      创建一个新的集合。异常时，返回null
+     */
+    public final static List<?> toLike(List<?> i_Datas ,String ... i_FindKeys)
+    {
+        return toLike(i_Datas ,false ,i_FindKeys);
+    }
+    
+    
+    
+    /**
+     * 比较集合元素中的某一个属性值是否包含多个关键字，并形成新的集合。新集合与原集合结构相同。
+     * 
+     * 模拟SQL语句中的like查询
+     * 
+     *   分为两种判定标准
+     *     1. 包含全部关键字为true
+     *     2. 包含任何一个关键字为true
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-09-27
+     * @version     v1.0
+     * 
+     * @param i_Datas               集合数据
+     * @param i_IsAllContains       是否包含全部关键字为true
+     * @param i_FindKeys            关键字组
+     * 
+     * @return                      创建一个新的集合。异常时，返回null
+     */
+    public final static List<?> toLike(List<?> i_Datas ,boolean i_IsAllContains ,String ... i_FindKeys)
+    {
+        if ( Help.isNull(i_Datas) )
+        {
+            return null;
+        }
+        
+        Object v_One = i_Datas.get(0);
+        if ( v_One == null )
+        {
+            return null;
+        }
+        
+        List<Object> v_Ret = new ArrayList<Object>(i_Datas.size());
+        
+        try
+        {
+            for (int v_Index=0; v_Index<i_Datas.size(); v_Index++)
+            {
+                Object v_Item = i_Datas.get(v_Index);
+                
+                if ( v_Item != null 
+                  && StringHelp.isContains(v_Item.toString() ,i_IsAllContains ,i_FindKeys) )
+                {
+                    v_Ret.add(v_Item);
+                }
+            }
+        }
+        catch (Exception exce)
+        {
+            exce.printStackTrace();
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
      * 数组排序。为了好记方便，并无特别操作
      * 
      * @author      ZhengWei(HY)
