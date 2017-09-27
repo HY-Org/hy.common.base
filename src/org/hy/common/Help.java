@@ -3650,7 +3650,7 @@ public class Help
      * 
      * @return                      创建一个新的集合。异常时，返回null
      */
-    public final static <T> List<T> toLike(List<T> i_Datas ,String i_SelectPropertyName ,String ... i_FindKeys)
+    public final static <T> List<T> toLike(List<T> i_Datas ,String i_SelectPropertyName ,String i_FindKeys)
     {
         return toLike(i_Datas ,i_SelectPropertyName ,false ,i_FindKeys);
     }
@@ -3735,7 +3735,7 @@ public class Help
      * 
      * @return                      创建一个新的集合。异常时，返回null
      */
-    public final static <T> List<T> toLike(Map<? ,T> i_Datas ,String i_SelectPropertyName ,String ... i_FindKeys)
+    public final static <T> List<T> toLike(Map<? ,T> i_Datas ,String i_SelectPropertyName ,String i_FindKeys)
     {
         return toLike(i_Datas ,i_SelectPropertyName ,false ,i_FindKeys);
     }
@@ -3820,7 +3820,7 @@ public class Help
      * 
      * @return                      创建一个新的集合。异常时，返回null
      */
-    public final static <T> List<T> toLike(PartitionMap<? ,T> i_Datas ,String i_SelectPropertyName ,String ... i_FindKeys)
+    public final static <T> List<T> toLike(PartitionMap<? ,T> i_Datas ,String i_SelectPropertyName ,String i_FindKeys)
     {
         return toLike(i_Datas ,i_SelectPropertyName ,false ,i_FindKeys);
     }
@@ -3911,7 +3911,7 @@ public class Help
      * 
      * @return                      创建一个新的集合。异常时，返回null
      */
-    public final static <T> List<T> toLike(Set<T> i_Datas ,String i_SelectPropertyName ,String ... i_FindKeys)
+    public final static <T> List<T> toLike(Set<T> i_Datas ,String i_SelectPropertyName ,String i_FindKeys)
     {
         return toLike(i_Datas ,i_SelectPropertyName ,false ,i_FindKeys);
     }
@@ -3996,7 +3996,7 @@ public class Help
      * 
      * @return                      创建一个新的集合。异常时，返回null
      */
-    public final static <T> List<T> toLike(T [] i_Datas ,String i_SelectPropertyName ,String ... i_FindKeys)
+    public final static <T> List<T> toLike(T [] i_Datas ,String i_SelectPropertyName ,String i_FindKeys)
     {
         return toLike(i_Datas ,i_SelectPropertyName ,false ,i_FindKeys);
     }
@@ -4082,7 +4082,7 @@ public class Help
      * 
      * @return                      创建一个新的集合。异常时，返回null
      */
-    public final static <T> List<T> toLike(List<T> i_Datas ,String ... i_FindKeys)
+    public final static <T> List<T> toLike(List<T> i_Datas ,String i_FindKeys)
     {
         return toLike(i_Datas ,false ,i_FindKeys);
     }
@@ -4157,7 +4157,7 @@ public class Help
      * 
      * @return                      创建一个新的集合。异常时，返回null
      */
-    public final static <T> List<T> toLike(Map<? ,T> i_Datas ,String ... i_FindKeys)
+    public final static <T> List<T> toLike(Map<? ,T> i_Datas ,String i_FindKeys)
     {
         return toLike(i_Datas ,false ,i_FindKeys);
     }
@@ -4232,7 +4232,7 @@ public class Help
      * 
      * @return                      创建一个新的集合。异常时，返回null
      */
-    public final static <T> List<T> toLike(PartitionMap<? ,T> i_Datas ,String ... i_FindKeys)
+    public final static <T> List<T> toLike(PartitionMap<? ,T> i_Datas ,String i_FindKeys)
     {
         return toLike(i_Datas ,false ,i_FindKeys);
     }
@@ -4313,7 +4313,7 @@ public class Help
      * 
      * @return                      创建一个新的集合。异常时，返回null
      */
-    public final static <T> List<T> toLike(Set<T> i_Datas ,String ... i_FindKeys)
+    public final static <T> List<T> toLike(Set<T> i_Datas ,String i_FindKeys)
     {
         return toLike(i_Datas ,false ,i_FindKeys);
     }
@@ -4388,7 +4388,7 @@ public class Help
      * 
      * @return                      创建一个新的集合。异常时，返回null
      */
-    public final static <T> List<T> toLike(T [] i_Datas ,String ... i_FindKeys)
+    public final static <T> List<T> toLike(T [] i_Datas ,String i_FindKeys)
     {
         return toLike(i_Datas ,false ,i_FindKeys);
     }
