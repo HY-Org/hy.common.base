@@ -22,6 +22,7 @@ public class JU_Help
     @Test
     public void test_toLike()
     {
+        String []      v_Arrs  = new String[100];
         List<String>   v_Strs  = new ArrayList<String>();
         List<JU_XJSON> v_Datas = new ArrayList<JU_XJSON>();
         
@@ -35,16 +36,20 @@ public class JU_Help
             
             v_Datas.add(v_Data);
             v_Strs .add("" + i);
+            v_Arrs[i - 1] = "" + i;
         }
         
-        System.out.println();
+        System.out.println("List对象xx.yy.zz测试");
         Help.print(Help.toLike(v_Datas ,"body.staffid" ,true ,"1"));
         
-        System.out.println();
+        System.out.println("List对象直属属性测试");
         Help.print(Help.toLike(v_Datas ,"sid" ,true ,"1" ,"2"));
         
-        System.out.println();
+        System.out.println("List简单类型集合测试");
         Help.print(Help.toLike(v_Strs ,true ,"0" ,"2"));
+        
+        System.out.println("数组简单类型测试");
+        Help.print(Help.toLike(v_Arrs ,true ,"3" ,"1"));
     }
     
     
