@@ -39,40 +39,43 @@ import org.hy.common.SplitSegment.InfoType;
 public final class StringHelp 
 {
     /** MD5加密(V2版)的加密类型：全数字形式 */
-    public  static final int     $MD5_Type_Num  = 1;
+    public  static final int       $MD5_Type_Num  = 1;
     
     /** MD5加密(V2版)的加密类型：数字字母混合的形式，但无特殊字符 */
-    public  static final int     $MD5_Type_Hex  = 2;
+    public  static final int       $MD5_Type_Hex  = 2;
+    
+    /** 字符集编码类型 */
+    public  static       String [] $CharEncodings = {"UTF-8" ,"ISO-8859-1" ,"ASCII" ,"UNICODE" ,"GBK" ,"GB2312" ,"GB18030"}; 
     
     
     
-	private static final String  $ABC           = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private static final String    $ABC           = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	
-	private static final String  $ABC36         = "0123456789" + $ABC;
+	private static final String    $ABC36         = "0123456789" + $ABC;
 	
-	private static final char    last2byte      = (char) Integer.parseInt("00000011", 2);
-    private static final char    last4byte      = (char) Integer.parseInt("00001111", 2);
-    private static final char    last6byte      = (char) Integer.parseInt("00111111", 2);
-    private static final char    lead6byte      = (char) Integer.parseInt("11111100", 2);
-    private static final char    lead4byte      = (char) Integer.parseInt("11110000", 2);
-    private static final char    lead2byte      = (char) Integer.parseInt("11000000", 2);
-    private static final char [] encodeTable    = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', '/'};
-    private static final char [] encodeTable_V2 = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+	private static final char      last2byte      = (char) Integer.parseInt("00000011", 2);
+    private static final char      last4byte      = (char) Integer.parseInt("00001111", 2);
+    private static final char      last6byte      = (char) Integer.parseInt("00111111", 2);
+    private static final char      lead6byte      = (char) Integer.parseInt("11111100", 2);
+    private static final char      lead4byte      = (char) Integer.parseInt("11110000", 2);
+    private static final char      lead2byte      = (char) Integer.parseInt("11000000", 2);
+    private static final char []   encodeTable    = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', '/'};
+    private static final char []   encodeTable_V2 = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
     
     /** 匹配XML标记或Html标记的正则表达式 */
-    private static final String  $XMLSign       = "(< *XMLSignName(( *)|( [ \\S\\s]*))>[.\\S\\s]*<\\/ *XMLSignName *>)|(< *XMLSignName(( *)|( [ \\S\\s]*))\\/>)";
+    private static final String    $XMLSign       = "(< *XMLSignName(( *)|( [ \\S\\s]*))>[.\\S\\s]*<\\/ *XMLSignName *>)|(< *XMLSignName(( *)|( [ \\S\\s]*))\\/>)";
     
     /** 保存XML特殊字符转换信息 */
     private static InterconnectMap<String, String> $XML_EnCodes = null;
     
     /** 匹配Email地址的正则表达式 */
-    private static final String  $EMail         = "\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
+    private static final String    $EMail         = "\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
     
     /** 解释方法的正则表达式。分割 xxx(...) 的形式 */
-    private static final String  $Method        = "\\w+\\([^(?!((\\()(\\))))]+\\)";
+    private static final String    $Method        = "\\w+\\([^(?!((\\()(\\))))]+\\)";
     
     /** 解释圆括号的正则表达式。分割(...) 的形式，但不含 ( 和 ) */
-    private static final String  $Parentheses   = "\\([^(?!((\\()(\\))))]*\\)";
+    private static final String    $Parentheses   = "\\([^(?!((\\()(\\))))]*\\)";
 	
 	
     
@@ -942,6 +945,87 @@ public final class StringHelp
     }
     
     
+    
+    /**
+     * 将一种编码的文字，转为另一种编码的文字
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-10-17
+     * @version     v1.0
+     *
+     * @param i_Text              文字信息
+     * @param i_FromCharEncoding  文字的原编码
+     * @param i_ToCharEncoding    将转为另一种编码
+     * @return                    异常是为：null
+     */
+    public final static String charEncoding(String i_Text ,String i_FromCharEncoding ,String i_ToCharEncoding)
+    {
+        if ( Help.isNull(i_Text) )
+        {
+            return null;
+        }
+        
+        try
+        {
+            return new String(i_Text.getBytes(i_FromCharEncoding) ,i_ToCharEncoding);
+        }
+        catch (Exception exce)
+        {
+            return null;
+        }
+    }
+    
+    
+    
+    /**
+     * 简单的判定文本是否为某一种字符集编码类型
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-10-17
+     * @version     v1.0
+     *
+     * @param i_Text          文字信息
+     * @param i_CharEncoding  是否为此编码类型
+     * @return
+     */
+    public final static boolean isCharEncoding(String i_Text ,String i_CharEncoding)
+    {
+        return i_Text.equals(charEncoding(i_Text ,i_CharEncoding ,i_CharEncoding));
+    }
+    
+    
+    
+    /**
+     * 简单的判定文本的字符集编码类型
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-10-17
+     * @version     v1.0
+     *
+     * @param i_Text
+     * @return
+     */
+    public final static String getCharEncoding(String i_Text)
+    {
+        if ( Help.isNull(i_Text) )
+        {
+            return null;
+        }
+        
+        String v_Ret = "";
+        
+        for (String v_CharEncoding : $CharEncodings)
+        {
+            if ( isCharEncoding(i_Text ,v_CharEncoding) )
+            {
+                v_Ret += v_CharEncoding + ";";
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+     
     
     /**
      * 将浮点数变字符

@@ -25,6 +25,21 @@ public class JU_StringHelp
 {
     
     @Test
+    public void test_getCharEncoding()
+    {
+        String v_Text = "我爱";
+        System.out.println(StringHelp.getCharEncoding(v_Text));
+        
+        String v_GBK          = StringHelp.charEncoding(v_Text ,"UTF-8" ,"GBK");
+        String v_ISO_8859_1   = StringHelp.charEncoding(v_Text ,"UTF-8" ,"ISO-8859-1");
+        
+        System.out.println(StringHelp.getCharEncoding(v_GBK));
+        System.out.println(StringHelp.getCharEncoding(v_ISO_8859_1));
+    }
+    
+    
+    
+    @Test
     public void test_toABC26()
     {
         for (int i=0; i<=100; i++)
