@@ -958,7 +958,7 @@ public final class StringHelp
      * @param i_ToCharEncoding    将转为另一种编码
      * @return                    异常是为：null
      */
-    public final static String charEncoding(String i_Text ,String i_FromCharEncoding ,String i_ToCharEncoding)
+    public final static String toCharEncoding(String i_Text ,String i_FromCharEncoding ,String i_ToCharEncoding)
     {
         if ( Help.isNull(i_Text) )
         {
@@ -990,7 +990,7 @@ public final class StringHelp
      */
     public final static boolean isCharEncoding(String i_Text ,String i_CharEncoding)
     {
-        return i_Text.equals(charEncoding(i_Text ,i_CharEncoding ,i_CharEncoding));
+        return i_Text.equals(toCharEncoding(i_Text ,i_CharEncoding ,i_CharEncoding));
     }
     
     
@@ -1005,7 +1005,7 @@ public final class StringHelp
      * @param i_Text
      * @return
      */
-    public final static String getCharEncoding(String i_Text)
+    public final static String getCharEncodings(String i_Text)
     {
         if ( Help.isNull(i_Text) )
         {
