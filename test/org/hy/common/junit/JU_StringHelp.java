@@ -66,6 +66,9 @@ public class JU_StringHelp
     {
         System.out.println(StringHelp.md5("xsso"));
         System.out.println(StringHelp.md5("xsso" ,StringHelp.$MD5_Type_Hex));
+        
+        System.out.println(StringHelp.md5("getData=;getDataType=1D;getDeviceNo=867246023785125;getDeviceType=android;" + "@20170801"));
+        System.out.println("yGSajQF/npSzjy179WP01Q__");
     }
     
     
