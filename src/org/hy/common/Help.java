@@ -50,6 +50,7 @@ import org.hy.common.app.Param;
  *                           3. 添加：toDistinct(? ,String ...)支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
  *               2017-07-23  1. 添加：getMacs() 获取本机全部的Mac
  *               2017-09-27  1. 添加：toLike(...)系列方法。可实现SQL语句中的like查询。
+ *               2017-10-23  1. 修复：当forName不实例的方式异常时，二次尝试传统模式。
  *
  */
 public class Help
@@ -6156,7 +6157,14 @@ public class Help
      */
     public final static Class<?> forName(String i_ClassName) throws ClassNotFoundException
     {
-        return Class.forName(i_ClassName ,false ,Thread.currentThread().getContextClassLoader());
+        try
+        {
+            return Class.forName(i_ClassName ,false ,Thread.currentThread().getContextClassLoader());
+        }
+        catch (ClassNotFoundException exce)
+        {
+            return Class.forName(i_ClassName);
+        }
     }
     
     
