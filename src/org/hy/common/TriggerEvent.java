@@ -18,7 +18,7 @@ import java.util.Map;
  * 触发事件。所有有事件功能的类都可以使用此类。
  * 存在主要目的就是方便，它将所有公用功能都提炼到此。
  *
- * @author      ZhengWei(HY)1
+ * @author      ZhengWei(HY)
  * @createDate  2015-11-02
  * @version     v1.0
  */
