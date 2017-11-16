@@ -34,7 +34,7 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.3  2017-09-18   1.添加 isContains()   多关键字包含判定
  *                                 2.添加 isStartsWith() 多关键字前缀匹配判定
  *                                 3.添加 isEndsWith()   多关键字后缀匹配判定
- *              v1.4  2017-11-16   1.修复unescape_toUnicode()方法，不应将分号;替换成空字符
+ *              v1.4  2017-11-16   1.修复unescape_toUnicode()方法，不应简单的将分号;替换成空字符。而是判定%u999;的格式下替换。
  * @createDate  2009-08-21
  */
 public final class StringHelp 
@@ -919,6 +919,11 @@ public final class StringHelp
                     v_OneChar = (char) Integer.parseInt(i_String.substring(v_Pos + 2 ,v_Pos + 6) ,16);
                     v_Buffer.append(v_OneChar);
                     v_LastPos = v_Pos + 6;
+                    
+                    if ( i_String.substring(v_LastPos).startsWith(";") )
+                    {
+                        v_LastPos++;
+                    }
                 }
                 else
                 {
