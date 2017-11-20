@@ -20,7 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author      ZhengWei(HY)
  * @createDate  2016-02-24
  * @version     v1.0
- *              v2.0  2017-02-28 添加：元素首次加入集合的创建时间
+ *              v2.0  2017-02-28  添加：元素首次加入集合的创建时间
+ *              v3.0  2017-11-20  添加：getAndKeep()方法，可实现Session机制。
  */
 public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneable
 {
@@ -123,6 +124,8 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
     /**
      * 设置Map.key的过期时长（单位：秒）
      * 
+     * 如果Map.key已过期，将无法设置。
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2016-02-25
      * @version     v1.0
@@ -140,6 +143,8 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
     
     /**
      * 设置Map.key的过期时长（单位：毫秒）
+     * 
+     * 如果Map.key已过期，将无法设置。
      * 
      * @author      ZhengWei(HY)
      * @createDate  2016-02-25
@@ -402,6 +407,79 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
         if ( null != v_Data )
         {
             return v_Data.checkExpire() == null ? null : v_Data.getValue();
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    
+    
+    /**
+     * 只返回 Map.key 在有效期内的 Map.value。
+     * 过期的 Map.key 返回 null
+     * 
+     * 当Map.key在有效期内时，可重新设备过期时长（单位：秒）。
+     * 
+     * 类似于 get() + setExpireTime() 两方法的组合，但性能更高。
+     * 
+     * 此方法可用于实现Session机制。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-11-20
+     * @version     v1.0
+     *
+     * @param i_Key
+     * @param i_Second
+     * @return
+     */
+    public V getAndKeep(Object i_Key ,long i_Second)
+    {
+        return this.getAndKeepMilli(i_Key ,i_Second * 1000);
+    }
+    
+    
+    
+    /**
+     * 只返回 Map.key 在有效期内的 Map.value。
+     * 过期的 Map.key 返回 null
+     * 
+     * 当Map.key在有效期内时，可重新设备过期时长（单位：毫秒）。
+     * 
+     * 类似于 get() + setExpireTime() 两方法的组合，但性能更高。
+     * 
+     * 此方法可用于实现Session机制。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-11-20
+     * @version     v1.0
+     *
+     * @param i_Key
+     * @param i_Second
+     * @return
+     */
+    public synchronized V getAndKeepMilli(Object i_Key ,long i_Millisecond)
+    {
+        ExpireElement<K ,V> v_Data = this.datas.get(i_Key);
+        
+        if ( null != v_Data )
+        {
+            if ( v_Data.checkExpire() == null )
+            {
+                return null;
+            }
+            else
+            {
+                long v_Time = Date.getNowTime().getTime() + i_Millisecond;
+                v_Data.time = v_Time;
+                if ( this.minTime == 0 || v_Time < this.minTime )
+                {
+                    this.minTime = v_Time;
+                }
+                
+                return v_Data.getValue();
+            }
         }
         else
         {

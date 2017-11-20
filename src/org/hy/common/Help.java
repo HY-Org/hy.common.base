@@ -51,10 +51,19 @@ import org.hy.common.app.Param;
  *               2017-07-23  1. 添加：getMacs() 获取本机全部的Mac
  *               2017-09-27  1. 添加：toLike(...)系列方法。可实现SQL语句中的like查询。
  *               2017-10-23  1. 修复：当forName不实例的方式异常时，二次尝试传统模式。
+ *               2017-11-20  1. 优化：toMap(Object ...)系列方法，添加高速缓存。对同一对象类型的高频密集性的转换时，能显示提升性能。
  *
  */
 public class Help
 {
+    
+    /** ToMap()方法的高速缓存 */
+    private static final ExpireMap<Class<?> ,List<Method>> $ToMapCaches  = new ExpireMap<Class<?> ,List<Method>>();
+    
+    /** ToMap()方法缓存的超时时长。单位：秒 */
+    public  static       long                              $ToMapTimeOut = 30; 
+    
+    
     
     /**
      * 私有构建器
@@ -2694,6 +2703,7 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2015-08-26
      * @version     v1.0
+     *              v2.0  2017-11-20  添加高速缓存。对同一对象类型的高频密集性的转换时，能显示提升性能。
      *
      * @param i_Obj           被转换的对象
      * @param i_DefaultValue  当对象的属性值为null时，赋予的默认方法
@@ -2719,9 +2729,18 @@ public class Help
             }
         }
         
-        List<Method>        v_PropertyMethods = MethodReflect.getStartMethods(i_Obj.getClass() ,new String[]{"get" ,"is"} ,0);
-        Map<String ,Object> v_Ret             = null;
         
+        List<Method> v_PropertyMethods = $ToMapCaches.getAndKeep(i_Obj.getClass() ,$ToMapTimeOut);
+        if ( v_PropertyMethods == null )
+        {
+            v_PropertyMethods = MethodReflect.getStartMethods(i_Obj.getClass() ,new String[]{"get" ,"is"} ,0);
+            
+            Collections.sort(v_PropertyMethods ,MethodComparator.getInstance());
+            
+            $ToMapCaches.put(i_Obj.getClass() ,v_PropertyMethods ,$ToMapTimeOut);
+        }
+        
+        Map<String ,Object> v_Ret = null;
         if ( i_IsOrderBy )
         {
             v_Ret = new LinkedHashMap<String ,Object>(v_PropertyMethods.size());
@@ -2730,8 +2749,6 @@ public class Help
         {
             v_Ret = new HashMap      <String ,Object>(v_PropertyMethods.size());
         }
-        
-        Collections.sort(v_PropertyMethods ,MethodComparator.getInstance());
         
         for (int i=0; i<v_PropertyMethods.size(); i++)
         {

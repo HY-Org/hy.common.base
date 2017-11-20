@@ -2,9 +2,13 @@ package org.hy.common.junit;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.hy.common.Date;
 import org.hy.common.Help;
+import org.hy.common.MethodReflect;
 import org.hy.common.StringHelp;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -18,6 +22,53 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) 
 public class JU_Help
 {
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void test_toMap_BigData() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
+    {
+        System.out.println("--  Init: " + Date.getNowTime().getFullMilli());
+        
+        
+        List<JU_XJSON> v_Datas = new ArrayList<JU_XJSON>();
+        
+        for (int i=1; i<=100000; i++)
+        {
+            JU_XJSON v_Data = new JU_XJSON();
+            
+            v_Data.setBODY(new JU_XJSON_BODYType());
+            v_Data.setSID("" + i);
+            v_Data.getBODY().setStaffId("" + i);
+            
+            v_Datas.add(v_Data);
+        }
+        
+        
+        System.out.println("-- Start: " + Date.getNowTime().getFullMilli());
+     
+        
+        List<Map<String ,Object>> v_CollectionMap = new ArrayList<Map<String ,Object>>();
+        
+        for (Object v_Item : v_Datas)
+        {
+            Map<String ,Object> v_ItemMap = new HashMap<String ,Object>();
+            
+            if ( MethodReflect.isExtendImplement(v_Item ,Map.class) )
+            {
+                v_ItemMap.putAll((Map<String ,Object>)v_Item);
+            }
+            else
+            {
+                v_ItemMap.putAll(Help.toMap(v_Item));
+            }
+            
+            v_CollectionMap.add(v_ItemMap);
+        }
+        
+        System.out.println("--   End: " + Date.getNowTime().getFullMilli());
+    }
+    
+    
     
     @Test
     public void test_toLike()
