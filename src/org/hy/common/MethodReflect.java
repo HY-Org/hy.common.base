@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
  *              v7.0  2017-06-23  修正：三个invokeForInstance(...)方法在中间实现对象为Null的处理。
  *              v8.0  2017-07-12  修改：所有方法名称的判定都不再区分大小。
  *                                修正：当方法名称正的以$开头时($为本类的关键字符，见v5.1)，也要能正确匹配到方法。parser()方法除外。
+ *              v9.0  2017-11-24  添加：invokeSet(...)调用对象的Setter赋值。
  */
 public class MethodReflect
 {
@@ -1501,6 +1502,289 @@ public class MethodReflect
         else
         {
             return null;
+        }
+    }
+    
+    
+    
+    /**
+     * 调用对象的Setter赋值。
+     * 
+     * 可将字符串表达形式的任何值，转换为真实的Java类型后，调用对象的Setter赋值。
+     * 
+     * 从XJava中的提炼出来。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-11-24
+     * @version     v1.0
+     *
+     * @param i_SetMethod  方法对象
+     * @param i_Instance   实例对象
+     * @param i_Value      可以为字符串表达形式的任何值。如下情况
+     *                         1. i_Value = "true"，当成员属性为Boolean类型时，将转为 true 进行赋值。
+     *                         2. i_Value = "true"，当成功属性为String 类型时，将转为"true"进行赋值。
+     * @param i_Replaces   须替换的字符。注：只对String、Class两类型生效。
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws ClassNotFoundException
+     */
+    public static void invokeSet(Method i_SetMethod ,Object i_Instance ,Object i_Value) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException
+    {
+        invokeSet(i_SetMethod ,i_Instance ,i_Value ,null);
+    }
+    
+    
+    
+    /**
+     * 调用对象的Setter赋值。
+     * 
+     * 可将字符串表达形式的任何值，转换为真实的Java类型后，调用对象的Setter赋值。
+     * 
+     * 从XJava中的提炼出来。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-11-24
+     * @version     v1.0
+     *
+     * @param i_SetMethod  方法对象
+     * @param i_Instance   实例对象
+     * @param i_Value      可以为字符串表达形式的任何值。如下情况
+     *                         1. i_Value = "true"，当成员属性为Boolean类型时，将转为 true 进行赋值。
+     *                         2. i_Value = "true"，当成功属性为String 类型时，将转为"true"进行赋值。
+     * @param i_Replaces   须替换的字符。注：只对String、Class两类型生效。
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws ClassNotFoundException
+     */
+    @SuppressWarnings("unchecked")
+    public static void invokeSet(Method i_SetMethod ,Object i_Instance ,Object i_Value ,Map<String ,String> i_Replaces) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException
+    {
+        Class<?> v_ParamType = i_SetMethod.getParameterTypes()[0];
+        
+        // 这里只对String、枚举、日期等特殊的类进行处理，其它的都是类型，而不是类
+        if ( String.class == v_ParamType )
+        {
+            if ( i_Value != null )
+            {
+                i_SetMethod.invoke(i_Instance ,StringHelp.replaceAll(i_Value.toString() ,i_Replaces ,false));
+            }
+            else
+            {
+                i_SetMethod.invoke(i_Instance ,(String)null);
+            }
+        }
+        else if ( MethodReflect.isExtendImplement(v_ParamType ,Enum.class) )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                Enum<?> [] v_EnumValues = StaticReflect.getEnums((Class<? extends Enum<?>>) v_ParamType);
+                
+                // ZhengWei(HY) Add 2017-10-31  支持枚举名称的匹配 
+                for (Enum<?> v_Enum : v_EnumValues)
+                {
+                    if ( v_Enum.name().equalsIgnoreCase(i_Value.toString()) )
+                    {
+                        i_SetMethod.invoke(i_Instance ,v_Enum);
+                        return;
+                    }
+                }
+                
+                // 尝试用枚举值匹配 
+                if ( Help.isNumber(i_Value.toString()) )
+                {
+                    int v_ParamValueInt = Integer.parseInt(i_Value.toString());
+                    if ( 0 <= v_ParamValueInt && v_ParamValueInt < v_EnumValues.length )
+                    {
+                        i_SetMethod.invoke(i_Instance ,v_EnumValues[v_ParamValueInt]);
+                    }
+                }
+            }
+        }
+        else if ( Date.class == v_ParamType )
+        {
+            // 以下每个if分支的空判定，只能写在此处，不能统一提炼，预防Java对象.toString()是空的情况。
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,new Date(i_Value.toString()));
+            }
+            else
+            {
+                i_SetMethod.invoke(i_Instance ,(Date)null);
+            }
+        }
+        else if ( java.util.Date.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,(new Date(i_Value.toString()).getDateObject()));
+            }
+            else
+            {
+                i_SetMethod.invoke(i_Instance ,(java.util.Date)null);
+            }
+        }
+        else if ( int.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Integer.parseInt(i_Value.toString()));
+            }
+        }
+        else if ( Integer.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Integer.valueOf(i_Value.toString()));
+            }
+            else
+            {
+                i_SetMethod.invoke(i_Instance ,(Integer)null);
+            }
+        }
+        else if ( boolean.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Boolean.parseBoolean(i_Value.toString()));
+            }
+        }
+        else if ( Boolean.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Boolean.valueOf(i_Value.toString()));
+            }
+            else
+            {
+                i_SetMethod.invoke(i_Instance ,(Boolean)null);
+            }
+        }
+        else if ( double.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Double.parseDouble(i_Value.toString()));
+            }
+        }
+        else if ( Double.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Double.valueOf(i_Value.toString()));
+            }
+            else
+            {
+                i_SetMethod.invoke(i_Instance ,(Double)null);
+            }
+        }
+        else if ( float.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Float.parseFloat(i_Value.toString()));
+            }
+        }
+        else if ( Float.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Float.valueOf(i_Value.toString()));
+            }
+            else
+            {
+                i_SetMethod.invoke(i_Instance ,(Float)null);
+            }
+        }
+        else if ( long.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Long.parseLong(i_Value.toString()));
+            }
+        }
+        else if ( Long.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Long.valueOf(i_Value.toString()));
+            }
+            else
+            {
+                i_SetMethod.invoke(i_Instance ,(Long)null);
+            }
+        }
+        else if ( short.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Short.parseShort(i_Value.toString()));
+            }
+        }
+        else if ( Short.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Short.valueOf(i_Value.toString()));
+            }
+            else
+            {
+                i_SetMethod.invoke(i_Instance ,(Short)null);
+            }
+        }
+        else if ( byte.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Byte.parseByte(i_Value.toString()));
+            }
+        }
+        else if ( Byte.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Byte.valueOf(i_Value.toString()));
+            }
+            else
+            {
+                i_SetMethod.invoke(i_Instance ,(Byte)null);
+            }
+        }
+        else if ( char.class == v_ParamType )
+        {
+            // 此不要加 .trim() 方法
+            if ( i_Value != null && i_Value.toString() != null && !"".equals(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,i_Value.toString().charAt(0));
+            }
+        }
+        else if ( Character.class == v_ParamType )
+        {
+            // 此不要加 .trim() 方法
+            if ( i_Value != null && i_Value.toString() != null && !"".equals(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,i_Value.toString().charAt(0));
+            }
+            else
+            {
+                i_SetMethod.invoke(i_Instance ,(Character)null);
+            }
+        }
+        else if ( Class.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,Help.forName(StringHelp.replaceAll(i_Value.toString().trim() ,i_Replaces ,false)));
+            }
+            else
+            {
+                i_SetMethod.invoke(i_Instance ,(Class<?>)null);
+            }
+        }
+        else
+        {
+            i_SetMethod.invoke(i_Instance ,i_Value);
         }
     }
     
