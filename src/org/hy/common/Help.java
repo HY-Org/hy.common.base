@@ -2582,6 +2582,25 @@ public class Help
      * @param i_PlaceholderEnd    占位符后缀
      * @return
      */
+    public final static Map<String ,?> toPlaceholders(Map<String ,?> i_Map ,String i_PlaceholderBegin)
+    {
+        return toPlaceholders(i_Map ,i_PlaceholderBegin ,"");
+    }
+    
+    
+    
+    /**
+     * Map集合转为占位符对象
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-05-12
+     * @version     v1.0
+     *
+     * @param i_Map              
+     * @param i_PlaceholderBegin  占位符前缀
+     * @param i_PlaceholderEnd    占位符后缀
+     * @return
+     */
     public final static Map<String ,?> toPlaceholders(Map<String ,?> i_Map ,String i_PlaceholderBegin ,String i_PlaceholderEnd)
     {
         Map<String ,Object> v_Ret = new HashMap<String ,Object>();
