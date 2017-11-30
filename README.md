@@ -9,6 +9,7 @@
 * [Execute 线程反射方式执行动作](src/org/hy/common/Execute.java)
 * [Serializable 有扩展的序列化接口](src/org/hy/common/Serializable.java)
 * [Return 使方法能返回多个值的通过对象](src/org/hy/common/Return.java)
+* [PinYin 汉字转拼音](src/org/hy/common/PinYin.java)
 * 反射
 	* [MethodReflect 方法的反射](src/org/hy/common/MethodReflect.java)
 	* [FieldReflect 成员属性的反射](src/org/hy/common/FieldReflect.java)
