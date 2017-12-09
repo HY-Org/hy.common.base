@@ -3096,6 +3096,25 @@ public class Help
     
     
     /**
+     * 数组转集合。
+     * 
+     * 一切为了方便。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-12-09
+     * @version     v1.0
+     *
+     * @param i_Array
+     * @return
+     */
+    public final static <T> List<T> toList(T ... i_Array)
+    {
+        return Arrays.asList(i_Array);
+    }
+    
+    
+    
+    /**
      * Set转为List
      * 
      * @param <T>
