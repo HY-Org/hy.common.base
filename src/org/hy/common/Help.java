@@ -2827,6 +2827,49 @@ public class Help
     
     
     /**
+     * 1. 简单的将List转Map。
+     * 2. 将List中的元素put到Map中。
+     * 
+     * Map.key   为 List中的元素
+     * Map.Value 为 null。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-12-14
+     * @version     v1.0
+     *
+     * @param i_Datas
+     * @param io_Map
+     * @return
+     */
+    public final static <T> Map<T ,?> toMap(List<T> i_Datas ,Map<T ,?> io_Map)
+    {
+        if ( Help.isNull(i_Datas) )
+        {
+            return null;
+        }
+        
+        Map<T ,?> v_Ret = null;
+        
+        if ( io_Map == null )
+        {
+            v_Ret = new Hashtable<T ,Object>(i_Datas.size());
+        }
+        else
+        {
+            v_Ret = io_Map;
+        }
+        
+        for (T v_Item : i_Datas)
+        {
+            v_Ret.put(v_Item ,null);
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
      *  纵向抽取集合元素中的某两二个属性值，形成新的Map集合
      *  
      *  可形成两种类型的Map集合
