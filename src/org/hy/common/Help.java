@@ -52,6 +52,7 @@ import org.hy.common.app.Param;
  *               2017-09-27  1. 添加：toLike(...)系列方法。可实现SQL语句中的like查询。
  *               2017-10-23  1. 修复：当forName不实例的方式异常时，二次尝试传统模式。
  *               2017-11-20  1. 优化：toMap(Object ...)系列方法，添加高速缓存。对同一对象类型的高频密集性的转换时，能显示提升性能。
+ *               2017-12-19  1. 添加：isNull(Object) 方法。
  *
  */
 public class Help
@@ -1230,6 +1231,50 @@ public class Help
     }
     
     
+    
+    /**
+     * 判断对象(字符串、List、Set、Map)是否为空
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-12-19
+     * @version     v1.0
+     *
+     * @param i_Value
+     * @return
+     */
+    public final static boolean isNull(Object i_Value)
+    {
+        if ( i_Value == null )
+        {
+            return false;
+        }
+        else if ( i_Value instanceof String )
+        {
+            return Help.isNull(i_Value.toString());
+        }
+        else if ( i_Value instanceof List )
+        {
+            return Help.isNull((List<?>)i_Value);
+        }
+        else if ( i_Value instanceof Map )
+        {
+            return Help.isNull((Map<? ,?>)i_Value);
+        }
+        else if ( i_Value instanceof Set )
+        {
+            return Help.isNull((Set<?>)i_Value);
+        }
+        else if ( i_Value instanceof Collection )
+        {
+            return Help.isNull((Collection<?>)i_Value);
+        }
+        else
+        {
+            return true;
+        }
+    }
+    
+    
     /**
      * 判断字符串是否为空
      *
@@ -1306,7 +1351,7 @@ public class Help
      * @param i_List
      * @return boolean  为空返回 True，其它返回 False
      */
-    public final static boolean isNull(List<?> i_List)
+    public final static <L extends List<?>> boolean isNull(L i_List)
     {
         if ( i_List == null || i_List.isEmpty() )
         {
@@ -1324,7 +1369,7 @@ public class Help
      * @param i_Map
      * @return boolean  为空返回 True，其它返回 False
      */
-    public final static boolean isNull(Map<? ,?> i_Map)
+    public final static <M extends Map<? ,?>> boolean isNull(M i_Map)
     {
         if ( i_Map == null || i_Map.isEmpty() )
         {
@@ -1341,7 +1386,7 @@ public class Help
      * @param i_Set
      * @return boolean  为空返回 True，其它返回 False
      */
-    public final static boolean isNull(Set<?> i_Set)
+    public final static <S extends Set<?>> boolean isNull(S i_Set)
     {
         if ( i_Set == null || i_Set.isEmpty() )
         {
