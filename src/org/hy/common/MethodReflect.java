@@ -1,5 +1,6 @@
 package org.hy.common;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -44,9 +45,13 @@ import java.util.regex.Pattern;
  *              v9.0  2017-11-24  添加：invokeSet(...)调用对象的Setter赋值。
  *              v10.0 2017-12-18  添加：getParameterAnnotations(...)
  */
-public class MethodReflect
+public class MethodReflect implements Serializable
 {
     
+    private static final long serialVersionUID = -4388208505011166797L;
+    
+    
+
     /** Getter、is方法的分区关键字。主用于 getGetSetMethods() 方法的返回值：分区结构 */
     public static final String $Partition_GET         = "GET";
     
