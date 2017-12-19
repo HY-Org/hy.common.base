@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
  *              v8.0  2017-07-12  修改：所有方法名称的判定都不再区分大小。
  *                                修正：当方法名称正的以$开头时($为本类的关键字符，见v5.1)，也要能正确匹配到方法。parser()方法除外。
  *              v9.0  2017-11-24  添加：invokeSet(...)调用对象的Setter赋值。
+ *              v10.0 2017-12-18  添加：getParameterAnnotations(...)
  */
 public class MethodReflect
 {
@@ -1131,6 +1132,58 @@ public class MethodReflect
         }
         
         return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 获取方法入参参数上的指定类型的注解
+     * 
+     * 1. 方法入参有三个，其中两个参数有注解。返回集合元素为三个，未注解参数的集合元素为null。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-12-18
+     * @version     v1.0
+     *
+     * @param i_Method
+     * @param i_AnnotationClass
+     * @return                   所有入参数均无注解时，返回null
+     */
+    @SuppressWarnings("unchecked")
+    public static <A extends Annotation> List<A> getParameterAnnotations(Method i_Method ,Class<A> i_AnnotationClass)
+    {
+        List<A> v_Params = null;
+        int     v_PCount = 0;
+        
+        Annotation[][] v_PAnnos = i_Method.getParameterAnnotations();
+        if ( !Help.isNull(v_PAnnos) )
+        {
+            v_Params = new ArrayList<A>(i_Method.getParameterTypes().length);
+            
+            for (int xp=0; xp<v_PAnnos.length; xp++)
+            {
+                A v_Temp = null;
+                
+                for (int xpAI=0; xpAI<v_PAnnos[xp].length; xpAI++)
+                {
+                    if ( i_AnnotationClass == v_PAnnos[xp][xpAI].annotationType() )
+                    {
+                        v_Temp = (A)v_PAnnos[xp][xpAI];
+                        v_PCount++;
+                        break;
+                    }
+                }
+                
+                v_Params.add(v_Temp);
+            }
+            
+            if ( v_PCount <= 0 )
+            {
+                v_Params = null;
+            }
+        }
+        
+        return v_Params;
     }
     
     
