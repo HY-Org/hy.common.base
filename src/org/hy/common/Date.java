@@ -37,7 +37,7 @@ public final class Date extends java.util.Date
     
     public  static final String               $FORMAT_YMD_ID   = "yyyyMMdd";                // length=8
     
-    /** 实现上面4种时间格式的快速检索 */
+    /** 实现上面6 + 3 + 3种时间格式的快速检索 */
     private static final Map<Integer ,String> $FORMATS;
     
     /** 需要有Locale.US的配合 */
@@ -202,10 +202,7 @@ public final class Date extends java.util.Date
 		
 		try
 		{
-		    v_Date = new Date(i_StrDateFormat.replaceAll("/" ,"-")
-		                                     .replaceAll("年" ,"-")
-		                                     .replaceAll("月" ,"-")
-		                                     .replaceAll("日" ,"-") 
+		    v_Date = new Date(StringHelp.replaceAll(i_StrDateFormat ,new String[]{"/" ,"年" ,"月" ,"日"} ,new String[]{"-"})
 		                     ,$FORMATS.get(i_StrDateFormat.trim().length()));
 		}
 		catch (Exception exce)
@@ -1413,12 +1410,11 @@ public final class Date extends java.util.Date
 	 */
 	public String getFull()
 	{
-		SimpleDateFormat SDF_FULL = new SimpleDateFormat($FORMAT_Normal);
-		return SDF_FULL.format(this);
+		return toString($FORMAT_Normal);
 	}
-    
-    
-    
+	
+	
+	
     /**
      * 获取 YYYYMMDDHHMISSSSS 格式的字符
      * 
@@ -1426,8 +1422,7 @@ public final class Date extends java.util.Date
      */
     public String getFullMilli()
     {
-        SimpleDateFormat SDF_FULL_ID = new SimpleDateFormat($FORMAT_Milli);
-        return SDF_FULL_ID.format(this);
+        return toString($FORMAT_Milli);
     }
 	
 	
@@ -1439,8 +1434,7 @@ public final class Date extends java.util.Date
 	 */
 	public String getYMD()
 	{
-		SimpleDateFormat SDF_YMD  = new SimpleDateFormat($FORMAT_YMD);
-		return SDF_YMD.format(this);
+	    return toString($FORMAT_YMD);
 	}
 	
 	
@@ -1452,8 +1446,7 @@ public final class Date extends java.util.Date
 	 */
 	public String getYM()
 	{
-		SimpleDateFormat SDF_YMD  = new SimpleDateFormat("yyyy-MM");
-		return SDF_YMD.format(this);
+	    return toString("yyyy-MM");
 	}
 	
 	
@@ -1465,8 +1458,7 @@ public final class Date extends java.util.Date
 	 */
 	public String getMD()
 	{
-		SimpleDateFormat SDF_YMD  = new SimpleDateFormat("MM-dd");
-		return SDF_YMD.format(this);
+	    return toString("MM-dd");
 	}
 	
 	
@@ -1478,8 +1470,7 @@ public final class Date extends java.util.Date
 	 */
 	public String getMD_ID()
 	{
-		SimpleDateFormat SDF_YMD  = new SimpleDateFormat("MMdd");
-		return SDF_YMD.format(this);
+	    return toString("MMdd");
 	}
 	
 	
@@ -1491,8 +1482,7 @@ public final class Date extends java.util.Date
 	 */
 	public String getHMS()
 	{
-		SimpleDateFormat SDF_TIME = new SimpleDateFormat("HH:mm:ss");
-		return SDF_TIME.format(this);
+	    return toString("HH:mm:ss");
 	}
 	
 	
@@ -1504,8 +1494,7 @@ public final class Date extends java.util.Date
      */
     public String getHMSMilli()
     {
-        SimpleDateFormat SDF_TIME = new SimpleDateFormat("HH:mm:ss.SSS");
-        return SDF_TIME.format(this);
+        return toString("HH:mm:ss.SSS");
     }
     
     
@@ -1517,8 +1506,7 @@ public final class Date extends java.util.Date
      */
     public String getHMSMilli_ID()
     {
-        SimpleDateFormat SDF_TIME = new SimpleDateFormat("HHmmssSSS");
-        return SDF_TIME.format(this);
+        return toString("HHmmssSSS");
     }
 	
 	
@@ -1530,8 +1518,7 @@ public final class Date extends java.util.Date
 	 */
 	public String getHM()
 	{
-		SimpleDateFormat SDF_TIME = new SimpleDateFormat("HH:mm");
-		return SDF_TIME.format(this);
+	    return toString("HH:mm");
 	}
     
     
@@ -1543,8 +1530,7 @@ public final class Date extends java.util.Date
      */
     public String getYMDHM()
     {
-        SimpleDateFormat SDF_FULL = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        return SDF_FULL.format(this);
+        return toString("yyyy-MM-dd HH:mm");
     }
     
     
@@ -1556,8 +1542,7 @@ public final class Date extends java.util.Date
      */
     public String getYMDHM_ID()
     {
-        SimpleDateFormat SDF_FULL = new SimpleDateFormat("yyyyMMddHHmm");
-        return SDF_FULL.format(this);
+        return toString("yyyyMMddHHmm");
     }
 	
 	
@@ -1569,8 +1554,7 @@ public final class Date extends java.util.Date
 	 */
 	public String getFull_ID()
 	{
-		SimpleDateFormat SDF_FULL_ID = new SimpleDateFormat($FROMAT_ID);
-		return SDF_FULL_ID.format(this);
+	    return toString($FROMAT_ID);
 	}
     
     
@@ -1582,8 +1566,7 @@ public final class Date extends java.util.Date
      */
     public String getFullMilli_ID()
     {
-        SimpleDateFormat SDF_FULL_ID = new SimpleDateFormat($FORMAT_MilliID);
-        return SDF_FULL_ID.format(this);
+        return toString($FORMAT_MilliID);
     }
 	
 	
@@ -1595,8 +1578,7 @@ public final class Date extends java.util.Date
 	 */
 	public String getYMD_ID()
 	{
-		SimpleDateFormat SDF_YMD_ID = new SimpleDateFormat($FORMAT_YMD_ID);
-		return SDF_YMD_ID.format(this);
+	    return toString($FORMAT_YMD_ID);
 	}
 	
 	
@@ -1608,8 +1590,7 @@ public final class Date extends java.util.Date
 	 */
 	public String getYM_ID()
 	{
-		SimpleDateFormat SDF_YMD_ID = new SimpleDateFormat("yyyyMM");
-		return SDF_YMD_ID.format(this);
+	    return toString("yyyyMM");
 	}
 	
 	
@@ -1621,8 +1602,7 @@ public final class Date extends java.util.Date
 	 */
 	public String getHMS_ID()
 	{
-		SimpleDateFormat SDF_TIME_ID = new SimpleDateFormat("HHmmss");
-		return SDF_TIME_ID.format(this);
+	    return toString("HHmmss");
 	}
     
     
@@ -1634,8 +1614,7 @@ public final class Date extends java.util.Date
      */
     public String getYMDH()
     {
-        SimpleDateFormat SDF_TIME_ID = new SimpleDateFormat("yyyy-MM-dd HH");
-        return SDF_TIME_ID.format(this);
+        return toString("yyyy-MM-dd HH");
     }
     
     
@@ -1647,8 +1626,20 @@ public final class Date extends java.util.Date
      */
     public String getYMDH_ID()
     {
-        SimpleDateFormat SDF_TIME_ID = new SimpleDateFormat("yyyyMMddHH");
-        return SDF_TIME_ID.format(this);
+        return toString("yyyyMMddHH");
+    }
+    
+    
+    
+    /**
+     * 格式化时间输出
+     * 
+     * @param i_Format
+     * @return
+     */
+    public String toFormat(String i_Format)
+    {
+        return toString(i_Format);
     }
 	
 	
@@ -1915,6 +1906,20 @@ public final class Date extends java.util.Date
 	public int compareTo(Date i_Other)
 	{
 		return super.compareTo(i_Other.getDateObject());
+	}
+	
+	
+	
+	/**
+	 * 格式化时间输出
+	 * 
+	 * @param i_Format
+	 * @return
+	 */
+	public String toString(String i_Format)
+	{
+	    SimpleDateFormat SDF_TIME_ID = new SimpleDateFormat(i_Format);
+        return SDF_TIME_ID.format(this);
 	}
 	
 	

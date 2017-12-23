@@ -24,6 +24,23 @@ import org.hy.common.StringHelp;
 public class JU_StringHelp
 {
     
+    /**
+     * 针对VB传过来小数点前没有0的数字处理，如：将 "-.123" 转换成: "-0.123"
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-12-23
+     * @version     v1.0
+     *
+     */
+    @Test
+    public void test_toNumberString()
+    {
+        System.out.println(StringHelp.toNumberString("5.68e+10"));
+        System.out.println(StringHelp.toNumberString("-.123"));
+    }
+    
+    
+    
     @Test
     public void test_getCharEncoding()
     {

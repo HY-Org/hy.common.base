@@ -2,6 +2,7 @@ package org.hy.common;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -35,6 +36,8 @@ import org.hy.common.SplitSegment.InfoType;
  *                                 2.添加 isStartsWith() 多关键字前缀匹配判定
  *                                 3.添加 isEndsWith()   多关键字后缀匹配判定
  *              v1.4  2017-11-16   1.修复unescape_toUnicode()方法，不应简单的将分号;替换成空字符。而是判定%u999;的格式下替换。
+ *              v1.5  2017-12-23   1.添加 toNumberString() 方法，将各种数字表达方式转为正规的数字表达方式
+ *                                 1.添加 trim() 方法，去掉空格、回车、换行字符串
  * @createDate  2009-08-21
  */
 public final class StringHelp 
@@ -948,6 +951,72 @@ public final class StringHelp
         }
         
         return v_Buffer.toString();  
+    }
+    
+    
+    
+    /**
+     * 去掉空格、回车、换行字符串
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-12-23
+     * @version     v1.0
+     *
+     * @param i_Text
+     * @return
+     */
+    public static String trim(String i_Text)
+    {
+        if ( i_Text != null )
+        {
+            Pattern v_Pattern = Pattern.compile("\\s*|\t|\r|\n");
+            Matcher v_Matcher = v_Pattern.matcher(i_Text);
+            
+            return v_Matcher.replaceAll("");
+        }
+        else
+        {
+            return i_Text;
+        }
+    }
+    
+    
+    
+    /**
+     * 将各种数字表达方式转为正规的数字表达方式。
+     *   1. 将 "-.123" 转换成: "-0.123"
+     *   2. 将科学计数法转为正规数字
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-12-23
+     * @version     v1.0
+     *
+     * @param i_Text
+     * @return
+     */
+    public static String toNumberString(String i_Number) 
+    {
+        if ( Help.isNull(i_Number) )
+        {
+            return i_Number;
+        }
+        
+        if ( !isNumber(i_Number) )
+        {
+            return i_Number;
+        }
+        
+        String v_Number = i_Number.trim();
+        if ( v_Number.toUpperCase().contains("E") )
+        {
+            v_Number = new BigDecimal(v_Number).toPlainString();
+        }
+        else
+        {
+            v_Number = Double.valueOf(v_Number).toString();
+        }
+        
+        return v_Number;
     }
     
     
