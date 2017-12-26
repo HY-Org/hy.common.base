@@ -466,7 +466,6 @@ public final class ByteHelp
 	 * 
 	 * @param i_Value
 	 * @return
-	 * @see RandomAccessFile.readLong()
 	 */
 	public static long byteToLong(byte [] i_Value)
 	{
@@ -478,13 +477,9 @@ public final class ByteHelp
 		{
 			return (byteToInt(substr(i_Value ,4 ,4)) & 0xFFFFFFFFL);
 		}
-		else if ( i_Value.length > 4 )
-		{
-			return (((long)(byteToInt(substr(i_Value ,0 ,i_Value.length - 4)))) << 32) + ((byteToInt(substr(i_Value ,i_Value.length - 4 ,4)) & 0xFFFFFFFFL));
-		}
 		else
 		{
-			return 0;
+		    return (((long)(byteToInt(substr(i_Value ,0 ,i_Value.length - 4)))) << 32) + ((byteToInt(substr(i_Value ,i_Value.length - 4 ,4)) & 0xFFFFFFFFL));
 		}
 	}
 	

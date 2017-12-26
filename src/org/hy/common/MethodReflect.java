@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
  *                                修正：当方法名称正的以$开头时($为本类的关键字符，见v5.1)，也要能正确匹配到方法。parser()方法除外。
  *              v9.0  2017-11-24  添加：invokeSet(...)调用对象的Setter赋值。
  *              v10.0 2017-12-18  添加：getParameterAnnotations(...)
+ *              v11.0 2017-12-23  修正：MethodReflect实现序列接口，但this.methods的类型Method是非序列，用MethodInfo代替。
  */
 public class MethodReflect implements Serializable
 {
@@ -98,7 +99,7 @@ public class MethodReflect implements Serializable
 	 * 即，当 isNorm = true  时，i_MethodURL = xxx.yyy.www 
 	 * 相等于 isNorm = false 时，i_MethodURL = getXxx.getYyy.setWww
 	 **/
-	private boolean            isNorm;
+	private boolean                isNorm;
 	
 	/** 
 	 *  规范的类型
@@ -106,33 +107,33 @@ public class MethodReflect implements Serializable
 	 *  1. normType =  1 为 setter 方法，如：getXxx.getYyy.setWww
 	 *  2. normType = -1 为 getter 方法，如：getXxx.getYyy.getWww
 	 **/
-	private int                normType;
+	private int                    normType;
 	
 	/** 方法全路径的Mehod返回对象类型的集合 */
-    private List<Class<?>>     classes;
+    private List<Class<?>>         classes;
 	
 	/** 方法全路径的Mehod返回对象实例的集合。第一元素为构造器的第一个参数值 */
-	private List<Object>       instances;
+	private List<Object>           instances;
 	
 	/** 
 	 * 方法全路径的Mehod的集合 
 	 * 外层List对应：方法全路径上.第几层次上方法
 	 * 内层List对应：具体层次上的多个相同重载的方法
 	 */
-	private List<List<Method>> methods;
+	private List<List<MethodInfo>> methods;
 	
 	/**
 	 * 方法全路径的Mehod的集合的参数集合
 	 * 外层List对应：方法全路径上.第几层次上方法
 	 * 内层List对应：具体层次上的方法的多个入参参数
 	 */
-	private List<List<String>> methodsParams;
+	private List<List<String>>     methodsParams;
 	
 	/** 方法全路径的分段数组 */
-	private String []          methodNames;
+	private String []              methodNames;
 	
 	/** 方法名称的全路径 */
-	private String             methodURL;
+	private String                 methodURL;
 	
 	
 	
@@ -1874,7 +1875,7 @@ public class MethodReflect implements Serializable
     {
         this.classes       = new ArrayList<Class<?>>();
         this.instances     = null;
-        this.methods       = new ArrayList<List<Method>>();
+        this.methods       = new ArrayList<List<MethodInfo>>();
         this.methodsParams = new ArrayList<List<String>>();
         this.methodURL     = i_MethodURL.trim();
         this.methodNames   = this.methodURL.replace("." ,"@").split("@");
@@ -1939,7 +1940,7 @@ public class MethodReflect implements Serializable
 	{
 	    this.classes       = new ArrayList<Class<?>>();
 		this.instances     = new ArrayList<Object>();
-		this.methods       = new ArrayList<List<Method>>();
+		this.methods       = new ArrayList<List<MethodInfo>>();
 		this.methodsParams = new ArrayList<List<String>>();
 		this.methodURL     = i_MethodURL.trim();
 		this.methodNames   = this.methodURL.replace("." ,"@").split("@");
@@ -1995,7 +1996,7 @@ public class MethodReflect implements Serializable
 	public MethodReflect(Object i_Instance ,Method i_Method)
 	{
 	    this.instances     = new ArrayList<Object>();
-        this.methods       = new ArrayList<List<Method>>();
+        this.methods       = new ArrayList<List<MethodInfo>>();
         this.methodsParams = new ArrayList<List<String>>();
         this.methodURL     = null;
         this.methodNames   = null;
@@ -2003,8 +2004,8 @@ public class MethodReflect implements Serializable
         this.normType      = $NormType_Getter;
         
         this.instances.add(i_Instance);
-        this.methods.add(new ArrayList<Method>());
-        this.methods.get(0).add(i_Method);
+        this.methods.add(new ArrayList<MethodInfo>());
+        this.methods.get(0).add(new MethodInfo(i_Method));
         this.methodsParams.add(new ArrayList<String>());
 	}
 	
@@ -2107,19 +2108,19 @@ public class MethodReflect implements Serializable
                 
                 if ( this.methodsParams.get(v_Index).size() <= 0 )
                 {
-                    this.methods.add(v_Methods);
+                    this.methods.add(MethodInfo.toMethods(v_Methods));
                     this.classes.add(v_Methods.get(0).getReturnType());
                 }
                 else
                 {
                     // 当方法的返回值类型为List集合时，进行二次解释  2017-03-22
-                    if ( v_Index >= 1 && MethodReflect.isExtendImplement(this.methods.get(v_Index-1).get(0).getReturnType() ,List.class) )
+                    if ( v_Index >= 1 && MethodReflect.isExtendImplement(this.methods.get(v_Index-1).get(0).toMethod().getReturnType() ,List.class) )
                     {
-                        GenericsReturn v_GenericsReturn = MethodReflect.getGenericsReturn(this.methods.get(v_Index-1).get(0));
+                        GenericsReturn v_GenericsReturn = MethodReflect.getGenericsReturn(this.methods.get(v_Index-1).get(0).toMethod());
                         
                         if ( v_GenericsReturn.getGenericType() != null )
                         {
-                            this.methods.add(v_Methods);
+                            this.methods.add(MethodInfo.toMethods(v_Methods));
                             this.classes.add(v_GenericsReturn.getGenericType());
                         }     
                     }
@@ -2161,7 +2162,7 @@ public class MethodReflect implements Serializable
     			    v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1) ,v_ParamObjs);
     			}
     			
-    			this.methods.add(v_Methods);
+    			this.methods.add(MethodInfo.toMethods(v_Methods));
     			this.instances.add(v_ChildInstance);
     			this.classes  .add(v_ChildInstance.getClass());
     		}
@@ -2186,7 +2187,7 @@ public class MethodReflect implements Serializable
 		    
 		    if ( !Help.isNull(v_Methods) )
 		    {
-		        this.methods.add(v_Methods);
+		        this.methods.add(MethodInfo.toMethods(v_Methods));
     		    return;
 		    }
 		    else
@@ -2208,7 +2209,7 @@ public class MethodReflect implements Serializable
             }
             else
             {
-                this.methods.add(v_Methods);
+                this.methods.add(MethodInfo.toMethods(v_Methods));
             }
 		}
 	}
@@ -2234,12 +2235,12 @@ public class MethodReflect implements Serializable
 		{
 		    if ( !Help.isNull(this.methods) )
 		    {
-    			List<Method> v_Methods = this.methods.get(v_Index);
+    			List<MethodInfo> v_Methods = this.methods.get(v_Index);
     			for (int i=0; i<v_Methods.size(); i++)
     		    {
     			    if ( isExtendImplement(i_ParamValue ,v_Methods.get(i).getParameterTypes()[0]) )
     			    {
-    			        v_Methods.get(i).invoke(this.instances.get(v_Index) ,i_ParamValue);
+    			        v_Methods.get(i).toMethod().invoke(this.instances.get(v_Index) ,i_ParamValue);
     			        return;
     			    }
     		    }
@@ -2272,13 +2273,13 @@ public class MethodReflect implements Serializable
         {
             v_Index = this.classes.size() - 1;
             
-            return this.methods.get(v_Index).get(0).getReturnType();
+            return this.methods.get(v_Index).get(0).toMethod().getReturnType();
         }
         else
         {
             v_Index = this.instances.size() - 1;
             
-            return this.methods.get(v_Index).get(0).getReturnType();
+            return this.methods.get(v_Index).get(0).toMethod().getReturnType();
         }
     }
     
@@ -2307,13 +2308,13 @@ public class MethodReflect implements Serializable
         {
             v_Index = this.classes.size() - 1;
             
-            return this.methods.get(v_Index).get(0);
+            return this.methods.get(v_Index).get(0).toMethod();
         }
         else
         {
             v_Index = this.instances.size() - 1;
             
-            return this.methods.get(v_Index).get(0);
+            return this.methods.get(v_Index).get(0).toMethod();
         }
     }
     
@@ -2336,7 +2337,7 @@ public class MethodReflect implements Serializable
 		}
 		else
 		{
-		    Method v_Method = this.methods.get(v_Index).get(0);
+		    Method v_Method = this.methods.get(v_Index).get(0).toMethod();
 		    
 		    if ( this.methodsParams.get(v_Index).size() <= 0 )
             {
@@ -2382,7 +2383,7 @@ public class MethodReflect implements Serializable
             Object v_Instance = i_Instance;
             for (int v_Index=0; v_Index<this.methods.size(); v_Index++)
             {
-                Method v_Method = this.methods.get(v_Index).get(0);
+                Method v_Method = this.methods.get(v_Index).get(0).toMethod();
                 
                 if ( v_Instance == null ){ break; }
                 
@@ -2436,7 +2437,7 @@ public class MethodReflect implements Serializable
             Object v_Instance = i_Instance;
             for (int v_Index=0; v_Index<this.methods.size(); v_Index++)
             {
-                Method v_Method = this.methods.get(v_Index).get(0);
+                Method v_Method = this.methods.get(v_Index).get(0).toMethod();
                 
                 if ( v_Instance == null ){ break; }
                 
@@ -2491,7 +2492,7 @@ public class MethodReflect implements Serializable
                     
             for (; v_Index<this.methods.size()-1; v_Index++)
             {
-                Method v_Method = this.methods.get(v_Index).get(0);
+                Method v_Method = this.methods.get(v_Index).get(0).toMethod();
                 
                 if ( v_Instance == null ){ break; }
                 
@@ -2542,7 +2543,7 @@ public class MethodReflect implements Serializable
             
             if ( v_Instance == null ){ return; }
             
-            Method v_Method = this.methods.get(v_Index).get(0);
+            Method v_Method = this.methods.get(v_Index).get(0).toMethod();
             
             if ( MethodReflect.isExtendImplement(v_Method.getParameterTypes()[0] ,i_Value.getClass()) )
             {

@@ -8,6 +8,7 @@ import java.util.List;
 
 
 
+
 /**
  * 因Java自带的 java.lang.reflect.Method 类没有实现序列化接口。
  * 而有些情况下，对象是需要 java.lang.reflect.Method 类型的信息时，就可用本类代替。
@@ -15,6 +16,7 @@ import java.util.List;
  * @author      ZhengWei(HY)
  * @createDate  2017-01-15
  * @version     v1.0
+ *              v2.0  2017-12-23  添加：javaType属性，使转为java.lang.reflect.Method时更加独立和方便。
  */
 public class MethodInfo implements Serializable
 {
@@ -22,6 +24,8 @@ public class MethodInfo implements Serializable
     private static final long serialVersionUID = 1261690656307247327L;
     
     
+    /** 方法所在的Java类的类型 */
+    private Class<?>    javaType;
 
     /** 方法的名称（区分大小写） */
     private String      name;
@@ -110,20 +114,28 @@ public class MethodInfo implements Serializable
     
     public MethodInfo()
     {
-        this(null ,null);
+        this(null ,null ,null);
     }
     
     
     
     public MethodInfo(Method i_Method)
     {
-        this(i_Method.getName() ,i_Method.getParameterTypes());
+        this(i_Method.getDeclaringClass() ,i_Method.getName() ,i_Method.getParameterTypes());
     }
     
     
     
     public MethodInfo(String i_Name ,Class<?> [] i_ParameterTypes)
     {
+        this(null ,i_Name ,i_ParameterTypes);
+    }
+    
+    
+    
+    public MethodInfo(Class<?> i_JavaType ,String i_Name ,Class<?> [] i_ParameterTypes)
+    {
+        this.javaType       = i_JavaType;
         this.name           = i_Name;
         this.parameterTypes = i_ParameterTypes;
     }
@@ -170,6 +182,30 @@ public class MethodInfo implements Serializable
         
         return null;
     }
+    
+    
+    
+    /**
+     * 将本类还原为Java自带的 java.lang.reflect.Method
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-12-23
+     * @version     v1.0
+     *
+     * @param i_Class
+     * @return
+     */
+    public java.lang.reflect.Method toMethod()
+    {
+        if ( this.javaType != null )
+        {
+            return this.toMethod(this.javaType);
+        }
+        else
+        {
+            return null;
+        }
+    }
 
     
     
@@ -213,6 +249,28 @@ public class MethodInfo implements Serializable
     public void setParameterTypes(Class<?> [] parameterTypes)
     {
         this.parameterTypes = parameterTypes;
+    }
+
+
+    
+    /**
+     * 获取：方法所在的Java类的类型
+     */
+    public Class<?> getJavaType()
+    {
+        return javaType;
+    }
+    
+
+    
+    /**
+     * 设置：方法所在的Java类的类型
+     * 
+     * @param javaType 
+     */
+    public void setJavaType(Class<?> javaType)
+    {
+        this.javaType = javaType;
     }
     
 }

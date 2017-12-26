@@ -373,7 +373,7 @@ public class Return<O> implements java.io.Serializable ,Comparable<Object>
         {
             return value == ((Return<?>) obj).booleanValue();
         }
-        else if ( obj.getClass().equals(Boolean.class) )
+        else if ( obj.getClass() == Boolean.class )
         {
             return value == ((Boolean)obj).booleanValue();
         }

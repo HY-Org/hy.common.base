@@ -3374,7 +3374,7 @@ public class Help
         }
         else
         {
-            new ArrayList<T>(); 
+            v_Ret = new ArrayList<T>(); 
         }
         
         return v_Ret;
@@ -6213,6 +6213,11 @@ public class Help
                 return (i_Recursive && i_File.isDirectory()) || (i_File.getName().endsWith(".class"));
             }
         });
+        
+        if ( Help.isNull(v_Files) )
+        {
+            return;
+        }
         
         
         // 包路径为空的情况，主要用于全部遍历的情况
