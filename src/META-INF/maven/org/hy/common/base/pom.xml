@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org</groupId>
+  <artifactId>hy.common.base</artifactId>
+  <version>1.0.126</version>
+  <packaging>jar</packaging>
+
+  <name>hy.common.base</name>
+  <url>https://github.com/HY-ZhengWei/hy.common.base</url>
+  
+  <developers>
+    <developer>
+        <id>hy.common.base</id>
+        <name>Wei Zheng</name>
+        <email>HY.ZhengWei@qq.com</email>
+        <url>https://github.com/hy-zhengwei</url>
+    </developer>
+  </developers>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+    
+	<dependency>
+	    <groupId>com.belerweb</groupId>
+	    <artifactId>pinyin4j</artifactId>
+	    <version>2.5.1</version>
+	</dependency>
+  </dependencies>
+</project>
