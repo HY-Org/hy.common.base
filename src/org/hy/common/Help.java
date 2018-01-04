@@ -54,6 +54,7 @@ import org.hy.common.app.Param;
  *               2017-11-20  1. 优化：toMap(Object ...)系列方法，添加高速缓存。对同一对象类型的高频密集性的转换时，能显示提升性能。
  *               2017-12-19  1. 添加：isNull(Object) 方法。
  *               2018-01-04  1. 添加：对加、减、乘、除四个系列的方法，均添加不定参数的支持。使其能多个数字运算。
+ *                           2. 添加：插值法（内推法）的interpolation()方法。
  *
  */
 public class Help
@@ -482,6 +483,30 @@ public class Help
     
     
     /**
+     * 插值法（内推法）
+     * 
+     * ((i_XValue - i_XMin) * (i_YMax - i_YMin) / (i_XMax - i_XMin) ) + i_XMin
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-01-04
+     * @version     v1.0
+     *
+     * @param i_XMin    X系范围的最小值
+     * @param i_XMax    X系范围的最大值
+     * @param i_YMin    Y系范围的最小值
+     * @param i_YMax    Y系范围的最大值
+     * @param i_XValue  X系的当前值
+     * @return          计算出Y系的当前值（相对于i_XValue）
+     */
+    @SuppressWarnings("unchecked")
+    public final static <N extends Number> double interpolation(N i_XMin ,N i_XMax ,N i_YMin ,N i_YMax ,N i_XValue)
+    {
+        return addition(division(multiply(subtract(i_XValue ,i_XMin) ,subtract(i_YMax ,i_YMin)) ,subtract(i_XMax ,i_XMin)) ,i_XMin);
+    }
+    
+    
+    
+    /**
      * 四舍五入。
      * 
      * 解决Java本身无法完全处理四舍五入的问题
@@ -491,7 +516,7 @@ public class Help
      * @return
      * @see   org.hy.common.xml.junit.JU_Round
      */
-    public static <N extends Number> double round(N i_Value ,int i_Digit) 
+    public final static <N extends Number> double round(N i_Value ,int i_Digit) 
     {
         return round(i_Value.toString() ,i_Digit);
     }
@@ -508,7 +533,7 @@ public class Help
      * @return
      * @see   org.hy.common.xml.junit.JU_Round
      */
-    public static double round(String i_Value ,int i_Digit) 
+    public final static double round(String i_Value ,int i_Digit) 
     {
         BigDecimal v_Value = new BigDecimal(i_Value.trim());
                 
