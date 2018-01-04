@@ -53,6 +53,7 @@ import org.hy.common.app.Param;
  *               2017-10-23  1. 修复：当forName不实例的方式异常时，二次尝试传统模式。
  *               2017-11-20  1. 优化：toMap(Object ...)系列方法，添加高速缓存。对同一对象类型的高频密集性的转换时，能显示提升性能。
  *               2017-12-19  1. 添加：isNull(Object) 方法。
+ *               2018-01-04  1. 添加：对加、减、乘、除四个系列的方法，均添加不定参数的支持。使其能多个数字运算。
  *
  */
 public class Help
@@ -90,19 +91,44 @@ public class Help
     
     
     /**
+     * 转为字符串数组
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-01-04
+     * @version     v1.0
+     *
+     * @param i_ValueX
+     * @return
+     */
+    private final static <N extends Number> String[] numbersToStrings(N ... i_ValueX)
+    {
+        String [] v_ValueX = new String[i_ValueX.length];
+        
+        for (int i=0; i<i_ValueX.length; i++)
+        {
+            v_ValueX[i] = i_ValueX[i].toString();
+        }
+        
+        return v_ValueX;
+    }
+    
+    
+    
+    /**
      * 高精度的加法
      * 
      * @author      ZhengWei(HY)
      * @createDate  2017-06-10
      * @version     v1.0
+     *              v2.0  2018-01-04  支持不定多参
      *
      * @param i_Value01
-     * @param i_Value02
+     * @param i_ValueX
      * @return
      */
-    public final static <N extends Number> double addition(N i_Value01 ,N i_Value02)
+    public final static <N extends Number> double addition(N i_Value01 ,N ... i_ValueX)
     {
-        return addition(i_Value01.toString() ,i_Value02.toString());
+        return addition(i_Value01.toString() ,numbersToStrings(i_ValueX));
     }
     
     
@@ -149,17 +175,24 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2017-06-10
      * @version     v1.0
+     *              v2.0  2018-01-04  支持不定多参
      *
      * @param i_Value01
-     * @param i_Value02
+     * @param i_ValueX
      * @return
      */
-    public final static double addition(String i_Value01 ,String i_Value02)
+    public final static double addition(String i_Value01 ,String ... i_ValueX)
     {
-        BigDecimal v_Decimal01 = new BigDecimal(i_Value01.trim());    
-        BigDecimal v_Decimal02 = new BigDecimal(i_Value02.trim());
+        BigDecimal v_Ret = new BigDecimal(i_Value01.trim());
         
-        return v_Decimal01.add(v_Decimal02).doubleValue();    
+        for (String v_ValueStr : i_ValueX)
+        {
+            BigDecimal v_Value = new BigDecimal(v_ValueStr.trim());
+            
+            v_Ret = v_Ret.add(v_Value);
+        }
+        
+        return v_Ret.doubleValue();    
     }
     
     
@@ -170,14 +203,15 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2017-06-10
      * @version     v1.0
+     *              v2.0  2018-01-04  支持不定多参
      *
      * @param i_Value01
-     * @param i_Value02
+     * @param i_ValueX
      * @return
      */
-    public final static <N extends Number> double subtract(N i_Value01 ,N i_Value02)
+    public final static <N extends Number> double subtract(N i_Value01 ,N ... i_ValueX)
     {
-        return subtract(i_Value01.toString() ,i_Value02.toString());
+        return subtract(i_Value01.toString() ,numbersToStrings(i_ValueX));
     }
     
     
@@ -224,17 +258,24 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2017-06-10
      * @version     v1.0
+     *              v2.0  2018-01-04  支持不定多参
      *
      * @param i_Value01
-     * @param i_Value02
+     * @param i_ValueX
      * @return
      */
-    public final static double subtract(String i_Value01 ,String i_Value02)
+    public final static double subtract(String i_Value01 ,String ... i_ValueX)
     {
-        BigDecimal v_Decimal01 = new BigDecimal(i_Value01.trim());    
-        BigDecimal v_Decimal02 = new BigDecimal(i_Value02.trim());
+        BigDecimal v_Ret = new BigDecimal(i_Value01.trim()); 
         
-        return v_Decimal01.subtract(v_Decimal02).doubleValue();    
+        for (String v_ValueStr : i_ValueX)
+        {
+            BigDecimal v_Value = new BigDecimal(v_ValueStr.trim());
+            
+            v_Ret = v_Ret.subtract(v_Value);
+        }
+        
+        return v_Ret.doubleValue();    
     }
     
     
@@ -245,14 +286,15 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2017-06-10
      * @version     v1.0
+     *              v2.0  2018-01-04  支持不定多参
      *
      * @param i_Value01
-     * @param i_Value02
+     * @param i_ValueX
      * @return
      */
-    public final static <N extends Number> double multiply(N i_Value01 ,N i_Value02)
+    public final static <N extends Number> double multiply(N i_Value01 ,N ... i_ValueX)
     {
-        return multiply(i_Value01.toString() ,i_Value02.toString());
+        return multiply(i_Value01.toString() ,numbersToStrings(i_ValueX));
     }
     
     
@@ -299,17 +341,24 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2017-06-10
      * @version     v1.0
+     *              v2.0  2018-01-04  支持不定多参
      *
      * @param i_Value01
-     * @param i_Value02
+     * @param i_ValueX
      * @return
      */
-    public final static double multiply(String i_Value01 ,String i_Value02)
+    public final static double multiply(String i_Value01 ,String ... i_ValueX)
     {
-        BigDecimal v_Decimal01 = new BigDecimal(i_Value01.trim());    
-        BigDecimal v_Decimal02 = new BigDecimal(i_Value02.trim());
+        BigDecimal v_Ret = new BigDecimal(i_Value01.trim());
         
-        return v_Decimal01.multiply(v_Decimal02).doubleValue();    
+        for (String v_ValueStr : i_ValueX)
+        {
+            BigDecimal v_Value = new BigDecimal(v_ValueStr.trim());
+            
+            v_Ret = v_Ret.multiply(v_Value);
+        }
+        
+        return v_Ret.doubleValue();    
     }
     
     
@@ -322,14 +371,15 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2017-06-10
      * @version     v1.0
+     *              v2.0  2018-01-04  支持不定多参
      *
      * @param i_Value01
-     * @param i_Value02
+     * @param i_ValueX
      * @return
      */
-    public final static <N extends Number> double division(N i_Value01 ,N i_Value02)
+    public final static <N extends Number> double division(N i_Value01 ,N ... i_ValueX)
     {
-        return division(i_Value01.toString() ,i_Value02.toString());
+        return division(i_Value01.toString() ,numbersToStrings(i_ValueX));
     }
     
     
@@ -382,14 +432,15 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2017-06-10
      * @version     v1.0
+     *              v2.0  2018-01-04  支持不定多参
      *
      * @param i_Value01
-     * @param i_Value02
+     * @param i_ValueX
      * @return
      */
-    public final static double division(String i_Value01 ,String i_Value02)
+    public final static double division(String i_Value01 ,String ... i_ValueX)
     {
-        return division(i_Value01 ,i_Value02 ,9);
+        return division(9 ,i_Value01 ,i_ValueX);
     }
     
     
@@ -402,22 +453,30 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2017-06-13
      * @version     v1.0
+     *              v2.0  2018-01-04  支持不定多参
      *
+     * @param i_Scale    精度
      * @param i_Value01
-     * @param i_Value02
+     * @param i_ValueX
      * @return
      */
-    public final static double division(String i_Value01 ,String i_Value02 ,int i_Scale)
+    public final static double division(int i_Scale ,String i_Value01 ,String ... i_ValueX)
     {
-        BigDecimal v_Decimal01 = new BigDecimal(i_Value01.trim());    
-        BigDecimal v_Decimal02 = new BigDecimal(i_Value02.trim());
+        BigDecimal v_Ret = new BigDecimal(i_Value01.trim());
         
-        if ( v_Decimal02.compareTo(BigDecimal.ZERO) == 0 )
+        for (String v_ValueStr : i_ValueX)
         {
-            return 0;
+            BigDecimal v_Value = new BigDecimal(v_ValueStr.trim());
+            
+            if ( v_Value.compareTo(BigDecimal.ZERO) == 0 )
+            {
+                return 0;
+            }
+            
+            v_Ret = v_Ret.divide(v_Value ,i_Scale ,BigDecimal.ROUND_HALF_UP);
         }
         
-        return v_Decimal01.divide(v_Decimal02 ,i_Scale ,BigDecimal.ROUND_HALF_UP).doubleValue();    
+        return v_Ret.doubleValue();    
     }
     
     
