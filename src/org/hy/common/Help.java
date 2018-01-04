@@ -485,7 +485,7 @@ public class Help
     /**
      * 插值法（内推法）
      * 
-     * ((i_XValue - i_XMin) * (i_YMax - i_YMin) / (i_XMax - i_XMin) ) + i_XMin
+     * ((i_XValue - i_XMin) * (i_YMax - i_YMin) / (i_XMax - i_XMin) ) + i_YMin
      * 
      * @author      ZhengWei(HY)
      * @createDate  2018-01-04
@@ -501,7 +501,7 @@ public class Help
     @SuppressWarnings("unchecked")
     public final static <N extends Number> double interpolation(N i_XMin ,N i_XMax ,N i_YMin ,N i_YMax ,N i_XValue)
     {
-        return addition(division(multiply(subtract(i_XValue ,i_XMin) ,subtract(i_YMax ,i_YMin)) ,subtract(i_XMax ,i_XMin)) ,i_XMin);
+        return addition(division(multiply(subtract(i_XValue ,i_XMin) ,subtract(i_YMax ,i_YMin)) ,subtract(i_XMax ,i_XMin)) ,i_YMin);
     }
     
     
