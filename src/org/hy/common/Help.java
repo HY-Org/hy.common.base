@@ -124,10 +124,10 @@ public class Help
      *              v2.0  2018-01-04  支持不定多参
      *
      * @param i_Value01
-     * @param i_ValueX
+     * @param i_ValueX   可变参数使用N时，第三方调用者为有一个Java警告，所以改为Number
      * @return
      */
-    public final static <N extends Number> double addition(N i_Value01 ,N ... i_ValueX)
+    public final static <N extends Number> double addition(N i_Value01 ,Number ... i_ValueX)
     {
         return addition(i_Value01.toString() ,numbersToStrings(i_ValueX));
     }
@@ -207,10 +207,10 @@ public class Help
      *              v2.0  2018-01-04  支持不定多参
      *
      * @param i_Value01
-     * @param i_ValueX
+     * @param i_ValueX   可变参数使用N时，第三方调用者为有一个Java警告，所以改为Number
      * @return
      */
-    public final static <N extends Number> double subtract(N i_Value01 ,N ... i_ValueX)
+    public final static <N extends Number> double subtract(N i_Value01 ,Number ... i_ValueX)
     {
         return subtract(i_Value01.toString() ,numbersToStrings(i_ValueX));
     }
@@ -290,10 +290,10 @@ public class Help
      *              v2.0  2018-01-04  支持不定多参
      *
      * @param i_Value01
-     * @param i_ValueX
+     * @param i_ValueX   可变参数使用N时，第三方调用者为有一个Java警告，所以改为Number
      * @return
      */
-    public final static <N extends Number> double multiply(N i_Value01 ,N ... i_ValueX)
+    public final static <N extends Number> double multiply(N i_Value01 ,Number ... i_ValueX)
     {
         return multiply(i_Value01.toString() ,numbersToStrings(i_ValueX));
     }
@@ -375,10 +375,10 @@ public class Help
      *              v2.0  2018-01-04  支持不定多参
      *
      * @param i_Value01
-     * @param i_ValueX
+     * @param i_ValueX   可变参数使用N时，第三方调用者为有一个Java警告，所以改为Number
      * @return
      */
-    public final static <N extends Number> double division(N i_Value01 ,N ... i_ValueX)
+    public final static <N extends Number> double division(N i_Value01 ,Number ... i_ValueX)
     {
         return division(i_Value01.toString() ,numbersToStrings(i_ValueX));
     }
@@ -498,7 +498,6 @@ public class Help
      * @param i_XValue  X系的当前值
      * @return          计算出Y系的当前值（相对于i_XValue）
      */
-    @SuppressWarnings("unchecked")
     public final static <N extends Number> double interpolation(N i_XMin ,N i_XMax ,N i_YMin ,N i_YMax ,N i_XValue)
     {
         return addition(division(multiply(subtract(i_XValue ,i_XMin) ,subtract(i_YMax ,i_YMin)) ,subtract(i_XMax ,i_XMin)) ,i_YMin);
