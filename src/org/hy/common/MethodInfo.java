@@ -18,7 +18,7 @@ import java.util.List;
  * @version     v1.0
  *              v2.0  2017-12-23  添加：javaType属性，使转为java.lang.reflect.Method时更加独立和方便。
  */
-public class MethodInfo implements Serializable
+public class MethodInfo implements Serializable ,Comparable<MethodInfo>
 {
     
     private static final long serialVersionUID = 1261690656307247327L;
@@ -271,6 +271,109 @@ public class MethodInfo implements Serializable
     public void setJavaType(Class<?> javaType)
     {
         this.javaType = javaType;
+    }
+    
+    
+    
+    public int hashCode()
+    {   
+        int v_HashCode = 0;
+        
+        if ( !Help.isNull(this.name) )
+        {
+            v_HashCode += this.name.hashCode() * 10000;
+        }
+        
+        if ( !Help.isNull(this.parameterTypes) )
+        {
+            for (Class<?> v_Class : this.parameterTypes)
+            {
+                v_HashCode += v_Class.hashCode() * 1000;
+            }
+        }
+        
+        if ( this.javaType != null )
+        {
+            v_HashCode += this.javaType.hashCode();
+        }
+        
+        return v_HashCode;
+    }
+
+
+
+    @Override
+    public int compareTo(MethodInfo i_Other)
+    {
+        if ( i_Other == null )
+        {
+            return 1;
+        }
+        else if ( this == i_Other )
+        {
+            return 0;
+        }
+        else if ( this.name.equals(i_Other.getName()) && this.javaType == i_Other.getJavaType() )
+        {
+            if ( Help.isNull(this.parameterTypes) )
+            {
+                if ( Help.isNull(i_Other.getParameterTypes()) )
+                {
+                    return 0;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+            else if ( Help.isNull(i_Other.getParameterTypes()) )
+            {
+                return 1;
+            }
+            else 
+            {
+                for (int i=0; i<this.parameterTypes.length; i++)
+                {
+                    if ( this.parameterTypes[i] != i_Other.getParameterTypes()[i] )
+                    {
+                        return 1;
+                    }
+                }
+                
+                return 0;
+            }
+        }
+        else 
+        {
+            return this.hashCode() - i_Other.hashCode();
+        }
+    }
+    
+    
+    
+    @Override
+    public boolean equals(Object i_Other)
+    {
+        if ( i_Other == null )
+        {
+            return false;
+        }
+        else if ( this == i_Other )
+        {
+            return true;
+        }
+        else if ( i_Other instanceof MethodInfo )
+        {
+            return this.compareTo((MethodInfo)i_Other) == 0;
+        }
+        else if ( i_Other instanceof Method )
+        {
+            return this.compareTo(new MethodInfo((Method)i_Other)) == 0;
+        }
+        else 
+        {
+            return false;
+        }
     }
     
 }

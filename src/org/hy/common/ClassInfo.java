@@ -103,6 +103,10 @@ public class ClassInfo implements Comparable<ClassInfo>
         {
             return 1;
         }
+        else if ( this == i_Other )
+        {
+            return 0;
+        }
         else if ( this.getClassObj() == i_Other.getClassObj() )
         {
             return 0;
