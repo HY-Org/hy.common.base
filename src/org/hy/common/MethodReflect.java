@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,6 +46,7 @@ import java.util.regex.Pattern;
  *              v9.0  2017-11-24  添加：invokeSet(...)调用对象的Setter赋值。
  *              v10.0 2017-12-18  添加：getParameterAnnotations(...)
  *              v11.0 2017-12-23  修正：MethodReflect实现序列接口，但this.methods的类型Method是非序列，用MethodInfo代替。
+ *              v12.0 2018-01-18  添加：支持BigDecimal类型
  */
 public class MethodReflect implements Serializable
 {
@@ -1495,6 +1497,10 @@ public class MethodReflect implements Serializable
                             {
                                 // Nothing.
                             }
+                            else if ( BigDecimal.class == i_MethodParams[v_PIndex].getClass() )
+                            {
+                                // Nothing.
+                            }
                             else if ( short.class == v_Method.getParameterTypes()[v_PIndex] 
                                    && Short.class == i_MethodParams[v_PIndex].getClass() )
                             {
@@ -1772,6 +1778,17 @@ public class MethodReflect implements Serializable
             else
             {
                 i_SetMethod.invoke(i_Instance ,(Long)null);
+            }
+        }
+        else if ( BigDecimal.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,new BigDecimal(i_Value.toString()));
+            }
+            else
+            {
+                i_SetMethod.invoke(i_Instance ,(BigDecimal)null);
             }
         }
         else if ( short.class == v_ParamType )

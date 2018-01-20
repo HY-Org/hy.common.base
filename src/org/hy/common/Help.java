@@ -55,6 +55,7 @@ import org.hy.common.app.Param;
  *               2017-12-19  1. 添加：isNull(Object) 方法。
  *               2018-01-04  1. 添加：对加、减、乘、除四个系列的方法，均添加不定参数的支持。使其能多个数字运算。
  *                           2. 添加：插值法（内推法）的interpolation()方法。
+ *               2018-01-18  1. 添加：支持BigDecimal类型            
  *
  */
 public class Help
@@ -5902,6 +5903,10 @@ public class Help
         {
             return new Date(i_Value.trim()).getDateObject();
         }
+        else if ( i_Class == BigDecimal.class )
+        {
+            return new BigDecimal(i_Value.trim());
+        }
         else if ( MethodReflect.isExtendImplement(i_Class ,Enum.class) )
         {
             @SuppressWarnings("unchecked")
@@ -6013,6 +6018,10 @@ public class Help
         else if ( i_Class == java.util.Date.class )
         {
             return new Date().getDateObject();
+        }
+        else if ( i_Class == BigDecimal.class )
+        {
+            return new BigDecimal(0);
         }
         else if ( MethodReflect.isExtendImplement(i_Class ,Enum.class) )
         {

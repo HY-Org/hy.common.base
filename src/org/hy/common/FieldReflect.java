@@ -1,6 +1,7 @@
 package org.hy.common;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.Map;
 
 
@@ -13,6 +14,7 @@ import java.util.Map;
  * @author      ZhengWei(HY)
  * @createDate  2017-11-24
  * @version     v1.0
+ *              v2.0  2018-01-18  添加：支持BigDecimal类型
  */
 public class FieldReflect
 {
@@ -280,6 +282,17 @@ public class FieldReflect
             if ( i_Value != null && !Help.isNull(i_Value.toString()) )
             {
                 i_Field.set(i_Instance ,Long.valueOf(i_Value.toString().trim()));
+            }
+            else
+            {
+                i_Field.set(i_Instance ,null);
+            }
+        }
+        else if ( BigDecimal.class == v_ClassType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_Field.set(i_Instance ,new BigDecimal(i_Value.toString().trim()));
             }
             else
             {
