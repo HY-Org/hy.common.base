@@ -9,25 +9,26 @@ import java.util.List;
 
 
 /**
- * 轮转、周而复始的循环
+ * 轮转、周而复始的循环（只前进，只能next）。
+ * 
+ * 源于org.hy.common.CycleList，但比它更简单，单向循环时性能更好。
  *
  * @author      ZhengWei(HY)
- * @createDate  2016-07-22
+ * @createDate  2018-01-20
  * @version     v1.0
- *              v2.0  2018-01-20  添加：current()方法，获取当前元素。 
  * @param <V>
  */
-public class CycleList<V> extends ArrayList<V> implements List<V> 
+public class CycleNextList<V> extends ArrayList<V> implements List<V> 
 {
 
-    private static final long serialVersionUID = -2247379996020664182L;
+    private static final long serialVersionUID = -6860598668289724942L;
     
     /** 当前轮转到的索引号 */
     private int cycleIndex;
     
     
     
-    public CycleList()
+    public CycleNextList()
     {
         super();
         this.cycleIndex = 0;
@@ -35,7 +36,7 @@ public class CycleList<V> extends ArrayList<V> implements List<V>
     
     
     
-    public CycleList(int initialCapacity) 
+    public CycleNextList(int initialCapacity) 
     {
         super(initialCapacity);
         this.cycleIndex = 0;
@@ -43,42 +44,10 @@ public class CycleList<V> extends ArrayList<V> implements List<V>
     
     
     
-    public CycleList(Collection<? extends V> c) 
+    public CycleNextList(Collection<? extends V> c) 
     {
         super(c);
         this.cycleIndex = 0;
-    }
-    
-    
-    
-    /**
-     * 轮转的方式获取下一个元素对象
-     * 
-     * @author      ZhengWei(HY)
-     * @createDate  2016-07-22
-     * @version     v1.0
-     *
-     * @return
-     */
-    public V next()
-    {
-        return this.getCycleValue(1);
-    }
-    
-    
-    
-    /**
-     * 轮转的方式获取前一个元素对象
-     * 
-     * @author      ZhengWei(HY)
-     * @createDate  2016-07-22
-     * @version     v1.0
-     *
-     * @return
-     */
-    public V previous()
-    {
-        return this.getCycleValue(-1);
     }
     
     
@@ -114,9 +83,9 @@ public class CycleList<V> extends ArrayList<V> implements List<V>
     }
     
     
-    
+        
     /**
-     * 轮转的方式获取下一个(或前一个)元素对象。
+     * 轮转的方式获取下一个元素对象
      * 
      * 有了此方法，就不用再去重写remove()、clearAll()等方法了，因为本方法是按size()重新计算读取cycleIndex位置的。
      * 
@@ -125,10 +94,9 @@ public class CycleList<V> extends ArrayList<V> implements List<V>
      * @version     v1.0
      *              v2.0  优化：size()大小为1时的读取速度
      *
-     * @param i_CycleType  轮转类型（轮转方向）
      * @return
      */
-    private synchronized V getCycleValue(int i_CycleType)
+    public synchronized V next()
     {
         int v_Size = this.size();
         
@@ -142,24 +110,12 @@ public class CycleList<V> extends ArrayList<V> implements List<V>
             return null;
         }
         
-        if ( i_CycleType >= 0 )
+        if ( this.cycleIndex >= v_Size - 1 )
         {
-            if ( this.cycleIndex >= v_Size - 1 )
-            {
-                this.cycleIndex = -1;
-            }
-            
-            return this.get(++this.cycleIndex);
+            this.cycleIndex = -1;
         }
-        else
-        {
-            if ( this.cycleIndex <= 0 )
-            {
-                this.cycleIndex = v_Size;
-            }
-            
-            return this.get(--this.cycleIndex);
-        }
+        
+        return this.get(++this.cycleIndex);
     }
     
 }
