@@ -55,7 +55,8 @@ import org.hy.common.app.Param;
  *               2017-12-19  1. 添加：isNull(Object) 方法。
  *               2018-01-04  1. 添加：对加、减、乘、除四个系列的方法，均添加不定参数的支持。使其能多个数字运算。
  *                           2. 添加：插值法（内推法）的interpolation()方法。
- *               2018-01-18  1. 添加：支持BigDecimal类型            
+ *               2018-01-18  1. 添加：支持BigDecimal类型           
+ *               2018-01-26  1. 修复：Arrays.asList()生成的集合是只读，不能对集合进行add()、remove()等修改操作。 
  *
  */
 public class Help
@@ -3275,13 +3276,14 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2017-12-09
      * @version     v1.0
+     *              v2.0  2018-01-26  修复：Arrays.asList()生成的集合是只读，不能对集合进行add()、remove()等修改操作。
      *
      * @param i_Array
      * @return
      */
     public final static <T> List<T> toList(T ... i_Array)
     {
-        return Arrays.asList(i_Array);
+        return new ArrayList<T>(Arrays.asList(i_Array));
     }
     
     
