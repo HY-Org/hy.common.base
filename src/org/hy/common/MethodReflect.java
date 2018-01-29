@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
  *              v10.0 2017-12-18  添加：getParameterAnnotations(...)
  *              v11.0 2017-12-23  修正：MethodReflect实现序列接口，但this.methods的类型Method是非序列，用MethodInfo代替。
  *              v12.0 2018-01-18  添加：支持BigDecimal类型
+ *              v12.1 2018-01-29  添加：扫描项目所有类时，当发现某一类引用的类不存在时，只错误提示不中断服务。
  */
 public class MethodReflect implements Serializable
 {
@@ -1227,33 +1228,19 @@ public class MethodReflect implements Serializable
      */
     public static List<Method> getAnnotationMethods(Class<?> i_Class ,Class<? extends Annotation> i_AnnotationClass ,int i_ParamSize)
     {
-        List<Method> v_Ret     = new ArrayList<Method>();
-        Method []    v_Methods = i_Class.getDeclaredMethods();
+        List<Method> v_Ret = new ArrayList<Method>();
         
-        // 无参数个数限制
-        if ( i_ParamSize < 0 )
+        try
         {
-            for (int i=0; i<v_Methods.length; i++)
+            Method [] v_Methods = i_Class.getDeclaredMethods();
+            
+            // 无参数个数限制
+            if ( i_ParamSize < 0 )
             {
-                Method v_Method = v_Methods[i];
-                
-                if ( Modifier.isPublic(v_Method.getModifiers()) )
+                for (int i=0; i<v_Methods.length; i++)
                 {
-                    if ( v_Method.isAnnotationPresent(i_AnnotationClass) )
-                    {
-                        v_Ret.add(v_Method);
-                    }
-                }
-            }
-        }
-        else
-        {
-            for (int i=0; i<v_Methods.length; i++)
-            {
-                Method v_Method = v_Methods[i];
-                
-                if ( v_Method.getParameterTypes().length == i_ParamSize )
-                {   
+                    Method v_Method = v_Methods[i];
+                    
                     if ( Modifier.isPublic(v_Method.getModifiers()) )
                     {
                         if ( v_Method.isAnnotationPresent(i_AnnotationClass) )
@@ -1263,6 +1250,29 @@ public class MethodReflect implements Serializable
                     }
                 }
             }
+            else
+            {
+                for (int i=0; i<v_Methods.length; i++)
+                {
+                    Method v_Method = v_Methods[i];
+                    
+                    if ( v_Method.getParameterTypes().length == i_ParamSize )
+                    {   
+                        if ( Modifier.isPublic(v_Method.getModifiers()) )
+                        {
+                            if ( v_Method.isAnnotationPresent(i_AnnotationClass) )
+                            {
+                                v_Ret.add(v_Method);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (Throwable exce)
+        {
+            // 2018-01-29 扫描项目所有类时，当发现某一类引用的类不存在时，只错误提示不中断服务。
+            System.err.println("Error: " + i_Class.getName() + ": " + exce.getMessage() + " " + exce.getClass().getName());
         }
         
         return v_Ret;

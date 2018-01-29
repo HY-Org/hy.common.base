@@ -22,6 +22,7 @@ import org.hy.common.TablePartition;
  * @version     v1.0  
  * @createDate  2014-04-17
  *              2017-12-04  1.添加：getAnnotationMethods()方法。
+ *              2018-01-29  1.添加：扫描项目所有类时，当发现某一类引用的类不存在时，只错误提示不中断服务。
  */
 public final class ClassReflect
 {
@@ -114,18 +115,25 @@ public final class ClassReflect
      */
     public static List<Field> getAnnotationFields(Class<?> i_Class ,Class<? extends Annotation> i_AnnotationClass)
     {
-        List<Field> v_Ret    = new ArrayList<Field>();
-        Field []    v_Fields = i_Class.getDeclaredFields();
-        
-
-        for (int i=0; i<v_Fields.length; i++)
+        List<Field> v_Ret = new ArrayList<Field>();
+        try
         {
-            Field v_Field = v_Fields[i];
-            
-            if ( v_Field.isAnnotationPresent(i_AnnotationClass) )
+            Field [] v_Fields = i_Class.getDeclaredFields();
+    
+            for (int i=0; i<v_Fields.length; i++)
             {
-                v_Ret.add(v_Field);
+                Field v_Field = v_Fields[i];
+                
+                if ( v_Field.isAnnotationPresent(i_AnnotationClass) )
+                {
+                    v_Ret.add(v_Field);
+                }
             }
+        }
+        catch (Throwable exce)
+        {
+            // 2018-01-29 扫描项目所有类时，当发现某一类引用的类不存在时，只错误提示不中断服务。
+            System.err.println("Error: " + i_Class.getName() + ": " + exce.getMessage() + " " + exce.getClass().getName());
         }
         
         return v_Ret;
