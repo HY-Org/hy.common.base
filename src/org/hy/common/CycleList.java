@@ -15,7 +15,9 @@ import java.util.List;
  * @createDate  2016-07-22
  * @version     v1.0
  *              v2.0  2018-01-20  添加：current()方法，获取当前元素。 
- * @param <V>
+ *              v3.0  2018-01-21  优化：首次执行next()方法时，从列表中首个元素开始循环。
+ *                                修复：确保 cycleIndex 不会为负值。之前没有current()方法时，
+ *                                     cycleIndex 为负值是没有关系的，而现在则不行。
  */
 public class CycleList<V> extends ArrayList<V> implements List<V> 
 {
@@ -146,10 +148,10 @@ public class CycleList<V> extends ArrayList<V> implements List<V>
         {
             if ( this.cycleIndex >= v_Size - 1 )
             {
-                this.cycleIndex = -1;
+                this.cycleIndex = 0;
             }
             
-            return this.get(++this.cycleIndex);
+            return this.get(this.cycleIndex++);
         }
         else
         {
