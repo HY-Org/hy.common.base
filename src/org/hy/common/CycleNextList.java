@@ -113,7 +113,7 @@ public class CycleNextList<V> extends ArrayList<V> implements List<V>
             return null;
         }
         
-        if ( this.cycleIndex >= v_Size - 1 )
+        if ( this.cycleIndex >= v_Size )
         {
             this.cycleIndex = 0;
         }

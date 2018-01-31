@@ -146,7 +146,7 @@ public class CycleList<V> extends ArrayList<V> implements List<V>
         
         if ( i_CycleType >= 0 )
         {
-            if ( this.cycleIndex >= v_Size - 1 )
+            if ( this.cycleIndex >= v_Size )
             {
                 this.cycleIndex = 0;
             }

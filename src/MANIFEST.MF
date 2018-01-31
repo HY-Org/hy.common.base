@@ -1,5 +1,5 @@
 Manifest-Version: 1.0.130
 Created-By: HY.ZhengWei@qq.com  2008
-Specification-Version: 1.0.130  2018-01-30
+Specification-Version: 1.0.130  2018-01-31
 SourceCode: https://github.com/HY-ZhengWei/hy.common.base
 Build-JDK: 1.6
