@@ -434,6 +434,7 @@ public final class StringHelp
 	 * @author      ZhengWei(HY)
 	 * @createDate  2016-02-20
 	 * @version     v1.0
+	 *              v2.0  2018-02-24  修复：当替换为一个空格" "时，因Help.NVL()的再次处理，为替换为空字符""了。
 	 *
 	 * @param i_Info
 	 * @param i_Replaces  Map.key 替换字符串。Map.value 被替换字符串。
@@ -468,7 +469,7 @@ public final class StringHelp
             }
             else
             {
-                v_Ret = StringHelp.replaceAll(v_Ret ,v_RR.getKey() ,Help.NVL(v_RR.getValue().toString()));
+                v_Ret = StringHelp.replaceAll(v_Ret ,v_RR.getKey() ,v_RR.getValue().toString());
             }
         }
         
