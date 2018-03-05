@@ -1331,7 +1331,7 @@ public class Help
     {
         if ( i_Value == null )
         {
-            return false;
+            return true;
         }
         else if ( i_Value instanceof String )
         {
