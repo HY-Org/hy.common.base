@@ -2230,7 +2230,7 @@ public class MethodReflect implements Serializable
 		    if ( Help.isNull(v_Methods) )
             {
 		        // 最后一个Getter方法支持isXXX()方法，支持逻辑方法  2018-03-11
-		        if ( this.methodNames[v_Index].startsWith("get") )
+		        if ( this.methodNames[v_Index].startsWith("get") && this.methodNames[v_Index].length() >= 4 )
 		        {
 		            v_Methods = getMethodsIgnoreCase(v_LastClass ,"is" + this.methodNames[v_Index].substring(3) ,this.methodsParams.get(v_Index).size());
 		        }
