@@ -48,6 +48,7 @@ import java.util.regex.Pattern;
  *              v11.0 2017-12-23  修正：MethodReflect实现序列接口，但this.methods的类型Method是非序列，用MethodInfo代替。
  *              v12.0 2018-01-18  添加：支持BigDecimal类型
  *              v12.1 2018-01-29  添加：扫描项目所有类时，当发现某一类引用的类不存在时，只错误提示不中断服务。
+ *              v12.2 2018-03-11  添加：解释方法全路径parser()，最后一个Getter方法支持isXXX()方法，支持逻辑方法。
  */
 public class MethodReflect implements Serializable
 {
@@ -2228,9 +2229,19 @@ public class MethodReflect implements Serializable
 			
 		    if ( Help.isNull(v_Methods) )
             {
-                throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
+		        // 最后一个Getter方法支持isXXX()方法，支持逻辑方法  2018-03-11
+		        if ( this.methodNames[v_Index].startsWith("get") )
+		        {
+		            v_Methods = getMethodsIgnoreCase(v_LastClass ,"is" + this.methodNames[v_Index].substring(3) ,this.methodsParams.get(v_Index).size());
+		        }
+		        
+		        if ( Help.isNull(v_Methods) )
+		        {
+		            throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
+		        }
             }
-            else if ( v_Methods.size() >= 2 )
+            
+		    if ( v_Methods.size() >= 2 )
             {
                 throw new VerifyError("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is more same Method name.");
             }
