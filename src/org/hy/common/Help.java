@@ -1739,14 +1739,14 @@ public class Help
         // Help.class.getResource("/").getFile().toString();
         try
         {
-            URL v_URL = Thread.currentThread().getContextClassLoader().getResource("");
-            if ( v_URL.toString().startsWith(v_URL.getProtocol() + ":/") )
+            String v_Ret = Thread.currentThread().getContextClassLoader().getResource("").getFile().toString();
+            if ( v_Ret.indexOf(":") >= 0 )
             {
-                return v_URL.toString().substring(v_URL.getProtocol().length() + 2);
+                return v_Ret.substring(1);
             }
             else
             {
-                return v_URL.toString();
+                return v_Ret;
             }
         }
         catch (Exception exce)
