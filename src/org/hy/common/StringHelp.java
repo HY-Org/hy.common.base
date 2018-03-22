@@ -38,6 +38,7 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.4  2017-11-16   1.修复unescape_toUnicode()方法，不应简单的将分号;替换成空字符。而是判定%u999;的格式下替换。
  *              v1.5  2017-12-23   1.添加 toNumberString() 方法，将各种数字表达方式转为正规的数字表达方式
  *                                 1.添加 trim() 方法，去掉空格、回车、换行字符串
+ *              v1.6  2018-03-22   1.添加 isContains() 支持有先、后顺序匹配查找关键字的功能。
  * @createDate  2009-08-21
  */
 public final class StringHelp 
@@ -2264,7 +2265,7 @@ public final class StringHelp
      */
     public final static boolean isContains(final String i_Text ,final String ... i_FindKeys)
     {
-        return isContains(i_Text ,false ,i_FindKeys);
+        return isContains(i_Text ,false ,false ,i_FindKeys);
     }
     
     
@@ -2285,7 +2286,32 @@ public final class StringHelp
      * @param i_FindKeys        关键字组
      * @return
      */
-    public final static boolean isContains(final String i_Text ,boolean i_IsAllContains ,final String ... i_FindKeys)
+    public final static boolean isContains(final String i_Text ,final boolean i_IsAllContains ,final String ... i_FindKeys)
+    {
+        return isContains(i_Text ,i_IsAllContains ,false ,i_FindKeys);
+    }
+    
+    
+    
+    /**
+     * 判定是否包含多个关键字
+     * 
+     *   分为两种判定标准
+     *     1. 包含全部关键字为true
+     *     2. 包含任何一个关键字为true
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-07-28
+     * @version     v1.0
+     *              v2.0  2018-03-22  添加：有先、后顺序匹配查找关键字的功能。
+     *
+     * @param i_Text            被查询的字符串
+     * @param i_IsAllContains   是否包含全部关键字为true
+     * @param i_IsHaveOrder     关键字有先、后顺序的。当i_IsAllContains为真时才有效。
+     * @param i_FindKeys        关键字组
+     * @return
+     */
+    public final static boolean isContains(final String i_Text ,final boolean i_IsAllContains ,final boolean i_IsHaveOrder ,final String ... i_FindKeys)
     {
         if ( Help.isNull(i_Text) || Help.isNull(i_FindKeys) )
         {
@@ -2294,17 +2320,42 @@ public final class StringHelp
         
         if ( i_IsAllContains )
         {
-            // 包含全部关键字为true
-            for (String v_Key : i_FindKeys)
+            if ( i_IsHaveOrder )
             {
-                if ( Help.isNull(v_Key) )
-                {
-                    continue;
-                }
+                // 关键字有先、后顺序的
+                // 包含全部关键字为true
+                int v_IndexOf = 0;
                 
-                if ( i_Text.indexOf(v_Key) < 0 )
+                for (String v_Key : i_FindKeys)
                 {
-                    return false;
+                    if ( Help.isNull(v_Key) )
+                    {
+                        continue;
+                    }
+                    
+                    v_IndexOf = i_Text.indexOf(v_Key ,v_IndexOf);
+                    if ( v_IndexOf < 0 )
+                    {
+                        return false;
+                    }
+                    
+                    v_IndexOf += v_Key.length();
+                }
+            }
+            else
+            {
+                // 包含全部关键字为true
+                for (String v_Key : i_FindKeys)
+                {
+                    if ( Help.isNull(v_Key) )
+                    {
+                        continue;
+                    }
+                    
+                    if ( i_Text.indexOf(v_Key) < 0 )
+                    {
+                        return false;
+                    }
                 }
             }
             
