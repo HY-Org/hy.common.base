@@ -39,6 +39,7 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.5  2017-12-23   1.添加 toNumberString() 方法，将各种数字表达方式转为正规的数字表达方式
  *                                 1.添加 trim() 方法，去掉空格、回车、换行字符串
  *              v1.6  2018-03-22   1.添加 isContains() 支持有先、后顺序匹配查找关键字的功能。
+ *                                 1.添加 比正则表达式性能更高的统计getCount(...)。
  * @createDate  2009-08-21
  */
 public final class StringHelp 
@@ -1847,6 +1848,41 @@ public final class StringHelp
         }
         
         return v_BytesOut.toByteArray();
+    }
+    
+    
+    
+    /**
+     * 获取i_FindChar字符在i_Text文本中出现的次数。
+     * 
+     * 比正则表达式性能更高的统计。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-03-22
+     * @version     v1.0
+     *
+     * @param i_Text      原文本
+     * @param i_FindChar  要查找到字符
+     * @return
+     */
+    public final static int getCount(String i_Text ,char i_FindChar)
+    {
+        if ( Help.isNull(i_Text) )
+        {
+            return 0;
+        }
+        
+        int v_IndexOf = 0;
+        int v_Count   = 0;
+        
+        v_IndexOf = i_Text.indexOf(i_FindChar);
+        while ( v_IndexOf >= 0 )
+        {
+            v_Count++;
+            v_IndexOf = i_Text.indexOf(i_FindChar ,v_IndexOf + 1);
+        }
+        
+        return v_Count;
     }
     
     
