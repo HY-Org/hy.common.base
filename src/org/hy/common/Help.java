@@ -1355,7 +1355,7 @@ public class Help
         }
         else
         {
-            return true;
+            return false;
         }
     }
     
