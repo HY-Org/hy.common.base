@@ -2321,7 +2321,7 @@ public class Help
             return "";
         }
         
-        Map<String ,Method> v_Getters  = MethodReflect.getGetMethodsMS(i_Class);
+        Map<String ,Method> v_Getters  = MethodReflect.getGetMethodsMSByJava(i_Class);
         StringBuilder       v_Buffer   = new StringBuilder();
         int                 v_Index    = 0;
         int                 v_MaxLen   = 0;
@@ -2484,7 +2484,7 @@ public class Help
             return "";
         }
         
-        Map<String ,Method> v_Getters      = MethodReflect.getGetMethodsMS(i_Class);
+        Map<String ,Method> v_Getters      = MethodReflect.getGetMethodsMSByJava(i_Class);
         StringBuilder       v_BufferInsert = new StringBuilder();
         StringBuilder       v_BufferValues = new StringBuilder();
         int                 v_Index        = 0;
@@ -2572,7 +2572,7 @@ public class Help
             return "";
         }
         
-        Map<String ,Method> v_Getters  = MethodReflect.getGetMethodsMS(i_Class);
+        Map<String ,Method> v_Getters  = MethodReflect.getGetMethodsMSByJava(i_Class);
         StringBuilder       v_Buffer   = new StringBuilder();
         int                 v_Index    = 0;
         int                 v_MaxLen   = 0;

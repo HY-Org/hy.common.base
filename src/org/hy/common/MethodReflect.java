@@ -49,6 +49,7 @@ import java.util.regex.Pattern;
  *              v12.0 2018-01-18  添加：支持BigDecimal类型
  *              v12.1 2018-01-29  添加：扫描项目所有类时，当发现某一类引用的类不存在时，只错误提示不中断服务。
  *              v12.2 2018-03-11  添加：解释方法全路径parser()，最后一个Getter方法支持isXXX()方法，支持逻辑方法。
+ *              v12.3 2018-04-26  添加：按方法对应的成员属性名称在类中的编程编写的顺序排序的getGetSetMethods(...)。
  */
 public class MethodReflect implements Serializable
 {
@@ -765,6 +766,28 @@ public class MethodReflect implements Serializable
     
     
     /**
+     * 获取成对出现的 Getter、Setter 方法集合中的Getter方法
+     * 
+     * 返回结果是按方法名称排序的。
+     * 
+     * 方法名称排序规则升级为：按方法对应的成员属性名称在类中的编程编写的顺序排序。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-04-26
+     * @version     v1.0
+     *
+     * @param i_Class
+     * @return         Map.key    为方法的短名称
+     *                 Map.value  为方法对象
+     */
+    public static Map<String ,Method> getGetMethodsMSByJava(Class<?> i_Class)
+    {
+        return getGetSetMethodsByJava(i_Class).get($Partition_GET);
+    }
+    
+    
+    
+    /**
      * 获取成对出现的 Getter、Setter 方法集合中的Setter方法
      * 
      * 返回结果是按方法名称排序的。
@@ -776,6 +799,28 @@ public class MethodReflect implements Serializable
     public static Map<String ,Method> getSetMethodsMG(Class<?> i_Class)
     {
         return getGetSetMethods(i_Class).get($Partition_SET);
+    }
+    
+    
+    
+    /**
+     * 获取成对出现的 Getter、Setter 方法集合中的Setter方法
+     * 
+     * 返回结果是按方法名称排序的。
+     * 
+     * 方法名称排序规则升级为：按方法对应的成员属性名称在类中的编程编写的顺序排序。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-04-26
+     * @version     v1.0
+     *
+     * @param i_Class
+     * @return         Map.key    为方法的短名称
+     *                 Map.value  为方法对象
+     */
+    public static Map<String ,Method> getSetMethodsMGByJava(Class<?> i_Class)
+    {
+        return getGetSetMethodsByJava(i_Class).get($Partition_SET);
     }
     
     
@@ -796,6 +841,85 @@ public class MethodReflect implements Serializable
         Method []                         v_Methods = i_Class.getMethods();
         
         Arrays.sort(v_Methods ,MethodComparator.getInstance());
+        
+        // 先行过滤出Getter方法(包括is开头的方法)
+        for (int i=0; i<v_Methods.length; i++)
+        {
+            Method v_Method = v_Methods[i];
+            
+            if ( v_Method.getParameterTypes().length == 0 )
+            {
+                if ( v_Method.getName().startsWith("get") )
+                {
+                    v_Ret.putRow($Partition_GET ,v_Method.getName().substring(3) ,v_Method);
+                }
+                else if ( v_Method.getName().startsWith("is") )
+                {
+                    v_Ret.putRow($Partition_GET ,v_Method.getName().substring(2) ,v_Method);
+                }
+            }
+        }
+        
+        // 再过滤出Setter方法。并要求参数类型与Getter方法的类型一致
+        for (int i=0; i<v_Methods.length; i++)
+        {
+            Method v_Method = v_Methods[i];
+            
+            if ( v_Method.getParameterTypes().length == 1 )
+            {
+                if ( v_Method.getName().startsWith("set") )
+                {
+                    String v_ShortName = v_Method.getName().substring(3);
+                    Method v_Getter    = v_Ret.getRow($Partition_GET ,v_ShortName);
+                    
+                    if ( v_Getter != null )
+                    {
+                        if ( v_Method.getParameterTypes()[0] == v_Getter.getReturnType() )
+                        {
+                            v_Ret.putRow($Partition_SET ,v_ShortName ,v_Method);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // 核对是否成对出现
+        List<String> v_ShortNames = Help.toListKeys(v_Ret.get($Partition_GET));
+        for (String v_ShortName : v_ShortNames)
+        {
+            if ( v_Ret.getRow($Partition_SET ,v_ShortName) == null )
+            {
+                v_Ret.removeRow($Partition_GET ,v_ShortName);
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 获取成对出现的 Getter、Setter 方法集合
+     * 
+     * 返回结果是按方法名称排序的。
+     * 
+     * 方法名称排序规则升级为：按方法对应的成员属性名称在类中的编程编写的顺序排序。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-04-26
+     * @version     v1.0
+     *
+     * @param i_Class
+     * @return         TablePartitionRID.key    只有两种值GET或SET。is开头的方法，也在GET分区中。
+     *                 TablePartitionRID.index  为方法的短名称
+     *                 TablePartitionRID.value  为方法对象
+     */
+    public static TablePartitionRID<String ,Method> getGetSetMethodsByJava(Class<?> i_Class)
+    {
+        TablePartitionRID<String ,Method> v_Ret     = new TablePartitionRID<String ,Method>(2);
+        Method []                         v_Methods = i_Class.getMethods();
+        
+        Arrays.sort(v_Methods ,new MethodFieldComparator(i_Class.getDeclaredFields()));
         
         // 先行过滤出Getter方法(包括is开头的方法)
         for (int i=0; i<v_Methods.length; i++)
