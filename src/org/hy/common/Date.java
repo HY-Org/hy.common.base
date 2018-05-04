@@ -1755,6 +1755,26 @@ public final class Date extends java.util.Date
     
     
     /**
+     * 比较两个时间的年、月、日、时、分是否相等
+     * 
+     * @param i_Other
+     * @return
+     */
+    public boolean equalsYMDHM(java.util.Date i_Other)
+    {
+        if ( i_Other == null )
+        {
+            return false;
+        }
+        else
+        {
+            return this.getYMDHM_ID().equals(new Date(i_Other).getYMDHM_ID());
+        }
+    }
+    
+    
+    
+    /**
      * 比较两个时间的年、月、日、时、分、秒是否相等
      * 
      * @param i_Other
@@ -1769,6 +1789,26 @@ public final class Date extends java.util.Date
         else
         {
             return this.getFull_ID().equals(i_Other.getFull_ID());
+        }
+    }
+    
+    
+    
+    /**
+     * 比较两个时间的年、月、日、时、分、秒是否相等
+     * 
+     * @param i_Other
+     * @return
+     */
+    public boolean equalsYMDHMS(java.util.Date i_Other)
+    {
+        if ( i_Other == null )
+        {
+            return false;
+        }
+        else
+        {
+            return this.getFull_ID().equals(new Date(i_Other).getFull_ID());
         }
     }
     

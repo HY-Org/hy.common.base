@@ -50,6 +50,7 @@ import java.util.regex.Pattern;
  *              v12.1 2018-01-29  添加：扫描项目所有类时，当发现某一类引用的类不存在时，只错误提示不中断服务。
  *              v12.2 2018-03-11  添加：解释方法全路径parser()，最后一个Getter方法支持isXXX()方法，支持逻辑方法。
  *              v12.3 2018-04-26  添加：按方法对应的成员属性名称在类中的编程编写的顺序排序的getGetSetMethods(...)。
+ *              v12.4 2018-05-04  添加：isExtendImplement()方法判定基本类型与包装类型是否一样。
  */
 public class MethodReflect implements Serializable
 {
@@ -286,6 +287,38 @@ public class MethodReflect implements Serializable
         else if ( i_ObjectClass == null || i_InterfaceClass == null )
         {
             return false;
+        }
+        // 判定Boolean.class == boolean.class  ZhengWei(HY) Add 2018-05-04 
+        // 对于Number类型，不处理
+        else if ( i_ObjectClass.getName().startsWith("java.lang") ) 
+        {
+            String v_LangName1 = i_ObjectClass   .getSimpleName().toLowerCase();
+            String v_LangName2 = i_InterfaceClass.getSimpleName().toLowerCase();
+            
+            if ( v_LangName1.startsWith(v_LangName2) )
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        // 判定boolean.class == Boolean.class  ZhengWei(HY) Add 2018-05-04
+        // 对于Number类型，不处理
+        else if ( i_InterfaceClass.getName().startsWith("java.lang") ) 
+        {
+            String v_LangName1 = i_InterfaceClass.getSimpleName().toLowerCase();
+            String v_LangName2 = i_ObjectClass   .getSimpleName().toLowerCase();
+            
+            if ( v_LangName1.startsWith(v_LangName2) )
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         
         Class<?> [] v_Interfaces = i_ObjectClass.getInterfaces();
