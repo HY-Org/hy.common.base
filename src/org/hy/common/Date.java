@@ -19,6 +19,7 @@ import java.util.Map;
  * @version     v1.0  
  *              v1.1  2016-03-01  添加：相差值differ() 、相加plus() 、相加getPlus() 三个方法。
  *              v1.2  2016-07-19  添加：获取第几个工作日的方法getDateByWork()
+ *              v1.3  2018-05-04  添加：时:分:秒 格式的自动识别转换功能。共支持  7 + 3 + 3 + 1 = 14 种格式。
  */
 public final class Date extends java.util.Date
 {
@@ -35,9 +36,11 @@ public final class Date extends java.util.Date
     
     public  static final String               $FORMAT_YMD      = "yyyy-MM-dd";              // length=10  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
-    public  static final String               $FORMAT_YMD_ID   = "yyyyMMdd";                // length=8
+    public  static final String               $FORMAT_YMD_ID   = "yyyyMMdd";                // length=8   需特殊处理
     
-    /** 实现上面6 + 3 + 3种时间格式的快速检索 */
+    public  static final String               $FORMAT_HMS      = "HH:mm:ss";                // length=8   需特殊处理
+    
+    /** 实现上面7 + 3 + 3 + 1种时间格式的快速检索 */
     private static final Map<Integer ,String> $FORMATS;
     
     /** 需要有Locale.US的配合 */
@@ -63,7 +66,6 @@ public final class Date extends java.util.Date
         $FORMATS.put($FORMAT_Normal .length() ,$FORMAT_Normal);
         $FORMATS.put($FROMAT_ID     .length() ,$FROMAT_ID);
         $FORMATS.put($FORMAT_YMD    .length() ,$FORMAT_YMD);
-        $FORMATS.put($FORMAT_YMD_ID .length() ,$FORMAT_YMD_ID);
     }
     
     
@@ -231,16 +233,34 @@ public final class Date extends java.util.Date
             throw new java.lang.NullPointerException("StrFullFormat Param is null.");
         }
         
-        if ( i_Format == null || "".equals(i_Format.trim()) )
+        String v_StrFullFormat = i_StrFullFormat;
+        String v_Format        = i_Format;
+        if ( v_Format == null || "".equals(v_Format.trim()) )
         {
-            throw new java.lang.NullPointerException("Format Param is null.");
+            if ( i_StrFullFormat.length() <= $FORMAT_HMS.length() )
+            {
+                // 支持 时:分:秒 格式的转换  ZhengWei(HY) Add 2018-05-04
+                if ( i_StrFullFormat.contains(":") )
+                {
+                    v_Format        = $FORMAT_Normal;
+                    v_StrFullFormat = "2000-01-01 " + v_StrFullFormat;
+                }
+                else
+                {
+                    v_Format = $FORMAT_YMD_ID;
+                }
+            }
+            else
+            {
+                throw new java.lang.NullPointerException("Format Param is null.");
+            }
         }
         
         
-        SimpleDateFormat SDF_FULL = new SimpleDateFormat(i_Format);
+        SimpleDateFormat SDF_FULL = new SimpleDateFormat(v_Format);
         try
         {
-            java.util.Date v_Date = SDF_FULL.parse(i_StrFullFormat);
+            java.util.Date v_Date = SDF_FULL.parse(v_StrFullFormat);
             
             this.setDate(v_Date);
         }

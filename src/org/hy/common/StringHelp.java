@@ -41,6 +41,7 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.6  2018-03-22   1.添加 isContains() 支持有先、后顺序匹配查找关键字的功能。
  *                                 1.添加 比正则表达式性能更高的统计getCount(...)。
  *              v1.7  2018-04-13   1.添加 replaceFirst(...)系统方法
+ *              v1.8  2018-05-04   1.添加 isEquals()、isEqualsIgnoreCase() 比较多个关键字，判定是否只少有一个相等。
  * @createDate  2009-08-21
  */
 public final class StringHelp 
@@ -2554,8 +2555,8 @@ public final class StringHelp
      * 判定是否前缀匹配多个关键字
      * 
      *   分为两种判定标准
-     *     1. 前缀匹配全部关键字为true
-     *     2. 前缀匹配任何一个关键字为true
+     *     1. i_IsAllContains=true时，前缀匹配全部关键字为true
+     *     2. i_IsAllContains=false时，前缀匹配任何一个关键字为true
      * 
      * @author      ZhengWei(HY)
      * @createDate  2017-09-18
@@ -2635,8 +2636,8 @@ public final class StringHelp
      * 判定是否后缀匹配多个关键字
      * 
      *   分为两种判定标准
-     *     1. 后缀匹配全部关键字为true
-     *     2. 后缀匹配任何一个关键字为true
+     *     1. i_IsAllContains=true时，后缀匹配全部关键字为true
+     *     2. i_IsAllContains=false时，后缀匹配任何一个关键字为true
      * 
      * @author      ZhengWei(HY)
      * @createDate  2017-09-18
@@ -2690,6 +2691,68 @@ public final class StringHelp
             
             return false;
         }
+    }
+    
+    
+    
+    /**
+     * 比较多个关键字，判定是否只少有一个相等
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-05-04
+     * @version     v1.0
+     *
+     * @param i_Text            被查询的字符串
+     * @param i_FindKeys        关键字组
+     * @return
+     */
+    public final static boolean isEquals(final String i_Text ,final String ... i_FindKeys)
+    {
+        if ( Help.isNull(i_Text) || Help.isNull(i_FindKeys) )
+        {
+            return false;
+        }
+        
+        for (String v_Key : i_FindKeys)
+        {
+            if ( i_Text.equals(v_Key) )
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    
+    
+    /**
+     * 不区分大小写的比较多个关键字，判定是否只少有一个相等
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-05-04
+     * @version     v1.0
+     *
+     * @param i_Text            被查询的字符串
+     * @param i_FindKeys        关键字组
+     * @return
+     */
+    public final static boolean isEqualsIgnoreCase(final String i_Text ,final String ... i_FindKeys)
+    {
+        if ( Help.isNull(i_Text) || Help.isNull(i_FindKeys) )
+        {
+            return false;
+        }
+        
+        for (String v_Key : i_FindKeys)
+        {
+            if ( i_Text.equalsIgnoreCase(v_Key) )
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     

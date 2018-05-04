@@ -57,6 +57,7 @@ import org.hy.common.app.Param;
  *                           2. 添加：插值法（内推法）的interpolation()方法。
  *               2018-01-18  1. 添加：支持BigDecimal类型           
  *               2018-01-26  1. 修复：Arrays.asList()生成的集合是只读，不能对集合进行add()、remove()等修改操作。 
+ *               2018-05-04  1. 添加：getClass()猜测字符串值是什么类型的。 
  *
  */
 public class Help
@@ -6067,6 +6068,51 @@ public class Help
         else
         {
             return "";
+        }
+    }
+    
+    
+    
+    /**
+     * 猜测字符串值是什么类型的。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-05-04
+     * @version     v1.0
+     *
+     * @param i_Value
+     * @return         字符类型 String.class
+     *                 逻辑类型 Boolean.class
+     *                 数字类型 Double.class
+     *                 时间类型 java.util.Date.class
+     */
+    public static Class<?> getClass(String i_Value)
+    {
+        if ( Help.isNull(i_Value) )
+        {
+            return String.class;
+        }
+        
+        String v_Value = i_Value.trim().toLowerCase();
+        if ( StringHelp.isEquals(v_Value ,"true" ,"false" ,"yes" ,"no" ,"真" ,"假" ,"是" ,"否") )
+        {
+            return Boolean.class;
+        }
+        else if ( Help.isNumber(i_Value) )
+        {
+            return Double.class;
+        }
+        else
+        {
+            try
+            {
+                new Date(i_Value);
+                return java.util.Date.class;
+            }
+            catch (Exception exce)
+            {
+                return String.class;
+            }
         }
     }
     
