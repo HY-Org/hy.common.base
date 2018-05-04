@@ -58,7 +58,7 @@ import org.hy.common.app.Param;
  *               2018-01-18  1. 添加：支持BigDecimal类型           
  *               2018-01-26  1. 修复：Arrays.asList()生成的集合是只读，不能对集合进行add()、remove()等修改操作。 
  *               2018-05-04  1. 添加：getClass()猜测字符串值是什么类型的。 
- *
+ *                           2. 添加：setValues()纵向对每个集合元素中的某一个属性赋值。
  */
 public class Help
 {
@@ -2705,6 +2705,46 @@ public class Help
         }
         
         return io_OldMap;
+    }
+    
+    
+    
+    /**
+     * 纵向对每个集合元素中的某一个属性赋值。
+     * 
+     * 可实现xxx.yyy.www(或getXxx.getYyy.setWww)全路径的解释
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-05-04
+     * @version     v1.0
+     *
+     * @param io_Datas      集合数据
+     * @param i_MethodName  Setter方法
+     * @param i_Value       属性值
+     */
+    public final static <V> void setValues(List<V> io_Datas ,String i_MethodName ,Object i_Value)
+    {
+        if ( Help.isNull(io_Datas) )
+        {
+            return;
+        }
+        
+        V             v_OneData   = io_Datas.get(0);
+        MethodReflect v_MethodRef = null;
+        
+        try
+        {
+            v_MethodRef = new MethodReflect(v_OneData.getClass() ,i_MethodName ,true ,MethodReflect.$NormType_Setter);
+            
+            for (V v_Item : io_Datas)
+            {
+                v_MethodRef.invokeSetForInstance(v_Item ,i_Value);
+            }
+        }
+        catch (Exception exce)
+        {
+            throw new RuntimeException(exce);
+        }
     }
     
     
