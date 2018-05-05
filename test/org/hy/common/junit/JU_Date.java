@@ -29,7 +29,6 @@ public class JU_Date
     {
         this.test01(0);
         
-        
         Date v_Now = new Date("2016-07-15");
         
         for (int v_WorkDay=0; v_WorkDay<=366 * 4; v_WorkDay++)

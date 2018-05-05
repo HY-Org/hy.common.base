@@ -301,7 +301,7 @@ public class MethodReflect implements Serializable
             }
             else
             {
-                return false;
+                // 不能简单的返回 false。如当 String 与 java.io.Serializable 比较时也应返回true的。
             }
         }
         // 判定boolean.class == Boolean.class  ZhengWei(HY) Add 2018-05-04
@@ -317,7 +317,7 @@ public class MethodReflect implements Serializable
             }
             else
             {
-                return false;
+                // 不能简单的返回 false。如当 String 与 java.io.Serializable 比较时也应返回true的。
             }
         }
         
