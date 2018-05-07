@@ -2759,6 +2759,8 @@ public class Help
      *
      * @param i_Data    值对象。
      * @param i_Values  Map.key   为i_Data对象的Setter方法的短名称。不区分大小写。
+     *                            支持面向对象，可实现xxx.yyy.www全路径的解释并赋值。
+     *                            支持方法重载。
      *                  Map.Value 为即将赋值i_Data对象属性的值。
      */
     public final static <V> void setValues(V i_Data ,Map<String ,?> i_Values)
@@ -2768,20 +2770,15 @@ public class Help
             return;
         }
         
-        Map<String ,Method> v_Methods = MethodReflect.getGetSetMethods(i_Data.getClass()).get(MethodReflect.$NormType_Setter);
+        MethodReflect v_MethodReflect = null;
         
         for (Map.Entry<String ,?> v_Item : i_Values.entrySet())
         {
-            Method v_Method = Help.getValueIgnoreCase(v_Methods ,v_Item.getKey());
-            
-            if ( v_Method == null )
-            {
-                continue;
-            }
-            
             try
             {
-                v_Method.invoke(i_Data ,v_Item.getValue());
+                v_MethodReflect = new MethodReflect(i_Data.getClass() ,v_Item.getKey() ,true ,MethodReflect.$NormType_Setter);
+                
+                v_MethodReflect.invokeSetForInstance(i_Data ,v_Item.getValue());
             }
             catch (Exception exce)
             {
@@ -2801,6 +2798,8 @@ public class Help
      *
      * @param i_Data    值对象。
      * @param i_Values  Map.key   为i_Data对象的Setter方法的短名称。不区分大小写。
+     *                            支持面向对象，可实现xxx.yyy.www全路径的解释并赋值。
+     *                            支持方法重载。
      *                  Map.Value 为即将赋值i_Data对象属性的值。
      */
     public final static <V> void setValuesNotNull(V i_Data ,Map<String ,?> i_Values)
@@ -2810,7 +2809,7 @@ public class Help
             return;
         }
         
-        Map<String ,Method> v_Methods = MethodReflect.getGetSetMethods(i_Data.getClass()).get(MethodReflect.$NormType_Setter);
+        MethodReflect v_MethodReflect = null;
         
         for (Map.Entry<String ,?> v_Item : i_Values.entrySet())
         {
@@ -2819,16 +2818,11 @@ public class Help
                 continue;
             }
             
-            Method v_Method = Help.getValueIgnoreCase(v_Methods ,v_Item.getKey());
-            
-            if ( v_Method == null )
-            {
-                continue;
-            }
-            
             try
             {
-                v_Method.invoke(i_Data ,v_Item.getValue());
+                v_MethodReflect = new MethodReflect(i_Data.getClass() ,v_Item.getKey() ,true ,MethodReflect.$NormType_Setter);
+                
+                v_MethodReflect.invokeSetForInstance(i_Data ,v_Item.getValue());
             }
             catch (Exception exce)
             {
