@@ -59,6 +59,7 @@ import org.hy.common.app.Param;
  *               2018-01-26  1. 修复：Arrays.asList()生成的集合是只读，不能对集合进行add()、remove()等修改操作。 
  *               2018-05-04  1. 添加：getClass()猜测字符串值是什么类型的。 
  *                           2. 添加：setValues()纵向对每个集合元素中的某一个属性赋值。
+ *               2018-05-07  1. 添加：setValues()、setValuesNotNull() 用Map中的值来设置对象。建议人：马龙
  */
 public class Help
 {
@@ -2744,6 +2745,95 @@ public class Help
         catch (Exception exce)
         {
             throw new RuntimeException(exce);
+        }
+    }
+    
+    
+    
+    /**
+     * 用Map中的值来设置对象。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-05-07
+     * @version     v1.0
+     *
+     * @param i_Data    值对象。
+     * @param i_Values  Map.key   为i_Data对象的Setter方法的短名称。不区分大小写。
+     *                  Map.Value 为即将赋值对i_Data对象属性的值。
+     */
+    public final static <V> void setValues(V i_Data ,Map<String ,?> i_Values)
+    {
+        if ( i_Data == null || Help.isNull(i_Values) )
+        {
+            return;
+        }
+        
+        Map<String ,Method> v_Methods = MethodReflect.getGetSetMethods(i_Data.getClass()).get(MethodReflect.$NormType_Setter);
+        
+        for (Map.Entry<String ,?> v_Item : i_Values.entrySet())
+        {
+            Method v_Method = Help.getValueIgnoreCase(v_Methods ,v_Item.getKey());
+            
+            if ( v_Method == null )
+            {
+                continue;
+            }
+            
+            try
+            {
+                v_Method.invoke(i_Data ,v_Item.getValue());
+            }
+            catch (Exception exce)
+            {
+                throw new RuntimeException(exce);
+            }
+        }
+    }
+    
+    
+    
+    /**
+     * 用Map中的值来设置对象。但Map.value为null值时，不设置。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-05-07
+     * @version     v1.0
+     *
+     * @param i_Data    值对象。
+     * @param i_Values  Map.key   为i_Data对象的Setter方法的短名称。不区分大小写。
+     *                  Map.Value 为即将赋值对i_Data对象属性的值。
+     */
+    public final static <V> void setValuesNotNull(V i_Data ,Map<String ,?> i_Values)
+    {
+        if ( i_Data == null || Help.isNull(i_Values) )
+        {
+            return;
+        }
+        
+        Map<String ,Method> v_Methods = MethodReflect.getGetSetMethods(i_Data.getClass()).get(MethodReflect.$NormType_Setter);
+        
+        for (Map.Entry<String ,?> v_Item : i_Values.entrySet())
+        {
+            if ( v_Item.getValue() == null )
+            {
+                continue;
+            }
+            
+            Method v_Method = Help.getValueIgnoreCase(v_Methods ,v_Item.getKey());
+            
+            if ( v_Method == null )
+            {
+                continue;
+            }
+            
+            try
+            {
+                v_Method.invoke(i_Data ,v_Item.getValue());
+            }
+            catch (Exception exce)
+            {
+                throw new RuntimeException(exce);
+            }
         }
     }
     
