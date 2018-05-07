@@ -2759,7 +2759,7 @@ public class Help
      *
      * @param i_Data    值对象。
      * @param i_Values  Map.key   为i_Data对象的Setter方法的短名称。不区分大小写。
-     *                  Map.Value 为即将赋值对i_Data对象属性的值。
+     *                  Map.Value 为即将赋值i_Data对象属性的值。
      */
     public final static <V> void setValues(V i_Data ,Map<String ,?> i_Values)
     {
@@ -2801,7 +2801,7 @@ public class Help
      *
      * @param i_Data    值对象。
      * @param i_Values  Map.key   为i_Data对象的Setter方法的短名称。不区分大小写。
-     *                  Map.Value 为即将赋值对i_Data对象属性的值。
+     *                  Map.Value 为即将赋值i_Data对象属性的值。
      */
     public final static <V> void setValuesNotNull(V i_Data ,Map<String ,?> i_Values)
     {
