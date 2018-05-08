@@ -60,6 +60,7 @@ import org.hy.common.app.Param;
  *               2018-05-04  1. 添加：getClass()猜测字符串值是什么类型的。 
  *                           2. 添加：setValues()纵向对每个集合元素中的某一个属性赋值。
  *               2018-05-07  1. 添加：setValues()、setValuesNotNull() 用Map中的值来设置对象。建议人：马龙
+ *               2018-05-08  1. 添加：支持枚举toString()的匹配
  */
 public class Help
 {
@@ -6046,16 +6047,37 @@ public class Help
         {
             @SuppressWarnings("unchecked")
             Enum<?> [] v_EnumValues = StaticReflect.getEnums((Class<? extends Enum<?>>) i_Class);
+            String     v_Value      = i_Value;
             
-            int v_Index = Integer.parseInt(i_Value.trim());
-            if ( 0 <= v_Index && v_Index < v_EnumValues.length )
+            // ZhengWei(HY) Add 2018-05-08  支持枚举名称的匹配 
+            for (Enum<?> v_Enum : v_EnumValues)
             {
-                return v_EnumValues[v_Index];
+                if ( v_Value.equalsIgnoreCase(v_Enum.name()) )
+                {
+                    return v_Enum;
+                }
             }
-            else
+            
+            // ZhengWei(HY) Add 2018-05-08  支持枚举toString()的匹配 
+            for (Enum<?> v_Enum : v_EnumValues)
             {
-                throw new java.lang.IndexOutOfBoundsException("Enum [" + i_Class.getName() + "] is not find Value[" + v_Index + "].");
+                if ( v_Value.equalsIgnoreCase(v_Enum.toString()) )
+                {
+                    return v_Enum;
+                }
             }
+            
+            // 尝试用枚举值匹配 
+            if ( Help.isNumber(v_Value) )
+            {
+                int v_IntValue = Integer.parseInt(v_Value.trim());
+                if ( 0 <= v_IntValue && v_IntValue < v_EnumValues.length )
+                {
+                    return v_EnumValues[v_IntValue];
+                }
+            }
+            
+            throw new java.lang.IndexOutOfBoundsException("Enum [" + i_Class.getName() + "] is not find Value[" + i_Value + "].");
         }
         else if ( i_Class == Short.class )
         {

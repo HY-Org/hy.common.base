@@ -15,6 +15,7 @@ import java.util.Map;
  * @createDate  2017-11-24
  * @version     v1.0
  *              v2.0  2018-01-18  添加：支持BigDecimal类型
+ *              v3.0  2018-05-08  添加：支持枚举toString()的匹配
  */
 public class FieldReflect
 {
@@ -152,11 +153,12 @@ public class FieldReflect
             {
                 Enum<?> [] v_EnumValues = StaticReflect.getEnums((Class<? extends Enum<?>>) v_ClassType);
                 boolean    v_EnumOK     = false;
+                String     v_Value      = i_Value.toString();
                 
                 // ZhengWei(HY) Add 2017-10-31  支持枚举名称的匹配 
                 for (Enum<?> v_Enum : v_EnumValues)
                 {
-                    if ( v_Enum.name().equalsIgnoreCase(i_Value.toString().trim()) )
+                    if ( v_Value.equalsIgnoreCase(v_Enum.name()) )
                     {
                         i_Field.set(i_Instance ,v_Enum);
                         v_EnumOK = true;
@@ -164,8 +166,22 @@ public class FieldReflect
                     }
                 }
                 
+                if ( !v_EnumOK )
+                {
+                    // ZhengWei(HY) Add 2018-05-08  支持枚举toString()的匹配 
+                    for (Enum<?> v_Enum : v_EnumValues)
+                    {
+                        if ( v_Value.equalsIgnoreCase(v_Enum.toString()) )
+                        {
+                            i_Field.set(i_Instance ,v_Enum);
+                            v_EnumOK = true;
+                            break;
+                        }
+                    }
+                }
+                
                 // 尝试用枚举值匹配 
-                if ( !v_EnumOK && Help.isNumber(i_Value.toString()) )
+                if ( !v_EnumOK && Help.isNumber(v_Value) )
                 {
                     int v_ParamValueInt = Integer.parseInt(i_Value.toString().trim());
                     if ( 0 <= v_ParamValueInt && v_ParamValueInt < v_EnumValues.length )

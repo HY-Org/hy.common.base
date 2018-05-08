@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
  *              v12.2 2018-03-11  添加：解释方法全路径parser()，最后一个Getter方法支持isXXX()方法，支持逻辑方法。
  *              v12.3 2018-04-26  添加：按方法对应的成员属性名称在类中的编程编写的顺序排序的getGetSetMethods(...)。
  *              v12.4 2018-05-04  添加：isExtendImplement()方法判定基本类型与包装类型是否一样。
+ *              v12.5 2018-05-08  添加：支持枚举toString()的匹配
  */
 public class MethodReflect implements Serializable
 {
@@ -1813,11 +1814,22 @@ public class MethodReflect implements Serializable
             if ( i_Value != null && !Help.isNull(i_Value.toString()) )
             {
                 Enum<?> [] v_EnumValues = StaticReflect.getEnums((Class<? extends Enum<?>>) v_ParamType);
+                String     v_Value      = i_Value.toString();
                 
                 // ZhengWei(HY) Add 2017-10-31  支持枚举名称的匹配 
                 for (Enum<?> v_Enum : v_EnumValues)
                 {
-                    if ( v_Enum.name().equalsIgnoreCase(i_Value.toString()) )
+                    if ( v_Value.equalsIgnoreCase(v_Enum.name()) )
+                    {
+                        i_SetMethod.invoke(i_Instance ,v_Enum);
+                        return;
+                    }
+                }
+                
+                // ZhengWei(HY) Add 2018-05-08  支持枚举toString()的匹配 
+                for (Enum<?> v_Enum : v_EnumValues)
+                {
+                    if ( v_Value.equalsIgnoreCase(v_Enum.toString()) )
                     {
                         i_SetMethod.invoke(i_Instance ,v_Enum);
                         return;
@@ -1825,12 +1837,12 @@ public class MethodReflect implements Serializable
                 }
                 
                 // 尝试用枚举值匹配 
-                if ( Help.isNumber(i_Value.toString()) )
+                if ( Help.isNumber(v_Value) )
                 {
-                    int v_ParamValueInt = Integer.parseInt(i_Value.toString());
-                    if ( 0 <= v_ParamValueInt && v_ParamValueInt < v_EnumValues.length )
+                    int v_IntValue = Integer.parseInt(v_Value.trim());
+                    if ( 0 <= v_IntValue && v_IntValue < v_EnumValues.length )
                     {
-                        i_SetMethod.invoke(i_Instance ,v_EnumValues[v_ParamValueInt]);
+                        i_SetMethod.invoke(i_Instance ,v_EnumValues[v_IntValue]);
                     }
                 }
             }
