@@ -52,6 +52,8 @@ import java.util.regex.Pattern;
  *              v12.3 2018-04-26  添加：按方法对应的成员属性名称在类中的编程编写的顺序排序的getGetSetMethods(...)。
  *              v12.4 2018-05-04  添加：isExtendImplement()方法判定基本类型与包装类型是否一样。
  *              v12.5 2018-05-08  添加：支持枚举toString()的匹配
+ *                                修改： 当子类实现父类接口时，方法重载时，可能出现方法名称相同的两个getter方法。
+ *                                      方法按修饰符排序后取首个方法，不再向外界抛错。
  */
 public class MethodReflect implements Serializable
 {
@@ -2212,6 +2214,8 @@ public class MethodReflect implements Serializable
 	 * 解释方法全路径
 	 * 
 	 * 2017-06-15 添加：方法名称不再区分大小写
+	 * 2018-05-08 修改：当子类实现父类接口时，方法重载时，可能出现方法名称相同的两个getter方法。
+	 *                 方法按修饰符排序后取首个方法，不再向外界抛错。
 	 * 
 	 * @throws SecurityException
 	 * @throws NoSuchMethodException
@@ -2412,7 +2416,30 @@ public class MethodReflect implements Serializable
             
 		    if ( v_Methods.size() >= 2 )
             {
-                throw new VerifyError("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is more same Method name.");
+		        // 当子类实现父类接口时，方法重载时，可能出现方法名称相同的两个getter方法
+		        // 这里按修饰符降序后，尝试性只保留首个元素，不再将再抛错。 ZhengWei(HY) Add 2018-05-08
+		        // throw new VerifyError("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is more same Method name.");
+		        /**
+		         * 以下为Method.getModifiers()的基本数值。
+                    PUBLIC:        1（二进制  0000 0001）
+                    PRIVATE:       2（二进制  0000 0010）
+                    PROTECTED:     4（二进制  0000 0100）
+                    STATIC:        8（二进制  0000 1000）
+                    FINAL:        16（二进制  0001 0000）
+                    SYNCHRONIZED: 32（二进制  0010 0000）
+                    VOLATILE:     64（二进制  0100 0000）
+                    TRANSIENT:   128（二进制  1000 0000）
+                    NATIVE:      256（二进制  0001 0000 0000）
+                    INTERFACE:   512（二进制  0010 0000 0000）
+                    ABSTRACT:   1024（二进制  0100 0000 0000）
+                    STRICT:     2048（二进制  1000 0000 0000）
+		         */
+		        Help.toSort(v_Methods ,"modifiers");
+		        for (int i=v_Methods.size()-1; i>=1; i--)
+		        {
+		            v_Methods.remove(i);
+		        }
+		        this.methods.add(MethodInfo.toMethods(v_Methods));
             }
             else
             {
