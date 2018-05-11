@@ -6049,19 +6049,19 @@ public class Help
             Enum<?> [] v_EnumValues = StaticReflect.getEnums((Class<? extends Enum<?>>) i_Class);
             String     v_Value      = i_Value;
             
-            // ZhengWei(HY) Add 2018-05-08  支持枚举名称的匹配 
+            // ZhengWei(HY) Add 2018-05-08  支持枚举toString()的匹配 
             for (Enum<?> v_Enum : v_EnumValues)
             {
-                if ( v_Value.equalsIgnoreCase(v_Enum.name()) )
+                if ( v_Value.equalsIgnoreCase(v_Enum.toString()) )
                 {
                     return v_Enum;
                 }
             }
             
-            // ZhengWei(HY) Add 2018-05-08  支持枚举toString()的匹配 
+            // ZhengWei(HY) Add 2018-05-08  支持枚举名称的匹配 
             for (Enum<?> v_Enum : v_EnumValues)
             {
-                if ( v_Value.equalsIgnoreCase(v_Enum.toString()) )
+                if ( v_Value.equalsIgnoreCase(v_Enum.name()) )
                 {
                     return v_Enum;
                 }

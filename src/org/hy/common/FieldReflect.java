@@ -155,10 +155,10 @@ public class FieldReflect
                 boolean    v_EnumOK     = false;
                 String     v_Value      = i_Value.toString();
                 
-                // ZhengWei(HY) Add 2017-10-31  支持枚举名称的匹配 
+                // ZhengWei(HY) Add 2018-05-08  支持枚举toString()的匹配 
                 for (Enum<?> v_Enum : v_EnumValues)
                 {
-                    if ( v_Value.equalsIgnoreCase(v_Enum.name()) )
+                    if ( v_Value.equalsIgnoreCase(v_Enum.toString()) )
                     {
                         i_Field.set(i_Instance ,v_Enum);
                         v_EnumOK = true;
@@ -168,10 +168,10 @@ public class FieldReflect
                 
                 if ( !v_EnumOK )
                 {
-                    // ZhengWei(HY) Add 2018-05-08  支持枚举toString()的匹配 
+                    // ZhengWei(HY) Add 2017-10-31  支持枚举名称的匹配 
                     for (Enum<?> v_Enum : v_EnumValues)
                     {
-                        if ( v_Value.equalsIgnoreCase(v_Enum.toString()) )
+                        if ( v_Value.equalsIgnoreCase(v_Enum.name()) )
                         {
                             i_Field.set(i_Instance ,v_Enum);
                             v_EnumOK = true;
