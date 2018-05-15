@@ -21,6 +21,7 @@ import java.util.Map;
  *              v1.2  2016-07-19  添加：获取第几个工作日的方法getDateByWork()
  *              v1.3  2018-05-04  添加：时:分:秒 格式的自动识别转换功能。共支持  7 + 3 + 3 + 1 = 14 种格式。
  *              v1.4  2018-05-15  修复：yyyy年MM月dd日多了一个 "日"，而引起的转换异常。
+ *                                添加：yyyy-MM、yyyyMM两种格式的转换。共支持  7 + 3 + 3 + 1 + 3 + 3 = 20 种格式。
  */
 public final class Date extends java.util.Date
 {
@@ -40,6 +41,10 @@ public final class Date extends java.util.Date
     public  static final String               $FORMAT_YMD_ID   = "yyyyMMdd";                // length=8   需特殊处理
     
     public  static final String               $FORMAT_HMS      = "HH:mm:ss";                // length=8   需特殊处理
+    
+    public  static final String               $FORMAT_YM       = "yyyy-MM";                 // length=7   需特殊处理   同时支持 yyyy/MM 、yyyy年MM月 的格式
+    
+    public  static final String               $FORMAT_YM_ID    = "yyyyMM";                  // length=6   需特殊处理   同时支持 yyyy/MM 、yyyy年MM月 的格式
     
     /** 实现上面7 + 3 + 3 + 1种时间格式的快速检索 */
     private static final Map<Integer ,String> $FORMATS;
@@ -239,9 +244,27 @@ public final class Date extends java.util.Date
         
         String v_StrFullFormat = i_StrFullFormat;
         String v_Format        = i_Format;
+        
+        if ( v_StrFullFormat.endsWith("-") )
+        {
+            // 支持 yyyy-MM
+            v_StrFullFormat = v_StrFullFormat.substring(0 ,v_StrFullFormat.length() - 1);
+        }
+        
         if ( v_Format == null || "".equals(v_Format.trim()) )
         {
-            if ( i_StrFullFormat.length() <= $FORMAT_HMS.length() )
+            int v_Len = v_StrFullFormat.length();
+            if ( v_Len <= $FORMAT_YM_ID.length() )
+            {
+                v_StrFullFormat += "01";
+                v_Format         = $FORMAT_YMD_ID;
+            }
+            else if ( v_Len <= $FORMAT_YM.length() )
+            {
+                v_StrFullFormat += "-01";
+                v_Format         = $FORMAT_YMD;
+            }
+            else if ( v_Len <= $FORMAT_HMS.length() )
             {
                 // 支持 时:分:秒 格式的转换  ZhengWei(HY) Add 2018-05-04
                 if ( i_StrFullFormat.contains(":") )
