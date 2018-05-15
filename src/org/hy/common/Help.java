@@ -13,6 +13,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -61,6 +62,7 @@ import org.hy.common.app.Param;
  *                           2. 添加：setValues()纵向对每个集合元素中的某一个属性赋值。
  *               2018-05-07  1. 添加：setValues()、setValuesNotNull() 用Map中的值来设置对象。建议人：马龙
  *               2018-05-08  1. 添加：支持枚举toString()的匹配
+ *               2018-05-15  1. 添加：数据库java.sql.Timestamp时间的转换
  */
 public class Help
 {
@@ -2518,9 +2520,11 @@ public class Help
             
             v_BufferInsert.append(v_Name).append(Help.getSysLineSeparator());
             
+            // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15 
             if (         String.class == v_Item.getValue().getReturnType()
               ||           Date.class == v_Item.getValue().getReturnType()
-              || java.util.Date.class == v_Item.getValue().getReturnType() )
+              || java.util.Date.class == v_Item.getValue().getReturnType()
+              ||      Timestamp.class == v_Item.getValue().getReturnType() )
             {
                 v_BufferValues.append("':").append(v_Name).append("'").append(Help.getSysLineSeparator());
             }
@@ -2612,9 +2616,11 @@ public class Help
             
             v_Buffer.append(StringHelp.rpad(v_Name ,v_MaxLen ," ")).append("= ");
             
+            // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15 
             if (         String.class == v_Item.getValue().getReturnType()
               ||           Date.class == v_Item.getValue().getReturnType()
-              || java.util.Date.class == v_Item.getValue().getReturnType() )
+              || java.util.Date.class == v_Item.getValue().getReturnType()
+              ||      Timestamp.class == v_Item.getValue().getReturnType() )
             {
                 v_Buffer.append("':").append(v_Name).append("'");
                 v_Buffer.append(StringHelp.lpad("]>" ,v_MaxLen - v_Name.length() + 4," "));
@@ -6039,6 +6045,11 @@ public class Help
         {
             return new Date(i_Value.trim()).getDateObject();
         }
+        // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15 
+        else if ( i_Class == Timestamp.class )
+        {
+            return new Date(i_Value.trim()).getSQLTimestamp();
+        }
         else if ( i_Class == BigDecimal.class )
         {
             return new BigDecimal(i_Value.trim());
@@ -6175,6 +6186,11 @@ public class Help
         else if ( i_Class == java.util.Date.class )
         {
             return new Date().getDateObject();
+        }
+        // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15 
+        else if ( i_Class == Timestamp.class )
+        {
+            return new Date().getSQLTimestamp();
         }
         else if ( i_Class == BigDecimal.class )
         {

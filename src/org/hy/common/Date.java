@@ -20,6 +20,7 @@ import java.util.Map;
  *              v1.1  2016-03-01  添加：相差值differ() 、相加plus() 、相加getPlus() 三个方法。
  *              v1.2  2016-07-19  添加：获取第几个工作日的方法getDateByWork()
  *              v1.3  2018-05-04  添加：时:分:秒 格式的自动识别转换功能。共支持  7 + 3 + 3 + 1 = 14 种格式。
+ *              v1.4  2018-05-15  修复：yyyy年MM月dd日多了一个 "日"，而引起的转换异常。
  */
 public final class Date extends java.util.Date
 {
@@ -61,11 +62,14 @@ public final class Date extends java.util.Date
     {
         // 只为少一点IF判断，多一点速度提升
         $FORMATS = new Hashtable<Integer ,String>(6);
-        $FORMATS.put($FORMAT_Milli  .length() ,$FORMAT_Milli);
-        $FORMATS.put($FORMAT_MilliID.length() ,$FORMAT_MilliID);
-        $FORMATS.put($FORMAT_Normal .length() ,$FORMAT_Normal);
-        $FORMATS.put($FROMAT_ID     .length() ,$FROMAT_ID);
-        $FORMATS.put($FORMAT_YMD    .length() ,$FORMAT_YMD);
+        $FORMATS.put($FORMAT_Milli  .length()     ,$FORMAT_Milli);
+        $FORMATS.put($FORMAT_Milli  .length() + 1 ,$FORMAT_Milli);    // yyyy年MM月dd日多了一个 "日"
+        $FORMATS.put($FORMAT_MilliID.length()     ,$FORMAT_MilliID);
+        $FORMATS.put($FORMAT_Normal .length()     ,$FORMAT_Normal);
+        $FORMATS.put($FORMAT_Normal .length() + 1 ,$FORMAT_Normal);   // yyyy年MM月dd日多了一个 "日"
+        $FORMATS.put($FROMAT_ID     .length()     ,$FROMAT_ID);
+        $FORMATS.put($FORMAT_YMD    .length()     ,$FORMAT_YMD);
+        $FORMATS.put($FORMAT_YMD    .length() + 1 ,$FORMAT_YMD);      // yyyy年MM月dd日多了一个 "日"
     }
     
     
@@ -204,7 +208,7 @@ public final class Date extends java.util.Date
         
         try
         {
-            v_Date = new Date(StringHelp.replaceAll(i_StrDateFormat ,new String[]{"/" ,"年" ,"月" ,"日"} ,new String[]{"-"})
+            v_Date = new Date(StringHelp.replaceAll(i_StrDateFormat ,new String[]{"日" ,"/" ,"年" ,"月"} ,new String[]{"" ,"-"})
                              ,$FORMATS.get(i_StrDateFormat.trim().length()));
         }
         catch (Exception exce)

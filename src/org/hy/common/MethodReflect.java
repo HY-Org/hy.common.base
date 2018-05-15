@@ -9,6 +9,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,6 +55,7 @@ import java.util.regex.Pattern;
  *              v12.5 2018-05-08  添加：支持枚举toString()的匹配
  *                                修改： 当子类实现父类接口时，方法重载时，可能出现方法名称相同的两个getter方法。
  *                                      方法按修饰符排序后取首个方法，不再向外界抛错。
+ *              v12.6 2018-05-15  添加：数据库java.sql.Timestamp时间的转换
  */
 public class MethodReflect implements Serializable
 {
@@ -1870,6 +1872,18 @@ public class MethodReflect implements Serializable
             else
             {
                 i_SetMethod.invoke(i_Instance ,(java.util.Date)null);
+            }
+        }
+        // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15 
+        else if ( Timestamp.class == v_ParamType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_SetMethod.invoke(i_Instance ,(new Date(i_Value.toString()).getSQLTimestamp()));
+            }
+            else
+            {
+                i_SetMethod.invoke(i_Instance ,(Timestamp)null);
             }
         }
         else if ( int.class == v_ParamType )

@@ -1,5 +1,6 @@
 package org.hy.common;
 
+import java.sql.Timestamp;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +13,9 @@ import java.util.Map;
  * HTML有很多方便的功能
  * 
  * @author      ZhengWei(HY)
- * @version     v1.0  
  * @createDate  2013-08-26
+ * @version     v1.0  
+ *              v1.1  2018-05-15  添加：数据库java.sql.Timestamp时间的转换
  */
 public final class HtmlHelp
 {
@@ -249,6 +251,11 @@ public final class HtmlHelp
                         {
                             v_Buffer.append((new Date((java.util.Date)v_ColValue)).getFull());
                         }
+                        // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15 
+                        else if ( Timestamp.class == v_ColClass )
+                        {
+                            v_Buffer.append((new Date((Timestamp)v_ColValue)).getFull());
+                        }
                         else
                         {
                             v_Buffer.append(v_ColValue);
@@ -278,6 +285,11 @@ public final class HtmlHelp
                         else if ( java.util.Date.class == v_ColClass )
                         {
                             v_Buffer.append((new Date((java.util.Date)v_ColValue)).getFull());
+                        }
+                        // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15 
+                        else if ( Timestamp.class == v_ColClass )
+                        {
+                            v_Buffer.append((new Date((Timestamp)v_ColValue)).getFull());
                         }
                         else
                         {

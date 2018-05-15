@@ -2,6 +2,7 @@ package org.hy.common;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Map;
 
 
@@ -16,6 +17,7 @@ import java.util.Map;
  * @version     v1.0
  *              v2.0  2018-01-18  添加：支持BigDecimal类型
  *              v3.0  2018-05-08  添加：支持枚举toString()的匹配
+ *              v3.1  2018-05-15  添加：数据库java.sql.Timestamp时间的转换
  */
 public class FieldReflect
 {
@@ -200,7 +202,7 @@ public class FieldReflect
             }
             else
             {
-                i_Field.set(i_Instance ,null);
+                i_Field.set(i_Instance ,(Date)null);
             }
         }
         else if ( java.util.Date.class == v_ClassType )
@@ -211,7 +213,19 @@ public class FieldReflect
             }
             else
             {
-                i_Field.set(i_Instance ,null);
+                i_Field.set(i_Instance ,(java.util.Date)null);
+            }
+        }
+        // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15 
+        else if ( Timestamp.class == v_ClassType )
+        {
+            if ( i_Value != null && !Help.isNull(i_Value.toString()) )
+            {
+                i_Field.set(i_Instance ,(new Date(i_Value.toString().trim()).getSQLTimestamp()));
+            }
+            else
+            {
+                i_Field.set(i_Instance ,(Timestamp)null);
             }
         }
         else if ( int.class == v_ClassType )
