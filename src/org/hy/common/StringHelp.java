@@ -42,6 +42,7 @@ import org.hy.common.SplitSegment.InfoType;
  *                                 1.添加 比正则表达式性能更高的统计getCount(...)。
  *              v1.7  2018-04-13   1.添加 replaceFirst(...)系统方法
  *              v1.8  2018-05-04   1.添加 isEquals()、isEqualsIgnoreCase() 比较多个关键字，判定是否只少有一个相等。
+ *              v1.9  2018-05-16   1.添加 支持中文占位符。建议人：邹德福
  * @createDate  2009-08-21
  */
 public final class StringHelp 
@@ -2853,7 +2854,8 @@ public final class StringHelp
      * @createDate  2012-10-30
      * @version     v1.0  
      *              v2.0  2014-07-30
-     *              v4.0  2015-12-10  支持 :A.B.C 的解释（对点.的解释）。
+     *              v3.0  2015-12-10  支持 :A.B.C 的解释（对点.的解释）。
+     *              v4.0  2018-05-16  添加：支持中文占位符
      *
      * @param i_Placeholders
      * @return
@@ -2861,12 +2863,12 @@ public final class StringHelp
     public final static Map<String ,Object> parsePlaceholdersSequence(String i_Placeholders)
     {
         // 匹配占位符
-        List<SplitSegment>  v_Segments = StringHelp.SplitOnlyFind("[ (,='%_\\s]?:[\\w\\.]+[ ),='%_\\s]?" ,i_Placeholders);
+        List<SplitSegment>  v_Segments = StringHelp.SplitOnlyFind("[ (,='%_\\s]?:[\\w\\.\\u4e00-\\u9fa5]+[ ),='%_\\s]?" ,i_Placeholders);
         Map<String ,Object> v_Ret      = new LinkedHashMap<String ,Object>();
         
         for (SplitSegment v_Segment : v_Segments)
         {
-            String v_PlaceHolder = StringHelp.SplitOnlyFind(":[\\w\\.]+" ,v_Segment.getInfo().trim()).get(0).getInfo();
+            String v_PlaceHolder = StringHelp.SplitOnlyFind(":[\\w\\.\\u4e00-\\u9fa5]+" ,v_Segment.getInfo().trim()).get(0).getInfo();
             
             v_Ret.put(v_PlaceHolder.substring(1) ,v_Segment.getInfo());
         }

@@ -170,4 +170,15 @@ public class JU_StringHelp
         //System.out.println(StringHelp.reABC36(StringHelp.toABC36(v_Value)));
     }
     
+    
+    
+    /**
+     * 测试中文占位符的解析
+     */
+    @Test
+    public void test_parsePlaceholdersSequence()
+    {
+        System.out.println(StringHelp.parsePlaceholdersSequence("INSERT INTO AAA (':中文')"));
+    }
+    
 }
