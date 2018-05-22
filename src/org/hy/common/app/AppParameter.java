@@ -15,10 +15,14 @@ import org.hy.common.Help;
  * @author   ZhengWei(HY)
  * @version  V1.0  2011-06-05
  */
-public class AppParameter 
+public class AppParameter implements java.io.Serializable
 {
 	
-	protected static String ParamSplit = "=";
+    private static final long serialVersionUID = 477626033146875701L;
+
+    
+
+    protected static String ParamSplit = "=";
 	
 	
 	/**

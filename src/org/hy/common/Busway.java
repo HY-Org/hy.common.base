@@ -24,6 +24,10 @@ package org.hy.common;
 public class Busway<O> extends Queue<O>
 {
     
+    private static final long serialVersionUID = -303438880266412812L;
+    
+    
+    
     /** 道路长度 */
     private int wayLength;
     

@@ -21,6 +21,10 @@ import org.hy.common.SplitSegment.InfoType;
 public class RelationList<O> extends Relation<O> implements List<Relation<O>>
 {
     
+    private static final long serialVersionUID = 4866820825894020934L;
+    
+    
+
     private final static String $Relation_PLeft  = "(";
     
     private final static String $Relation_PRight = ")";

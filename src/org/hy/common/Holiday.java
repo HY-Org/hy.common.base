@@ -13,8 +13,12 @@ package org.hy.common;
  * @author  ZhengWei(HY)
  * @version 2013-06-14
  */
-public class Holiday
+public class Holiday implements java.io.Serializable
 {
+    private static final long serialVersionUID = 3813598646833278096L;
+    
+    
+
     /** 无效值 */
     private final static int $InvalidValue = -99;
 

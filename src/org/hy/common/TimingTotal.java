@@ -21,9 +21,12 @@ import org.hy.common.Timing.TimingInfo;
  * @createDate  2015-01-05
  * @version     v1.0
  */
-public class TimingTotal
+public class TimingTotal implements java.io.Serializable
 {
+    private static final long serialVersionUID = -3213356765024864679L;
     
+    
+
     /**
      * 计时器详情数据
      * 

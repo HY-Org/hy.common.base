@@ -15,9 +15,13 @@ package org.hy.common;
  * @version     v1.0  
  * @createDate  2012-10-09
  */
-public class TreeNode<O> implements Comparable<O>
+public class TreeNode<O> implements Comparable<O> ,java.io.Serializable
 {
-	/** 树目录的层级。下标从1开始 */
+    private static final long serialVersionUID = 3800637276777810516L;
+    
+    
+
+    /** 树目录的层级。下标从1开始 */
 	private int         level;
 	
 	/** 

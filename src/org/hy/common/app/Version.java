@@ -13,9 +13,13 @@ import org.hy.common.Date;
  * @createDate  2015-01-28
  * @version     v1.0
  */
-public class Version
+public class Version implements java.io.Serializable
 {
     
+    private static final long serialVersionUID = 1776033007651113014L;
+    
+    
+
     /** 版本号 */
     private String  versionNo;
     

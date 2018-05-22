@@ -16,9 +16,13 @@ import java.util.List;
  * @createDate  2015-01-05 
  * @version     v1.0 
  */
-public class Timing
+public class Timing implements java.io.Serializable
 {
     
+    private static final long serialVersionUID = 3781736567889784229L;
+    
+    
+
     /** 总体最早开始计时时间 */
     private Date             totalBeginTime;
     
@@ -160,8 +164,12 @@ public class Timing
      * @createDate  2015-01-05
      * @version     v1.0
      */
-    class TimingInfo
+    class TimingInfo implements java.io.Serializable
     {
+        private static final long serialVersionUID = 1074796360731584951L;
+        
+        
+
         /** 计时顺序 */
         private int    index;
         

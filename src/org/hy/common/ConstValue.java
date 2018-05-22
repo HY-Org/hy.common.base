@@ -22,9 +22,13 @@ import java.util.Map;
  * @author   ZhengWei(HY)
  * @version  V1.0  2011-11-17
  */
-public class ConstValue implements Comparable<ConstValue> ,Cloneable
+public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Serializable
 {
-	/** 常量的常量类型的常量类型。即最高级的常量类型，此常量类型也是唯一不存入$AllConst中的实例 */
+    private static final long serialVersionUID = -7634825538489687236L;
+    
+    
+
+    /** 常量的常量类型的常量类型。即最高级的常量类型，此常量类型也是唯一不存入$AllConst中的实例 */
 	public final static ConstValue $ConstType_Type$ = new ConstValue("$ConstType_Type$" ,true);
 	
 	/**

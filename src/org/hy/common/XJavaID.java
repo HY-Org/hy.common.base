@@ -5,7 +5,7 @@ package org.hy.common;
 
 
 /**
- * 通过实现此接口来自动的获取配置在XML配置文件中的XJava池中对象的ID标识。
+ * 通过实现此接口，使XJava实例化的对象，能自动的获取XML配置文件中的配置的ID标记，即XJava对象池中的ID标识。
  * 
  * 此类没有定义在XJava包中的原因是：为了更广泛的应用，如hy.common.db包是能应用的同时，不用反正引用XJava。
  *

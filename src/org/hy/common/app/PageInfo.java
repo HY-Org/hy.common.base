@@ -15,8 +15,12 @@ import org.hy.common.Help;
  * @createDate  2005-12-04
  * @version     v1.0
  */
-public class PageInfo<O>
+public class PageInfo<O> implements java.io.Serializable
 {
+
+    private static final long serialVersionUID = 7576540312390196308L;
+    
+    
 
     /** 分页中当前页中要显示的记录 */
     private O   datas;

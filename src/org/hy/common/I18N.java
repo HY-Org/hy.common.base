@@ -17,9 +17,13 @@ import org.hy.common.app.Param;
  * @version     v1.0
  * @createDate  2014-07-10
  */
-public class I18N
+public class I18N implements java.io.Serializable
 {
     
+    private static final long serialVersionUID = 3341255191566194267L;
+    
+    
+
     /** 多国语言文本 */
     private TablePartitionRID<String ,String> datas;
     

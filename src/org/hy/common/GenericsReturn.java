@@ -14,9 +14,13 @@ import java.util.List;
  * @version     v2.0  
  * @createDate  2014-12-27
  */
-public class GenericsReturn
+public class GenericsReturn implements java.io.Serializable
 {
     
+    private static final long serialVersionUID = 2034377815234837877L;
+    
+    
+
     /** 范型的类型 */
     private Class<?>         genericType;
     

@@ -12,9 +12,13 @@ package org.hy.common;
  * @author ZhengWei(HY)
  * @create 2014-08-18
  */
-public class Expression
+public class Expression implements java.io.Serializable
 {
     
+    private static final long serialVersionUID = 620734538702797589L;
+
+    
+
     /** 通过 Set()、SetLR() 设置值时的动作类型 */
     public enum SetActionType
     {

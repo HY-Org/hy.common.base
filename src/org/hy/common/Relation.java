@@ -10,8 +10,12 @@ package org.hy.common;
  * @author ZhengWei(HY)
  * @create 2014-08-12
  */
-public class Relation<O> implements Cloneable
+public class Relation<O> implements Cloneable ,java.io.Serializable
 {
+    
+    private static final long serialVersionUID = 7885679023335811418L;
+    
+    
     
     private O info;
     

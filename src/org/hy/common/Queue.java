@@ -21,9 +21,12 @@ import java.util.LinkedList;
  *                             3.队列类型初始化不能修改，防止异常
  *           v1.2  2014-12-07  1.添加查看队列中的数据，并不影响队列，类似于只读模式。
  */
-public class Queue<O>
+public class Queue<O> implements java.io.Serializable
 {
-    
+    private static final long serialVersionUID = -4906701281382456673L;
+
+
+
     /** 队列类型 */
     public enum QueueType
     {

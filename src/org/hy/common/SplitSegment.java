@@ -16,9 +16,13 @@ import java.util.List;
  * @version     v1.0  
  * @createDate  2014-07-30
  */
-public class SplitSegment implements Cloneable
+public class SplitSegment implements Cloneable ,java.io.Serializable
 {
     
+    private static final long serialVersionUID = 1821850237917994796L;
+
+
+
     public enum InfoType
     {
         /** 普通文本信息 */

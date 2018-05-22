@@ -19,10 +19,14 @@ import java.util.SortedMap;
  * @author   ZhengWei(HY)
  * @version  V1.0  2012-10-08
  */
-public class TreeMap<O>
+public class TreeMap<O> implements java.io.Serializable
 {
 	
-	/** 
+    private static final long serialVersionUID = 8893165781470163765L;
+    
+    
+
+    /** 
 	 * 保存树结构信息
 	 * Map.key   为 TreeNode.getOrderByID()
 	 * Map.Value 为 TreeNode 本身

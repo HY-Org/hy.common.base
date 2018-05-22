@@ -13,9 +13,13 @@ import java.util.Map;
  * @author   ZhengWei(HY)
  * @version  V1.0  2011-12-06
  */
-public class Global
+public class Global implements java.io.Serializable
 {
-	/** 保存全局量的地方 */
+    private static final long serialVersionUID = -7179513838733827964L;
+
+    
+
+    /** 保存全局量的地方 */
 	private static Global         $Global = new Global();
 	
 	
