@@ -43,6 +43,8 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.7  2018-04-13   1.添加 replaceFirst(...)系统方法
  *              v1.8  2018-05-04   1.添加 isEquals()、isEqualsIgnoreCase() 比较多个关键字，判定是否只少有一个相等。
  *              v1.9  2018-05-16   1.添加 支持中文占位符。建议人：邹德福
+ *              v1.10 2018-05-23   1.添加 trim(String ,String)去掉字符串前后两端的指定的子字符。
+ *              
  * @createDate  2009-08-21
  */
 public final class StringHelp 
@@ -1096,6 +1098,40 @@ public final class StringHelp
         {
             return i_Text;
         }
+    }
+    
+    
+    
+    /**
+     * 去掉字符串i_Text前后两端的指定的子字符i_TrimKey
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-05-23
+     * @version     v1.0
+     *
+     * @param i_Text      被修整的字符串
+     * @param i_TrimKeys  被去掉的字符串（区分大小写，并且有前后顺序的区别）
+     * @return
+     */
+    public static String trim(String i_Text ,String ... i_TrimKeys)
+    {
+        String v_Ret = i_Text; 
+        
+        for (String v_TrimKey : i_TrimKeys)
+        {
+            int v_Len = v_TrimKey.length();
+            
+            if ( v_Ret.startsWith(v_TrimKey) )
+            {
+                v_Ret = v_Ret.substring(v_Len);
+            }
+            if ( v_Ret.endsWith(v_TrimKey) )
+            {
+                v_Ret = v_Ret.substring(0 ,v_Ret.length() - v_Len);
+            }
+        }
+        
+        return v_Ret;
     }
     
     
