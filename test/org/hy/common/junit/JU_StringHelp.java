@@ -24,6 +24,25 @@ import org.hy.common.StringHelp;
 public class JU_StringHelp
 {
     
+    
+    /**
+     * 随机生成指定长度的数字与字母混合的字符串
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-05-23
+     * @version     v1.0
+     *
+     */
+    @Test
+    public void test_random()
+    {
+        System.out.println("数字+字母混合：" + StringHelp.random(36));
+        
+        System.out.println("纯字母随机："    + StringHelp.random(36 ,false));
+    }
+    
+    
+    
     /**
      * 针对VB传过来小数点前没有0的数字处理，如：将 "-.123" 转换成: "-0.123"
      * 

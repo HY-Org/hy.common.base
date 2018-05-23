@@ -625,6 +625,24 @@ public class Help
     
     
     /**
+     * 随机生成指定长度的数字与字母混合的字符串
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-05-23
+     * @version     v1.0
+     *
+     * @param i_Length      随机生成的字符串长度
+     * @param i_HaveNumber  随机生成的字符串中是否内含数字
+     * @return
+     */
+    public final static String random(int i_Length ,boolean i_HaveNumber)
+    {
+        return StringHelp.random(i_Length ,i_HaveNumber);
+    }
+    
+    
+    
+    /**
      * 向控制台打印信息--就是为了方便
      * 
      * @param i_Array

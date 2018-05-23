@@ -118,6 +118,58 @@ public final class StringHelp
 	
 	
 	/**
+     * 随机生成指定长度的数字与字母混合的字符串
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-05-23
+     * @version     v1.0
+     *
+     * @param i_Length      随机生成的字符串长度
+     * @return
+     */
+    public final static String random(int i_Length)
+    {
+        return random(i_Length ,true);
+    }
+	
+	
+	
+	/**
+	 * 随机生成指定长度的数字与字母混合的字符串
+	 * 
+	 * @author      ZhengWei(HY)
+	 * @createDate  2018-05-23
+	 * @version     v1.0
+	 *
+	 * @param i_Length      随机生成的字符串长度
+	 * @param i_HaveNumber  随机生成的字符串中是否内含数字
+	 * @return
+	 */
+	public final static String random(int i_Length ,boolean i_HaveNumber)
+	{
+	    StringBuilder v_Buffer = new StringBuilder();
+	    
+	    if ( i_HaveNumber )
+	    {
+    	    for (int i=1; i<=i_Length; i++)
+    	    {
+    	        v_Buffer.append($ABC36.charAt(Help.random(0 ,35)));
+    	    }
+	    }
+	    else
+	    {
+	        for (int i=1; i<=i_Length; i++)
+            {
+                v_Buffer.append($ABC.charAt(Help.random(0 ,25)));
+            }
+	    }
+	    
+	    return v_Buffer.toString();
+	}
+	
+	
+	
+	/**
 	 * 首字母大写
 	 * 
 	 * @author      ZhengWei(HY)
