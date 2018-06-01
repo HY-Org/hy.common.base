@@ -23,17 +23,18 @@ import java.util.Map;
 public class SumObjectMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
 {
 
-    private static final long serialVersionUID = -8835763432149887369L;
+    private static final long serialVersionUID = -7589287786273391713L;
 
     /** 连接符。默认是空字符串 */
     private String        connector;
     
-    /**  */
+    /** 合并或拼接对象属性的Setter方法 */
     private MethodReflect methodSetter;
     
+    /** 合并或拼接对象属性的Getter方法 */
     private MethodReflect methodGetter;
     
-    /** 合并或拼接对象的那个属性。支持面向对象，可实现xxx.yyy.www全路径的解释 */
+    /** 合并或拼接对象的哪个属性。支持面向对象，可实现xxx.yyy.www全路径的解释 */
     private String        methodURL;
     
     
