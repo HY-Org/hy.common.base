@@ -17,7 +17,7 @@ import java.util.Map;
  * @version     v1.0
  * @createDate  2018-06-01
  */
-public class SumString<K> extends Hashtable<K ,String> implements Map<K ,String>
+public class SumStringMap<K> extends Hashtable<K ,String> implements Map<K ,String>
 {
 
     private static final long serialVersionUID = -8835763432149887369L;
@@ -27,21 +27,21 @@ public class SumString<K> extends Hashtable<K ,String> implements Map<K ,String>
     
     
     
-    public SumString()
+    public SumStringMap()
     {
         this("");
     }
     
     
     
-    public SumString(int i_InitialCapacity)
+    public SumStringMap(int i_InitialCapacity)
     {
         this("" ,i_InitialCapacity);
     }
     
     
     
-    public SumString(String i_Connector)
+    public SumStringMap(String i_Connector)
     {
         super();
         
@@ -50,7 +50,7 @@ public class SumString<K> extends Hashtable<K ,String> implements Map<K ,String>
     
     
     
-    public SumString(String i_Connector ,int i_InitialCapacity)
+    public SumStringMap(String i_Connector ,int i_InitialCapacity)
     {
         super(i_InitialCapacity);
         
