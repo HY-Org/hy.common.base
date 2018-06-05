@@ -1,7 +1,9 @@
 package org.hy.common;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 
@@ -24,18 +26,27 @@ public class SumObjectMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
 {
 
     private static final long serialVersionUID = -7589287786273391713L;
-
-    /** 连接符。默认是空字符串 */
-    private String        connector;
+    
+    
+    
+    /** 连接符、对象属性名称的分隔符。默认是逗号 */
+    private String              split;
+    
+    /** 
+     * 连接符。默认是空字符串。多个连接符间用this.split指定字符分隔 
+     * 
+     * 当连接符数量少于对象属性名称数量时，多出的对象属性按最后一个连接符连接
+     */
+    private String []           connectors;
     
     /** 合并或拼接对象属性的Setter方法 */
-    private MethodReflect methodSetter;
+    private List<MethodReflect> methodSetters;
     
     /** 合并或拼接对象属性的Getter方法 */
-    private MethodReflect methodGetter;
+    private List<MethodReflect> methodGetters;
     
-    /** 合并或拼接对象的哪个属性。支持面向对象，可实现xxx.yyy.www全路径的解释 */
-    private String        methodURL;
+    /** 合并或拼接对象的哪个属性。支持面向对象，可实现xxx.yyy.www全路径的解释。多个属性间用this.split指定字符分隔  */
+    private String              methodURLs;
     
     
     
@@ -53,20 +64,22 @@ public class SumObjectMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
     
     
     
-    public SumObjectMap(String i_Connector)
+    public SumObjectMap(String i_Connectors)
     {
         super();
         
-        this.connector = i_Connector;
+        this.setConnectors(i_Connectors);
+        this.setSplit(",");
     }
     
     
     
-    public SumObjectMap(String i_Connector ,int i_InitialCapacity)
+    public SumObjectMap(String i_Connectors ,int i_InitialCapacity)
     {
         super(i_InitialCapacity);
         
-        this.connector = i_Connector;
+        this.setConnectors(i_Connectors);
+        this.setSplit(",");
     }
     
     
@@ -113,17 +126,26 @@ public class SumObjectMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
         }
         else if ( v_Old == null )
         {
-            if ( this.methodSetter == null )
+            if ( this.methodSetters == null )
             {
-                try
+                if ( !Help.isNull(this.methodURLs) )
                 {
-                    this.methodSetter = new MethodReflect(i_Value.getClass() ,this.methodURL ,true ,MethodReflect.$NormType_Setter);
-                    this.methodGetter = new MethodReflect(i_Value.getClass() ,this.methodURL ,true ,MethodReflect.$NormType_Getter);
-                }
-                catch (Exception exce)
-                {
-                    exce.printStackTrace();
-                    throw new RuntimeException(exce);
+                    this.methodGetters = new ArrayList<MethodReflect>();
+                    this.methodSetters = new ArrayList<MethodReflect>();
+                    String [] v_MethodURLs = this.methodURLs.split(this.split);
+                    for (String v_MethodURL : v_MethodURLs)
+                    {
+                        try
+                        {
+                            this.methodGetters.add(new MethodReflect(i_Value.getClass() ,v_MethodURL ,true ,MethodReflect.$NormType_Getter));
+                            this.methodSetters.add(new MethodReflect(i_Value.getClass() ,v_MethodURL ,true ,MethodReflect.$NormType_Setter));
+                        }
+                        catch (Exception exce)
+                        {
+                            exce.printStackTrace();
+                            throw new RuntimeException(exce);
+                        }
+                    }
                 }
             }
             
@@ -133,19 +155,28 @@ public class SumObjectMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
         {
             try
             {
-                String v_NewValue = (String)this.methodGetter.invokeForInstance(i_Value);
-                if ( v_NewValue == null )
+                for (int v_Index=0; v_Index<this.methodGetters.size(); v_Index++)
                 {
-                    return v_Old;
+                    MethodReflect v_MGetter = this.methodGetters.get(v_Index);
+                    MethodReflect v_MSetter = this.methodSetters.get(v_Index);
+                    
+                    String v_NewValue = (String)v_MGetter.invokeForInstance(i_Value);
+                    if ( v_NewValue == null )
+                    {
+                        continue;
+                    }
+                    
+                    String v_OldValue = (String)v_MGetter.invokeForInstance(v_Old);
+                    if ( v_OldValue != null )
+                    {
+                        v_NewValue = v_OldValue 
+                                   + this.connectors[Math.min(v_Index ,this.connectors.length - 1)] 
+                                   + v_NewValue;
+                    }
+                    
+                    v_MSetter.invokeSetForInstance(v_Old ,v_NewValue);
                 }
                 
-                String v_OldValue = (String)this.methodGetter.invokeForInstance(v_Old);
-                if ( v_OldValue != null )
-                {
-                    v_NewValue = v_OldValue + this.connector + v_NewValue;
-                }
-                
-                this.methodSetter.invokeSetForInstance(v_Old ,v_NewValue);
                 return v_Old;
             }
             catch (Exception exce)
@@ -202,49 +233,77 @@ public class SumObjectMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
             set(e.getKey(), e.getValue());
         }
     }
-
-
+    
+    
     
     /**
-     * 获取：连接符。默认是空字符串
+     * 获取：连接符。默认是空字符串。多个连接符间用this.split指定字符分隔
      */
-    public String getConnector()
+    public String getConnectors()
     {
-        return connector;
+        return StringHelp.toString(this.connectors ,"" ,this.split);
     }
     
 
     
     /**
-     * 设置：连接符。默认是空字符串
+     * 设置：连接符。默认是空字符串。多个连接符间用this.split指定字符分隔
      * 
-     * @param i_Connector 
+     * @param i_Connectors
      */
-    public void setConnector(String i_Connector)
+    public void setConnectors(String i_Connectors)
     {
-        this.connector = Help.NVL(i_Connector);
+        this.connectors = Help.NVL(i_Connectors).split(this.split);
     }
 
 
     
     /**
      * 获取：合并或拼接对象的那个属性。支持面向对象，可实现xxx.yyy.www全路径的解释
+     * 
+     *      多个连接符间用this.split指定字符分隔
      */
-    public String getMethodURL()
+    public String getMethodURLs()
     {
-        return methodURL;
+        return methodURLs;
     }
     
 
 
     /**
-     * 设置：合并或拼接对象的那个属性。支持面向对象，可实现xxx.yyy.www全路径的解释
+     * 设置：合并或拼接对象的那个属性。支持面向对象，可实现xxx.yyy.www全路径的解释。
+     * 
+     *      多个连接符间用this.split指定字符分隔
      * 
      * @param methodURL 
      */
-    public void setMethodURL(String methodURL)
+    public void setMethodURLs(String methodURLs)
     {
-        this.methodURL = methodURL;
+        this.methodURLs    = methodURLs;
+        this.methodGetters = null;
+        this.methodSetters = null;
+    }
+
+
+    
+    /**
+     * 获取：连接符、对象属性名称的分隔符。默认是逗号
+     */
+    public String getSplit()
+    {
+        return split;
+    }
+    
+
+    
+    /**
+     * 设置：连接符、对象属性名称的分隔符。默认是逗号
+     * 
+     * @param split 
+     */
+    public void setSplit(String split)
+    {
+        this.split = split;
     }
     
 }
