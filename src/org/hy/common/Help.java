@@ -63,6 +63,7 @@ import org.hy.common.app.Param;
  *               2018-05-07  1. 添加：setValues()、setValuesNotNull() 用Map中的值来设置对象。建议人：马龙
  *               2018-05-08  1. 添加：支持枚举toString()的匹配
  *               2018-05-15  1. 添加：数据库java.sql.Timestamp时间的转换
+ *               2018-06-19  1. 添加：max()、min()多值一起比较最大值、最小值的系统方法。
  */
 public class Help
 {
@@ -118,6 +119,366 @@ public class Help
         }
         
         return v_ValueX;
+    }
+    
+    
+    
+    /**
+     * 多值一起比较，得出最大值。
+     * 
+     *   注：空对象NULL，不参考比较。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-06-19
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_ValueX
+     * @return
+     */
+    public final static Integer max(Integer i_Value01 ,Integer ... i_ValueX)
+    {
+        Integer v_Ret = i_Value01;
+        int     i     = 0;
+        
+        if ( v_Ret == null )
+        {
+            // 查找首个非空的对象
+            for (; i<i_ValueX.length; i++)
+            {
+                v_Ret = i_ValueX[i];
+                if ( v_Ret != null )
+                {
+                    break;
+                }
+            }
+        }
+        
+        
+        for (; i<i_ValueX.length; i++)
+        {
+            if ( i_ValueX[i] != null )
+            {
+                v_Ret = Math.max(v_Ret ,i_ValueX[i]);
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 多值一起比较，得出最大值。
+     * 
+     *   注：空对象NULL，不参考比较。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-06-19
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_ValueX
+     * @return
+     */
+    public final static Long max(Long i_Value01 ,Long ... i_ValueX)
+    {
+        Long v_Ret = i_Value01;
+        int  i     = 0;
+        
+        if ( v_Ret == null )
+        {
+            // 查找首个非空的对象
+            for (; i<i_ValueX.length; i++)
+            {
+                v_Ret = i_ValueX[i];
+                if ( v_Ret != null )
+                {
+                    break;
+                }
+            }
+        }
+        
+        
+        for (; i<i_ValueX.length; i++)
+        {
+            if ( i_ValueX[i] != null )
+            {
+                v_Ret = Math.max(v_Ret ,i_ValueX[i]);
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 多值一起比较，得出最大值。
+     * 
+     *   注：空对象NULL，不参考比较。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-06-19
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_ValueX
+     * @return
+     */
+    public final static Double max(Double i_Value01 ,Double ... i_ValueX)
+    {
+        Double v_Ret = i_Value01;
+        int    i     = 0;
+        
+        if ( v_Ret == null )
+        {
+            // 查找首个非空的对象
+            for (; i<i_ValueX.length; i++)
+            {
+                v_Ret = i_ValueX[i];
+                if ( v_Ret != null )
+                {
+                    break;
+                }
+            }
+        }
+        
+        
+        for (; i<i_ValueX.length; i++)
+        {
+            if ( i_ValueX[i] != null )
+            {
+                v_Ret = Math.max(v_Ret ,i_ValueX[i]);
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 多值一起比较，得出最大值。
+     * 
+     *   注：空对象NULL，不参考比较。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-06-19
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_ValueX
+     * @return
+     */
+    public final static Float max(Float i_Value01 ,Float ... i_ValueX)
+    {
+        Float v_Ret = i_Value01;
+        int   i     = 0;
+        
+        if ( v_Ret == null )
+        {
+            // 查找首个非空的对象
+            for (; i<i_ValueX.length; i++)
+            {
+                v_Ret = i_ValueX[i];
+                if ( v_Ret != null )
+                {
+                    break;
+                }
+            }
+        }
+        
+        
+        for (; i<i_ValueX.length; i++)
+        {
+            if ( i_ValueX[i] != null )
+            {
+                v_Ret = Math.max(v_Ret ,i_ValueX[i]);
+            }
+        }
+        
+        return v_Ret;
+    }
+
+    
+    
+    /**
+     * 多值一起比较，得出最小值。
+     * 
+     *   注：空对象NULL，不参考比较。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-06-19
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_ValueX
+     * @return
+     */
+    public final static Integer min(Integer i_Value01 ,Integer ... i_ValueX)
+    {
+        Integer v_Ret = i_Value01;
+        int     i     = 0;
+        
+        if ( v_Ret == null )
+        {
+            // 查找首个非空的对象
+            for (; i<i_ValueX.length; i++)
+            {
+                v_Ret = i_ValueX[i];
+                if ( v_Ret != null )
+                {
+                    break;
+                }
+            }
+        }
+        
+        
+        for (; i<i_ValueX.length; i++)
+        {
+            if ( i_ValueX[i] != null )
+            {
+                v_Ret = Math.min(v_Ret ,i_ValueX[i]);
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 多值一起比较，得出最小值。
+     * 
+     *   注：空对象NULL，不参考比较。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-06-19
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_ValueX
+     * @return
+     */
+    public final static Long min(Long i_Value01 ,Long ... i_ValueX)
+    {
+        Long v_Ret = i_Value01;
+        int  i     = 0;
+        
+        if ( v_Ret == null )
+        {
+            // 查找首个非空的对象
+            for (; i<i_ValueX.length; i++)
+            {
+                v_Ret = i_ValueX[i];
+                if ( v_Ret != null )
+                {
+                    break;
+                }
+            }
+        }
+        
+        
+        for (; i<i_ValueX.length; i++)
+        {
+            if ( i_ValueX[i] != null )
+            {
+                v_Ret = Math.min(v_Ret ,i_ValueX[i]);
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 多值一起比较，得出最小值。
+     * 
+     *   注：空对象NULL，不参考比较。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-06-19
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_ValueX
+     * @return
+     */
+    public final static Double min(Double i_Value01 ,Double ... i_ValueX)
+    {
+        Double v_Ret = i_Value01;
+        int    i     = 0;
+        
+        if ( v_Ret == null )
+        {
+            // 查找首个非空的对象
+            for (; i<i_ValueX.length; i++)
+            {
+                v_Ret = i_ValueX[i];
+                if ( v_Ret != null )
+                {
+                    break;
+                }
+            }
+        }
+        
+        
+        for (; i<i_ValueX.length; i++)
+        {
+            if ( i_ValueX[i] != null )
+            {
+                v_Ret = Math.min(v_Ret ,i_ValueX[i]);
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 多值一起比较，得出最小值。
+     * 
+     *   注：空对象NULL，不参考比较。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-06-19
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_ValueX
+     * @return
+     */
+    public final static Float min(Float i_Value01 ,Float ... i_ValueX)
+    {
+        Float v_Ret = i_Value01;
+        int   i     = 0;
+        
+        if ( v_Ret == null )
+        {
+            // 查找首个非空的对象
+            for (; i<i_ValueX.length; i++)
+            {
+                v_Ret = i_ValueX[i];
+                if ( v_Ret != null )
+                {
+                    break;
+                }
+            }
+        }
+        
+        
+        for (; i<i_ValueX.length; i++)
+        {
+            if ( i_ValueX[i] != null )
+            {
+                v_Ret = Math.min(v_Ret ,i_ValueX[i]);
+            }
+        }
+        
+        return v_Ret;
     }
     
     

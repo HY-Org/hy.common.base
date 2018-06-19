@@ -27,6 +27,8 @@ public class JU_Help
     @Test
     public void test_toMap_BigData() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
     {
+        Integer vMin = null;
+        System.out.println(Math.min(0 ,vMin));
         System.out.println("--  Init: " + Date.getNowTime().getFullMilli());
         
         
