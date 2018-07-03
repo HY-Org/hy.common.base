@@ -1,13 +1,13 @@
 package org.hy.common;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.io.Serializable;
 
 
 
 
 
 /**
- * 队列缓存池。
+ * 双通道缓存池
  * 
  * 预先创建对象（主要用于对象在创建时十分耗时的情况），在get()时直接使用，提高创建对象的性能。
  * 
@@ -18,30 +18,30 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * 测试数据：创建1000个Fel用时23秒，但1000次计算只需0.600秒。
  *
  * @author      ZhengWei(HY)
- * @createDate  2018-07-02
+ * @createDate  2018-07-03
  * @version     v1.0
  * @param <O>   队列缓存池中预先创建的对象
  */
-public class QueuePool<O> extends ConcurrentLinkedQueue<O>
+public class DualChannelPool<O> implements Serializable
 {
-
-    private static final long serialVersionUID = -8087291628889068333L;
     
+    private static final long serialVersionUID = 4277466853337090846L;
+    
+    
+
+    private DualChannel<O> dualChannel;
     
     /** 队列缓存池中的元素类型 */
-    private Class<O> poolDataClass;
-    
-    /** 队列缓存池的大小 */
-    private int      poolSize;
+    private Class<O>       poolDataClass;
     
     /** 队列缓存池的最小大小，当小于此值时，将创建新的元素并添加到池中 */
-    private int      poolMinSize;
+    private int            poolMinSize;
     
     /** 创建队列缓存池中元素的最大线程数量（默认值：100） */
-    private int      maxThreadCount;
+    private int            maxThreadCount;
     
     /** 创建队列缓存池中元素的当前程数量 */
-    private int      threadCount;
+    private int            threadCount;
     
     
     
@@ -49,14 +49,14 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
      * 队列缓存池中的构造器
      *
      * @author      ZhengWei(HY)
-     * @createDate  2018-07-02
+     * @createDate  2018-07-03
      * @version     v1.0
      *
      * @param i_PoolDataClass   队列缓存池中的元素类型
      * @param i_PoolSize        队列缓存池的大小
      * @param i_PoolMinSize     队列缓存池的最小大小，当小于此值时，将创建新的元素并添加到池中
      */
-    public QueuePool(Class<O> i_PoolDataClass ,int i_PoolSize ,int i_PoolMinSize)
+    public DualChannelPool(Class<O> i_PoolDataClass ,int i_PoolSize ,int i_PoolMinSize)
     {
         this(i_PoolDataClass ,i_PoolSize ,i_PoolMinSize ,true);
     }
@@ -67,7 +67,7 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
      * 队列缓存池中的构造器
      *
      * @author      ZhengWei(HY)
-     * @createDate  2018-07-02
+     * @createDate  2018-07-03
      * @version     v1.0
      *
      * @param i_PoolDataClass   队列缓存池中的元素类型
@@ -75,17 +75,17 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
      * @param i_PoolMinSize     队列缓存池的最小大小，当小于此值时，将创建新的元素并添加到池中
      * @param i_IsInitPool      在构造器中初始化完成队列缓存池
      */
-    public QueuePool(Class<O> i_PoolDataClass ,int i_PoolSize ,int i_PoolMinSize ,boolean i_IsInitPool)
+    public DualChannelPool(Class<O> i_PoolDataClass ,int i_PoolSize ,int i_PoolMinSize ,boolean i_IsInitPool)
     {
         if ( i_PoolDataClass == null )
         {
             throw new InstantiationError("Pool data class is null.");
         }
         
+        this.dualChannel    = new DualChannel<O>(i_PoolSize);
         this.poolDataClass  = i_PoolDataClass;
-        this.maxThreadCount = 10;
+        this.maxThreadCount = 1;
         this.threadCount    = 0;
-        this.setPoolSize   (i_PoolSize);
         this.setPoolMinSize(i_PoolMinSize);
         
         if ( i_IsInitPool )
@@ -108,23 +108,21 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
      * 注：有意不加同步锁synchronized，好处是：在队列缓存中元素不足时，有机会产生多个线程同时创建新元素。
      *
      * @author      ZhengWei(HY)
-     * @createDate  2018-07-02
+     * @createDate  2018-07-03
      * @version     v1.0
      *
      * @return
-     *
-     * @see org.hy.common.Queue#get()
      */
     public O get() 
     {
-        O v_Ret = this.poll();
+        O v_Ret = this.dualChannel.poll();
         
         if ( v_Ret == null )
         {
             v_Ret = this.newObject();
         }
         
-        if ( this.size() <= this.poolMinSize )
+        if ( this.dualChannel.size() <= this.poolMinSize )
         {
             this.startAdding();
         }
@@ -165,9 +163,9 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
         {
             try
             {
-                while ( this.size() < this.poolSize )
+                while ( this.dualChannel.size() < this.dualChannel.getChannelSize() )
                 {
-                    this.add(this.newObject());
+                    this.dualChannel.put(this.newObject());
                 }
             }
             finally
@@ -249,7 +247,7 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
      */
     public int getPoolSize()
     {
-        return poolSize;
+        return this.dualChannel.getChannelSize();
     }
 
 
@@ -262,23 +260,6 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
         return poolMinSize;
     }
     
-
-    
-    /**
-     * 设置：队列缓存池的大小
-     * 
-     * @param i_PoolSize 
-     */
-    private void setPoolSize(int i_PoolSize)
-    {
-        if ( i_PoolSize < 1 )
-        {
-            throw new InstantiationError("Pool size < 1.");
-        }
-        
-        this.poolSize = i_PoolSize;
-    }
-
 
     
     /**
@@ -326,6 +307,16 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
     public int getThreadCount()
     {
         return maxThreadCount;
+    }
+    
+    
+    
+    /**
+     * 双通道中的对象数量
+     */
+    public int size()
+    {
+        return this.dualChannel.size();
     }
     
 }
