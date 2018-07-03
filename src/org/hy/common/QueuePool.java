@@ -37,11 +37,11 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
     /** 队列缓存池的最小大小，当小于此值时，将创建新的元素并添加到池中 */
     private int      poolMinSize;
     
-    /** 创建队列缓存池中元素的最大线程数量（默认值：10） */
-    private int      addingMaxThreadCount;
+    /** 创建队列缓存池中元素的最大线程数量（默认值：100） */
+    private int      maxThreadCount;
     
     /** 创建队列缓存池中元素的当前程数量 */
-    private int      addingThreadCount;
+    private int      threadCount;
     
     
     
@@ -77,11 +77,11 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
      */
     public QueuePool(Class<O> i_PoolDataClass ,int i_PoolSize ,int i_PoolMinSize ,boolean i_IsInitPool)
     {
-        this.poolDataClass        = i_PoolDataClass;
-        this.poolSize             = i_PoolSize;
-        this.poolMinSize          = i_PoolMinSize;
-        this.addingMaxThreadCount = 10;
-        this.addingThreadCount    = 0;
+        this.poolDataClass  = i_PoolDataClass;
+        this.poolSize       = i_PoolSize;
+        this.poolMinSize    = i_PoolMinSize;
+        this.maxThreadCount = 100;
+        this.threadCount    = 0;
         
         if ( this.poolDataClass == null )
         {
@@ -192,13 +192,13 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
      */
     private synchronized boolean addingThreadCount()
     {
-        if ( this.addingThreadCount > this.addingMaxThreadCount )
+        if ( this.threadCount >= this.maxThreadCount )
         {
             return false;
         }
         else
         {
-            this.addingThreadCount++;
+            this.threadCount++;
             return true;
         }
     }
@@ -206,7 +206,7 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
     
     private synchronized void addingFinsh()
     {
-        this.addingThreadCount--;
+        this.threadCount--;
     }
     
     
@@ -305,23 +305,23 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
 
     
     /**
-     * 获取：创建队列缓存池中元素的最大线程数量（默认值：10）
+     * 获取：创建队列缓存池中元素的最大线程数量（默认值：100）
      */
-    public int getAddingMaxThreadCount()
+    public int getMaxThreadCount()
     {
-        return addingMaxThreadCount;
+        return maxThreadCount;
     }
 
 
     
     /**
-     * 设置：创建队列缓存池中元素的最大线程数量（默认值：10）
+     * 设置：创建队列缓存池中元素的最大线程数量（默认值：100）
      * 
-     * @param addingMaxThreadCount 
+     * @param maxThreadCount 
      */
-    public void setAddingMaxThreadCount(int addingMaxThreadCount)
+    public void setAddingMaxThreadCount(int maxThreadCount)
     {
-        this.addingMaxThreadCount = addingMaxThreadCount;
+        this.maxThreadCount = maxThreadCount;
     }
 
 
@@ -329,9 +329,9 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
     /**
      * 获取：创建队列缓存池中元素的当前程数量
      */
-    public int getAddingThreadCount()
+    public int getThreadCount()
     {
-        return addingThreadCount;
+        return maxThreadCount;
     }
     
 }
