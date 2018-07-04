@@ -84,7 +84,7 @@ public class DualChannelPool<O> implements Serializable
         
         this.dualChannel    = new DualChannel<O>(i_PoolSize);
         this.poolDataClass  = i_PoolDataClass;
-        this.maxThreadCount = 1;
+        this.maxThreadCount = 10;
         this.threadCount    = 0;
         this.setPoolMinSize(i_PoolMinSize);
         
