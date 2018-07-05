@@ -15,8 +15,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *   1. 构造本类的实例时。可通过i_IsInitPool参数调用创建对象的方式（true:同步创建对象； false:异步创建对象）。
  *   2. 调用get()方法时。当队列缓存池中的元素小于poolMinSize阀值时，将自动的、异步的、多线程的创建对象。
  *   
- * 测试数据：创建1000个Fel用时23秒，但1000次计算只需0.600秒。
- *
  * @author      ZhengWei(HY)
  * @createDate  2018-07-02
  * @version     v1.0
