@@ -31,7 +31,7 @@ public class JU_Round
             
             double v_R01 = Help.round(v_Base.doubleValue() ,v_Digit);
             // 对比Java自身提供的四舍五入方法
-            double v_R02 = new BigDecimal(v_Base.doubleValue()).setScale(v_Digit ,BigDecimal.ROUND_HALF_EVEN).doubleValue();
+            double v_R02 = new BigDecimal(v_Base.doubleValue()).setScale(v_Digit ,BigDecimal.ROUND_HALF_UP).doubleValue();
             
             System.out.print(StringHelp.rpad(String.valueOf(v_Base.doubleValue()) ,20 ," ") + " ~ " 
                            + StringHelp.rpad(String.valueOf(v_R01)                ,10 ," ") 

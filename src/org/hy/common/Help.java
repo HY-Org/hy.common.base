@@ -926,6 +926,25 @@ public class Help
         // 下面代码无法解决 4.015 四舍五入2位等于 4.02 的目标
         // BigDecimal v_BigDecimal = new BigDecimal(String.valueOf(i_Value));
         // return v_BigDecimal.setScale(i_Digit ,BigDecimal.ROUND_HALF_EVEN).doubleValue();
+        // return v_BigDecimal.setScale(i_Digit ,BigDecimal.ROUND_HALF_UP)  .doubleValue();
+    }
+    
+    
+    
+    /**
+     * 四舍五入。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-07-06
+     * @version     v1.0
+     *
+     * @param i_Value
+     * @param i_Digit
+     * @return
+     */
+    public final static double round(BigDecimal i_Value ,int i_Digit)
+    {
+        return Help.round(i_Value.toString() ,i_Digit);
     }
     
     
