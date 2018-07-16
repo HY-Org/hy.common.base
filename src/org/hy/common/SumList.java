@@ -29,6 +29,10 @@ public class SumList<V> extends ArrayList<V>
     private static final long serialVersionUID = -3325332111680395262L;
     
     
+    public static final String   $Default_Split = ",";
+    
+    
+    
     /** 连接符、对象属性名称的分隔符。默认是逗号 */
     private String               split;
     
@@ -82,7 +86,7 @@ public class SumList<V> extends ArrayList<V>
         
         this.keyListIndex = new HashMap<Object ,Integer>();
         this.isAllowSum   = false; 
-        this.setSplit(",");
+        this.setSplit($Default_Split);
         this.setConnectors(i_Connectors);
     }
     
@@ -94,7 +98,7 @@ public class SumList<V> extends ArrayList<V>
         
         this.keyListIndex = new HashMap<Object ,Integer>();
         this.isAllowSum   = false;
-        this.setSplit(",");
+        this.setSplit($Default_Split);
         this.setConnectors(i_Connectors);
     }
     
@@ -501,11 +505,11 @@ public class SumList<V> extends ArrayList<V>
     /**
      * 设置：连接符、对象属性名称的分隔符。默认是逗号
      * 
-     * @param split 
+     * @param i_Split 
      */
-    public void setSplit(String split)
+    public void setSplit(String i_Split)
     {
-        this.split = split;
+        this.split = Help.NVL(i_Split ,$Default_Split);
     }
 
 

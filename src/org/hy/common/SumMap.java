@@ -68,7 +68,7 @@ public class SumMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
     {
         super();
         
-        this.setSplit(",");
+        this.setSplit(SumList.$Default_Split);
         this.setConnectors(i_Connectors);
     }
     
@@ -78,7 +78,7 @@ public class SumMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
     {
         super(i_InitialCapacity);
         
-        this.setSplit(",");
+        this.setSplit(SumList.$Default_Split);
         this.setConnectors(i_Connectors);
     }
     
@@ -299,11 +299,11 @@ public class SumMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
     /**
      * 设置：连接符、对象属性名称的分隔符。默认是逗号
      * 
-     * @param split 
+     * @param i_Split 
      */
-    public void setSplit(String split)
+    public void setSplit(String i_Split)
     {
-        this.split = split;
+        this.split = Help.NVL(i_Split ,SumList.$Default_Split);
     }
     
 }
