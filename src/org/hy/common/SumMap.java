@@ -15,14 +15,14 @@ import java.util.Map;
  * 
  * 类似于 org.hy.common.SumStringMap，不同是，此类是对对象属性的合并或拼接字符串。
  * 
- * 要求1：对象属性的类型必须是 java.lang.String
- * 要求2：对象属性必须有Public访问域的Geter、Setter方法。
+ * 要求1：被合并（或拼接）对象属性的类型必须是 java.lang.String
+ * 要求2：被合并（或拼接）对象属性必须有Public访问域的Geter、Setter方法。
  * 
  * @author      ZhengWei(HY)
  * @version     v1.0
  * @createDate  2018-06-01
  */
-public class SumObjectMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
+public class SumMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
 {
 
     private static final long serialVersionUID = -7589287786273391713L;
@@ -50,36 +50,36 @@ public class SumObjectMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
     
     
     
-    public SumObjectMap()
+    public SumMap()
     {
         this("");
     }
     
     
     
-    public SumObjectMap(int i_InitialCapacity)
+    public SumMap(int i_InitialCapacity)
     {
         this("" ,i_InitialCapacity);
     }
     
     
     
-    public SumObjectMap(String i_Connectors)
+    public SumMap(String i_Connectors)
     {
         super();
         
-        this.setConnectors(i_Connectors);
         this.setSplit(",");
+        this.setConnectors(i_Connectors);
     }
     
     
     
-    public SumObjectMap(String i_Connectors ,int i_InitialCapacity)
+    public SumMap(String i_Connectors ,int i_InitialCapacity)
     {
         super(i_InitialCapacity);
         
-        this.setConnectors(i_Connectors);
         this.setSplit(",");
+        this.setConnectors(i_Connectors);
     }
     
     
