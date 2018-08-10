@@ -192,6 +192,7 @@ public class SumList<V> extends ArrayList<V>
                 Object v_KeyValue = this.keyMethodGetter.invokeForInstance(i_NewObject);
                 if ( v_KeyValue == null )
                 {
+                    System.err.println("SumList key value is null.\t" + i_NewObject.toString());
                     return null;
                 }
                 
@@ -262,6 +263,7 @@ public class SumList<V> extends ArrayList<V>
                 Object v_KeyValue = this.keyMethodGetter.invokeForInstance(i_NewObject);
                 if ( v_KeyValue == null )
                 {
+                    System.err.println("SumList key value is null.\t" + i_NewObject.toString());
                     return false;
                 }
                 
