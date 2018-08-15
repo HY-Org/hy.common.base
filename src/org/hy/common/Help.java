@@ -3269,13 +3269,22 @@ public class Help
      * @param i_PlaceholderEnd    占位符后缀
      * @return
      */
+    @SuppressWarnings("unchecked")
     public final static Map<String ,?> toPlaceholders(Map<String ,?> i_Map ,String i_PlaceholderBegin ,String i_PlaceholderEnd)
     {
-        Map<String ,Object> v_Ret = new HashMap<String ,Object>();
-        
-        for (Map.Entry<String ,?> v_Item : i_Map.entrySet())
+        Map<String ,Object> v_Ret = null;
+        try
         {
-            v_Ret.put(i_PlaceholderBegin + v_Item.getKey() + i_PlaceholderEnd ,v_Item.getValue());
+            v_Ret = (Map<String ,Object>)i_Map.getClass().newInstance();
+            
+            for (Map.Entry<String ,?> v_Item : i_Map.entrySet())
+            {
+                v_Ret.put(i_PlaceholderBegin + v_Item.getKey() + i_PlaceholderEnd ,v_Item.getValue());
+            }
+        }
+        catch (Exception exce)
+        {
+            exce.printStackTrace();
         }
         
         return v_Ret;
