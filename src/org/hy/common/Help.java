@@ -3083,6 +3083,47 @@ public class Help
     
     
     /**
+     * 重命名Map的Key。如果是LinkHashMap，还将保持原来的顺序。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-08-16
+     * @version     v1.0
+     *
+     * @param io_Map 
+     * @param i_OldKey  原Key值
+     * @param i_NewKey  新Key值
+     */
+    public final static <K> void renameMapKey(Map<K ,Object> io_Map ,K i_OldKey ,K i_NewKey)
+    {
+        if ( io_Map instanceof LinkedHashMap )
+        {
+            Map<K ,Object> v_TempMap = new LinkedHashMap<K ,Object>();
+            
+            for (Map.Entry<K ,Object> v_Item : io_Map.entrySet())
+            {
+                if ( v_Item.getKey().equals(i_OldKey) )
+                {
+                    v_TempMap.put(i_NewKey ,v_Item.getValue());
+                }
+                else
+                {
+                    v_TempMap.put(v_Item.getKey() ,v_Item.getValue());
+                }
+            }
+            
+            io_Map.clear();
+            io_Map.putAll(v_TempMap);
+            v_TempMap.clear();
+        }
+        else
+        {
+            io_Map.put(i_NewKey ,io_Map.remove(i_OldKey));
+        }
+    }
+    
+    
+    
+    /**
      * 设置"老Map"中的元素，用"新Map"中的元素设置"老Map"中对应Key的Value。
      * 
      *   1. "老Map"的元素个数不会增减
