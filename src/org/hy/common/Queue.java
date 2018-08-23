@@ -42,7 +42,7 @@ public class Queue<O> implements java.io.Serializable
 	private LinkedList<O>    linkedList;
 	
 	/** 独立出大小是为性能与速度 */
-	private int              queueSize;
+	private long             queueSize;
 	
 	/** 曾经进入过队列的对象次数 */
 	private long             putedCount;
@@ -175,7 +175,7 @@ public class Queue<O> implements java.io.Serializable
 	 * 
 	 * @return
 	 */
-	public int size()
+	public long size()
 	{
 		return this.queueSize;
 	}
@@ -188,9 +188,11 @@ public class Queue<O> implements java.io.Serializable
 	 */
 	public synchronized void remove(O i_Object)
 	{
-		this.linkedList.remove(i_Object);
-		this.queueSize--;
-		this.putedCount--;
+		if ( this.linkedList.remove(i_Object) )
+		{
+    		this.queueSize--;
+    		this.putedCount--;
+		}
 	}
 	
 	

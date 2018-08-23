@@ -29,7 +29,7 @@ public class Busway<O> extends Queue<O>
     
     
     /** 道路长度 */
-    private int wayLength;
+    private long wayLength;
     
     
     
@@ -44,7 +44,7 @@ public class Busway<O> extends Queue<O>
     
     public synchronized void put(O i_Object) 
     {
-        int v_Size = super.size();
+        long v_Size = super.size();
         
         if ( v_Size < this.wayLength )
         {
@@ -59,14 +59,14 @@ public class Busway<O> extends Queue<O>
 
 
     
-    public synchronized int getWayLength()
+    public synchronized long getWayLength()
     {
         return wayLength;
     }
 
 
     
-    public synchronized void setWayLength(int i_WayLength)
+    public synchronized void setWayLength(long i_WayLength)
     {
         if ( i_WayLength <= 0 )
         {
@@ -75,10 +75,10 @@ public class Busway<O> extends Queue<O>
         
         this.wayLength = i_WayLength;
         
-        int v_Size = super.size();
+        long v_Size = super.size();
         if ( v_Size > this.wayLength )
         {
-            int v_OutCount = v_Size - this.wayLength;
+            long v_OutCount = v_Size - this.wayLength;
             for (int i=1; i<=v_OutCount; i++)
             {
                 // 抛弃多余的，最先(最老)的数据
