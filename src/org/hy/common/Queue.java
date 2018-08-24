@@ -16,10 +16,11 @@ import java.util.LinkedList;
  *
  * @author   ZhengWei(HY)
  * @version  v1.0  2011-05-08
- * @version  v1.1  2014-08-16  1.支持 "先进后出" 方式
- *                             2.新增队列类型
- *                             3.队列类型初始化不能修改，防止异常
- *           v1.2  2014-12-07  1.添加查看队列中的数据，并不影响队列，类似于只读模式。
+ * @version  v1.1  2014-08-16  1.添加：支持 "先进后出" 方式
+ *                             2.添加：队列类型
+ *                             3.添加：队列类型初始化不能修改，防止异常
+ *           v1.2  2014-12-07  1.添加：查看队列中的数据，并不影响队列，类似于只读模式。
+ *           v1.3  2018-08-24  1.添加：remove()方法添加返回值，表示是否删除成功。
  */
 public class Queue<O> implements java.io.Serializable
 {
@@ -186,13 +187,16 @@ public class Queue<O> implements java.io.Serializable
 	 * 
 	 * @param i_Object
 	 */
-	public synchronized void remove(O i_Object)
+	public synchronized boolean remove(O i_Object)
 	{
 		if ( this.linkedList.remove(i_Object) )
 		{
     		this.queueSize--;
     		this.putedCount--;
+    		return true;
 		}
+		
+		return false;
 	}
 	
 	
