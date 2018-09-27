@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hy.common.Counter;
 import org.hy.common.Date;
 import org.hy.common.Help;
 import org.hy.common.MethodReflect;
@@ -260,6 +261,26 @@ public class JU_Help
         System.out.println("\n\n按SIGN倒排序。并有错误排序属性名的情况下");
         Help.toSort(v_Datas ,"2015 Desc" ,"SIGN Desc" ,"2016 Asc");
         Help.print(v_Datas);
+    }
+    
+    
+    
+    @Test
+    public void test_toSortByMap()
+    {
+        Counter<String> v_Counter = new Counter<String>();
+        String []       v_ABC     = {"A" ,"B" ,"C" ,"D" ,"E" ,"F" ,"G" ,"H" ,"I" ,"J" ,"K" ,"M" ,"N"};
+        
+        for (int i=0; i<10; i++)
+        {
+            v_Counter.put(v_ABC[i] ,Help.random(10));
+        }
+        
+        System.out.println("-- 正排序Map.value");
+        Help.print(Help.toSortByMap(   v_Counter));
+        
+        System.out.println("\n-- 倒排序Map.value");
+        Help.print(Help.toReverseByMap(v_Counter));
     }
     
     

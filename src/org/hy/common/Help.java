@@ -64,6 +64,7 @@ import org.hy.common.app.Param;
  *               2018-05-08  1. 添加：支持枚举toString()的匹配
  *               2018-05-15  1. 添加：数据库java.sql.Timestamp时间的转换
  *               2018-06-19  1. 添加：max()、min()多值一起比较最大值、最小值的系统方法。
+ *               2018-09-26  1. 添加：对Map集合的Values排序。
  */
 public class Help
 {
@@ -6273,6 +6274,44 @@ public class Help
     
     
     /**
+     * 对Map集合的Values排序生成一个新的LinkedMap。
+     * 
+     * 当Map.value相同时，Map.key也按规则排序后返回。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-09-26
+     * @version     v1.0
+     *
+     * @param i_Map
+     * @return
+     */
+    public final static <K extends Comparable<? super K> ,V extends Comparable<? super V>> Map<K ,V> toSortByMap(Map<K ,V> i_Map)
+    {
+        return toSortReverseByMap(i_Map ,1);
+    }
+    
+    
+    
+    /**
+     * 对Map集合的Values排序生成一个新的LinkedMap
+     * 
+     * 当Map.value相同时，Map.key也按规则排序后返回。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-09-26
+     * @version     v1.0
+     *
+     * @param i_Map
+     * @return
+     */
+    public final static <K extends Comparable<? super K> ,V extends Comparable<? super V>> Map<K ,V> toReverseByMap(Map<K ,V> i_Map)
+    {
+        return toSortReverseByMap(i_Map ,-1);
+    }
+    
+    
+    
+    /**
      * 对Map集合的Keys升序排序生成一个新的LinkedMap
      * 
      * 字符串转数字后，再比较排序（正序）
@@ -6421,6 +6460,73 @@ public class Help
         else
         {
             v_Ret = i_Map;
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 对Map集合的Values排序生成一个新的LinkedMap
+     * 
+     * 当Map.value相同时，Map.key也按规则排序后返回。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-09-26
+     * @version     v1.0
+     *
+     * @param i_Map
+     * @param i_Direction   排序方向。>= 0 表示升序。 < 0表示降序
+     * @return
+     */
+    private final static <K extends Comparable<? super K> ,V extends Comparable<? super V>> Map<K ,V> toSortReverseByMap(Map<K ,V> i_Map ,int i_Direction)
+    {
+        Map<V ,List<K>> v_SortDatas = new Hashtable<V ,List<K>>();
+        for (Map.Entry<K ,V> v_Item : i_Map.entrySet())
+        {
+            List<K> v_Values = v_SortDatas.get(v_Item.getValue());
+            
+            if ( v_Values == null )
+            {
+                v_Values = new ArrayList<K>();
+                v_Values.add(v_Item.getKey());
+                
+                v_SortDatas.put(v_Item.getValue() ,v_Values);
+            }
+            else
+            {
+                v_Values.add(v_Item.getKey());
+            }
+        }
+        
+        Map<K ,V>       v_Ret     = new LinkedHashMap<K ,V>();
+        Map<V ,List<K>> v_NewSort = null;
+        
+        if ( i_Direction >= 0 )
+        {
+            v_NewSort = Help.toSort(v_SortDatas);
+        }
+        else
+        {
+            v_NewSort = Help.toReverse(v_SortDatas);
+        }
+        
+        for (Map.Entry<V ,List<K>> v_Item : v_NewSort.entrySet())
+        {
+            if ( i_Direction >= 0 )
+            {
+                Help.toSort(v_Item.getValue());
+            }
+            else
+            {
+                Help.toReverse(v_Item.getValue());
+            }
+            
+            for (K v_Key : v_Item.getValue())
+            {
+                v_Ret.put(v_Key ,v_Item.getKey());
+            }
         }
         
         return v_Ret;
