@@ -6529,6 +6529,10 @@ public class Help
             }
         }
         
+        
+        v_SortDatas.clear();
+        v_SortDatas = null;
+        
         return v_Ret;
     }
     
