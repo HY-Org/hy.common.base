@@ -2242,7 +2242,7 @@ public final class StringHelp
     
     
     /**
-     * 获取两个字符串间的内容
+     * 获取两个字符串间的内容。如，StringHelp.getString("A123C" ,"A" ,"C") = "123"
      * 
      * 可支持，不区分大小写的匹配
      * 
@@ -2282,7 +2282,7 @@ public final class StringHelp
         
         while( v_Matcher.find() )
         {  
-            return i_String.substring(v_Matcher.start() ,v_Matcher.end());
+            return i_String.substring(v_Matcher.start() + i_BeginStr.length() ,v_Matcher.end() - i_EndStr.length());
         }
         
         return "";
