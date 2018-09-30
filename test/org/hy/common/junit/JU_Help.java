@@ -27,14 +27,15 @@ public class JU_Help
     @Test
     public void test_executeCommand()
     {
+        Help.print(Help.executeCommand("ls -aln /"));
         // Help.print(Help.executeCommand("ls" ,"-aln" ,"/"));
-        Help.print(Help.executeCommand("cmd.exe /c dir c:\\"));
+        // Help.print(Help.executeCommand("cmd.exe /c dir c:\\"));
         // Help.print(Help.executeCommand("cmd.exe" ,"/c" ,"dir" ,"c:\\"));
     }
     
     
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked" ,"null"})
     @Test
     public void test_toMap_BigData() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
     {

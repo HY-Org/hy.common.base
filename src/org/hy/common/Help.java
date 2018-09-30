@@ -7244,7 +7244,7 @@ public class Help
      */
     public final static List<String> executeCommand(String ... i_Commands)
     {
-        return executeCommand(false ,i_Commands);
+        return executeCommand("UTF-8" ,false ,i_Commands);
     }
     
     
@@ -7265,10 +7265,37 @@ public class Help
      * @version     v1.0
      *
      * @param i_IsWaitProcess  是否等待命令执行完成。当等待时调用线程将被阻塞
-     * @param i_Commands       执行命令 
+     * @param i_Commands
      * @return
      */
     public final static List<String> executeCommand(boolean i_IsWaitProcess ,String ... i_Commands)
+    {
+        return executeCommand("UTF-8" ,i_IsWaitProcess ,i_Commands);
+    }
+    
+    
+    
+    /**
+     * 执行操作系统命令。
+     * 
+     * 如MacOS系统上查看目录列表的命令："ls -aln /" 有下面两种写法
+     *   1. Help.executeCommand("ls" ,"-aln" ,"/");
+     *   2. Help.executeCommand("ls -aln /");
+     *   
+     * 如Windows系统上查看目录列表的命令："dir c:\\" 有下面两种写法
+     *   1. Help.executeCommand("cmd.exe /c dir c:\\");
+     *   2. Help.executeCommand("cmd.exe" ,"/c" ,"dir" ,"c:\\");
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-09-28
+     * @version     v1.0
+     *
+     * @param i_CharEncoding   命令结果返回时字符集
+     * @param i_IsWaitProcess  是否等待命令执行完成。当等待时调用线程将被阻塞
+     * @param i_Commands       执行命令 
+     * @return
+     */
+    public final static List<String> executeCommand(String i_CharEncoding ,boolean i_IsWaitProcess ,String ... i_Commands)
     {
         Runtime        v_Runtime = Runtime.getRuntime();
         Process        v_Process = null;
@@ -7292,7 +7319,7 @@ public class Help
             }
             
             v_Input  = v_Process.getInputStream();
-            v_Reader = new BufferedReader(new InputStreamReader(v_Input));
+            v_Reader = new BufferedReader(new InputStreamReader(v_Input ,i_CharEncoding));
             
             String v_RetLine = null;
             while ((v_RetLine = v_Reader.readLine()) != null) 
