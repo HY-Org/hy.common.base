@@ -29,8 +29,8 @@ public class JU_Help
     {
         Help.print(Help.executeCommand("ls -aln /"));
         // Help.print(Help.executeCommand("ls" ,"-aln" ,"/"));
-        // Help.print(Help.executeCommand("cmd.exe /c dir c:\\"));
-        // Help.print(Help.executeCommand("cmd.exe" ,"/c" ,"dir" ,"c:\\"));
+        // Help.print(Help.executeCommand("GBK" ,false ,"cmd.exe /c dir c:\\"));
+        // Help.print(Help.executeCommand("GBK" ,false ,"cmd.exe" ,"/c" ,"dir" ,"c:\\"));
     }
     
     
