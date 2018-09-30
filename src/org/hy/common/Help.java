@@ -68,6 +68,7 @@ import org.hy.common.app.Param;
  *               2018-05-15  1. 添加：数据库java.sql.Timestamp时间的转换
  *               2018-06-19  1. 添加：max()、min()多值一起比较最大值、最小值的系统方法。
  *               2018-09-26  1. 添加：对Map集合的Values排序。
+ *               2018-09-30  1. 添加：执行操作系统命令的方法executeCommand()
  */
 public class Help
 {
