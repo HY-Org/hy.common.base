@@ -7227,7 +7227,13 @@ public class Help
     /**
      * 执行操作系统命令（不等待命令执行完成）。
      * 
-     * 如MacOS系统上查看目录列表的命令："ls -aln /"，应写为 Help.executeCommand("ls" ,"-aln" ,"/");
+     * 如MacOS系统上查看目录列表的命令："ls -aln /" 有下面两种写法
+     *   1. Help.executeCommand("ls" ,"-aln" ,"/");
+     *   2. Help.executeCommand("ls -aln /");
+     *   
+     * 如Windows系统上查看目录列表的命令："dir c:\\" 有下面两种写法
+     *   1. Help.executeCommand("cmd.exe /c dir c:\\");
+     *   2. Help.executeCommand("cmd.exe" ,"/c" ,"dir" ,"c:\\");
      * 
      * @author      ZhengWei(HY)
      * @createDate  2018-09-28
@@ -7246,7 +7252,13 @@ public class Help
     /**
      * 执行操作系统命令。
      * 
-     * 如MacOS系统上查看目录列表的命令："ls -aln /"，应写为 Help.executeCommand("ls" ,"-aln" ,"/");
+     * 如MacOS系统上查看目录列表的命令："ls -aln /" 有下面两种写法
+     *   1. Help.executeCommand("ls" ,"-aln" ,"/");
+     *   2. Help.executeCommand("ls -aln /");
+     *   
+     * 如Windows系统上查看目录列表的命令："dir c:\\" 有下面两种写法
+     *   1. Help.executeCommand("cmd.exe /c dir c:\\");
+     *   2. Help.executeCommand("cmd.exe" ,"/c" ,"dir" ,"c:\\");
      * 
      * @author      ZhengWei(HY)
      * @createDate  2018-09-28
@@ -7266,11 +7278,23 @@ public class Help
         
         try 
         {
-            v_Process = v_Runtime.exec(i_Commands);
-            v_Input   = v_Process.getInputStream();
-            v_Reader  = new BufferedReader(new InputStreamReader(v_Input));
-            String v_RetLine = null;
+            if ( Help.isNull(i_Commands) )
+            {
+                return v_Ret;
+            }
+            else if ( i_Commands.length == 1 )
+            {
+                v_Process = v_Runtime.exec(i_Commands[0]);
+            }
+            else
+            {
+                v_Process = v_Runtime.exec(i_Commands);
+            }
             
+            v_Input  = v_Process.getInputStream();
+            v_Reader = new BufferedReader(new InputStreamReader(v_Input));
+            
+            String v_RetLine = null;
             while ((v_RetLine = v_Reader.readLine()) != null) 
             {
                 v_Ret.add(v_RetLine);
