@@ -7225,7 +7225,9 @@ public class Help
     
     
     /**
-     * 执行操作系统命令（不等待命令执行完成）
+     * 执行操作系统命令（不等待命令执行完成）。
+     * 
+     * 如MacOS系统上查看目录列表的命令："ls -aln /"，应写为 Help.executeCommand("ls" ,"-aln" ,"/");
      * 
      * @author      ZhengWei(HY)
      * @createDate  2018-09-28
@@ -7242,7 +7244,9 @@ public class Help
     
     
     /**
-     * 执行操作系统命令
+     * 执行操作系统命令。
+     * 
+     * 如MacOS系统上查看目录列表的命令："ls -aln /"，应写为 Help.executeCommand("ls" ,"-aln" ,"/");
      * 
      * @author      ZhengWei(HY)
      * @createDate  2018-09-28
