@@ -1,7 +1,10 @@
 package org.hy.common;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -7217,6 +7220,113 @@ public class Help
         }
         
         return v_PIndex;
+    }
+    
+    
+    
+    /**
+     * 执行操作系统命令（不等待命令执行完成）
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-09-28
+     * @version     v1.0
+     *
+     * @param i_Commands
+     * @return
+     */
+    public final static List<String> executeCommand(String ... i_Commands)
+    {
+        return executeCommand(false ,i_Commands);
+    }
+    
+    
+    
+    /**
+     * 执行操作系统命令
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-09-28
+     * @version     v1.0
+     *
+     * @param i_IsWaitProcess  是否等待命令执行完成。当等待时调用线程将被阻塞
+     * @param i_Commands       执行命令 
+     * @return
+     */
+    public final static List<String> executeCommand(boolean i_IsWaitProcess ,String ... i_Commands)
+    {
+        Runtime        v_Runtime = Runtime.getRuntime();
+        Process        v_Process = null;
+        InputStream    v_Input   = null;
+        BufferedReader v_Reader  = null;
+        List<String>   v_Ret     = new ArrayList<String>();
+        
+        try 
+        {
+            v_Process = v_Runtime.exec(i_Commands);
+            v_Input   = v_Process.getInputStream();
+            v_Reader  = new BufferedReader(new InputStreamReader(v_Input));
+            String v_RetLine = null;
+            
+            while ((v_RetLine = v_Reader.readLine()) != null) 
+            {
+                v_Ret.add(v_RetLine);
+            }
+            
+            if ( i_IsWaitProcess )
+            {
+                v_Process.waitFor();
+            }
+        } 
+        catch (Exception exce) 
+        {
+            exce.printStackTrace();
+        }
+        finally
+        {
+            if ( v_Reader != null )
+            {
+                try
+                {
+                    v_Reader.close();
+                }
+                catch (Exception exce)
+                {
+                    // Nothing.
+                }
+                
+                v_Reader = null;
+            }
+            
+            if ( v_Input != null )
+            {
+                try
+                {
+                    v_Input.close();
+                }
+                catch (Exception exce)
+                {
+                    // Nothing.
+                }
+                
+                v_Input = null;
+            }
+            
+            if ( v_Process != null )
+            {
+                try
+                {
+                    v_Process.destroy();
+                }
+                catch (Exception exce)
+                {
+                    // Nothing.
+                }
+                
+                v_Process = null;
+            }
+        }
+        
+        return v_Ret;
     }
     
 }
