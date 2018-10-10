@@ -29,8 +29,17 @@ public class JU_Help
     {
         Help.print(Help.executeCommand("ls -aln /"));
         // Help.print(Help.executeCommand("ls" ,"-aln" ,"/"));
-        // Help.print(Help.executeCommand("GBK" ,false ,"cmd.exe /c dir c:\\"));
+        // Help.print(Help.executeCommand("GBK" ,false ,"cmd.exe /c d: && cd D:\\apache-tomcat-7.0.47\\bin && D:\\apache-tomcat-7.0.47\\bin\\shutdown.bat"));
         // Help.print(Help.executeCommand("GBK" ,false ,"cmd.exe" ,"/c" ,"dir" ,"c:\\"));
+    }
+    
+    
+    
+    @Test
+    public void test_executeCommand_otherExe()
+    {
+        Help.print(Help.executeCommand(false ,false ,"/Volumes/HY_HD_06/Develop_HD/apache-tomcat-7.0.47/bin/startup.sh"));
+        System.exit(0);
     }
     
     
