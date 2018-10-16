@@ -1228,6 +1228,144 @@ public final class StringHelp
     
     
     /**
+     * 简化显示数字，显示允许的长度。
+     * 
+     *   如允许长度为6时，1234567890.1 将显示为 1234567890；
+     *   如允许长度为6时，1.2345678    将显示为 1.23457；
+     *   如允许长度为6时，1234.5678    将显示为 1234.57；
+     *   如允许长度为6时，0.000001     将显示为 1.000E-6；
+     *   
+     * @author      ZhengWei(HY)
+     * @createDate  2018-10-16
+     * @version     v1.0
+     * 
+     * @param i_Num              数字
+     * @param i_AllowLen         允许长度
+     * @param i_RoundScientific  如果启用了科学计数后，科学计数的显示小数位数（四舍五入）
+     */
+    public static <N extends Number> String toNumberSimplify(N i_Num ,int i_AllowLen ,int i_RoundScientific)
+    {
+        return toNumberSimplify(i_Num.toString() ,i_AllowLen ,i_RoundScientific);
+    }
+    
+    
+    
+    /**
+     * 简化显示数字，显示允许的长度。
+     * 
+     *   如允许长度为6时，1234567890.1 将显示为 1234567890；
+     *   如允许长度为6时，1.2345678    将显示为 1.23457；
+     *   如允许长度为6时，1234.5678    将显示为 1234.57；
+     *   如允许长度为6时，0.000001     将显示为 1.000E-6；
+     *   
+     * @author      ZhengWei(HY)
+     * @createDate  2018-10-16
+     * @version     v1.0
+     * 
+     * @param i_Num              数字
+     * @param i_AllowLen         允许长度
+     * @param i_RoundScientific  如果启用了科学计数后，科学计数的显示小数位数（四舍五入）
+     */
+    public static String toNumberSimplify(String i_Num ,int i_AllowLen ,int i_RoundScientific)
+    {
+        if ( !Help.isNumber(i_Num) )
+        {
+            return i_Num;
+        }
+        else if ( i_AllowLen > 0 )
+        {
+            if ( i_Num.indexOf(".") >= 0 )
+            {
+                String []  v_NumArr      = i_Num.split(".");
+                BigDecimal v_NumSimplify = new BigDecimal(i_Num);
+                
+                if ( v_NumArr[0].length() >= i_AllowLen )
+                {
+                    v_NumSimplify = new BigDecimal(v_NumArr[0]);
+                }
+                else
+                {
+                    int v_Digit = i_AllowLen - v_NumArr[0].length();
+                    v_NumSimplify = new BigDecimal(Help.round(i_Num ,v_Digit));
+                    
+                    if ( v_NumSimplify.equals(BigDecimal.ZERO) && !(new BigDecimal(i_Num).equals(BigDecimal.ZERO)) )
+                    {
+                        // 高精度值为0.0001，四舍五入后为0.000时，显示科学记数法 ZhengWei(HY) Add 2018-10-15
+                        return toScientificNotation(i_Num ,v_Digit + 1 ,i_RoundScientific ,v_Digit + 1);
+                    }
+                }
+                
+                return v_NumSimplify.toString();
+            }
+        }
+        
+        return i_Num;
+    }
+    
+    
+    
+    /**
+     * 科学计数
+     * 
+     * @param i_Num              数字
+     * @param i_Decimal          多少位的小数启用科学计数
+     * @param i_RoundScientific  如果启用了科学计数后，科学计数的显示小数位数（四舍五入）
+     * @param i_Round            未启用科学计数时，对数字i_Num的四舍五入。
+     * 
+     * @author  ZhengWei(HY)
+     * @version 1.0  2018-10-16
+     */
+    public static <N extends Number> String toScientificNotation(N i_Num ,int i_Decimal ,int i_RoundScientific ,int i_Round)
+    {
+        return toScientificNotation(i_Num.toString() ,i_Decimal ,i_RoundScientific ,i_Round);
+    }
+    
+    
+    
+    /**
+     * 科学计数
+     * 
+     * @param i_Num              数字
+     * @param i_Decimal          多少位的小数启用科学计数
+     * @param i_RoundScientific  如果启用了科学计数后，科学计数的显示小数位数（四舍五入）
+     * @param i_Round            未启用科学计数时，对数字i_Num的四舍五入。
+     * 
+     * @author  ZhengWei(HY)
+     * @version 1.0  2018-10-16
+     */
+    public static String toScientificNotation(String i_Num ,int i_Decimal ,int i_RoundScientific ,int i_Round)
+    {
+        if ( !Help.isNumber(i_Num) )
+        {
+            return ""; 
+        }
+        
+        BigDecimal v_Num = new BigDecimal(i_Num);
+        if ( 1 > v_Num.doubleValue() && v_Num.doubleValue() > -1 && !v_Num.equals(BigDecimal.ZERO) )
+        {
+            int v_Decimal = 0;
+            BigDecimal v_Ten = new BigDecimal(10);
+            
+            do
+            {
+                v_Num = v_Num.multiply(v_Ten);
+                v_Decimal++;
+            }
+            while ( 1 > v_Num.doubleValue() && v_Num.doubleValue() > -1 );
+            
+            if ( v_Decimal >= i_Decimal )
+            {
+                return Help.round(v_Num ,i_RoundScientific) + "E-" + v_Decimal;
+            }
+        }
+        
+        String v_RetFixed = Help.round(i_Num ,i_Round) + "";
+        return i_Num.length() <= v_RetFixed.length() ? i_Num : v_RetFixed;
+    }
+    
+    
+    
+    /**
      * 将一种编码的文字，转为另一种编码的文字
      * 
      * @author      ZhengWei(HY)
