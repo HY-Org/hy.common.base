@@ -24,6 +24,16 @@ import org.hy.common.StringHelp;
 public class JU_StringHelp
 {
     
+    @Test
+    public void test_toNumberSimplify()
+    {
+        System.out.println(StringHelp.toNumberSimplify("1234567890.1" ,6 ,2));
+        System.out.println(StringHelp.toNumberSimplify("1.2345678"    ,6 ,2));
+        System.out.println(StringHelp.toNumberSimplify("1234.5678"    ,6 ,2));
+        System.out.println(StringHelp.toNumberSimplify("0.000001"     ,6 ,2));
+    }
+    
+    
     
     /**
      * 随机生成指定长度的数字与字母混合的字符串

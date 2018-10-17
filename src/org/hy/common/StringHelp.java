@@ -44,6 +44,8 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.8  2018-05-04   1.添加 isEquals()、isEqualsIgnoreCase() 比较多个关键字，判定是否只少有一个相等。
  *              v1.9  2018-05-16   1.添加 支持中文占位符。建议人：邹德福
  *              v1.10 2018-05-23   1.添加 trim(String ,String)去掉字符串前后两端的指定的子字符。
+ *              v1.11 2018-10-17   1.添加 toNumberSimplify()简化显示数字，显示允许的长度。
+ *                                 2.添加 toScientificNotation()特殊的科学计数显示数字。
  *              
  * @createDate  2009-08-21
  */
@@ -1259,7 +1261,7 @@ public final class StringHelp
      *   如允许长度为6时，0.000001     将显示为 1.000E-6；
      *   
      * @author      ZhengWei(HY)
-     * @createDate  2018-10-16
+     * @createDate  2018-10-17
      * @version     v1.0
      * 
      * @param i_Num              数字
@@ -1276,26 +1278,24 @@ public final class StringHelp
         {
             if ( i_Num.indexOf(".") >= 0 )
             {
-                String []  v_NumArr      = i_Num.split(".");
-                BigDecimal v_NumSimplify = new BigDecimal(i_Num);
+                String [] v_NumArr      = i_Num.split("\\.");
+                double    v_NumSimplify = Double.parseDouble(i_Num);
                 
                 if ( v_NumArr[0].length() >= i_AllowLen )
                 {
-                    v_NumSimplify = new BigDecimal(v_NumArr[0]);
+                    return v_NumArr[0];
                 }
-                else
+
+                int v_Digit = i_AllowLen - v_NumArr[0].length();
+                v_NumSimplify = Help.round(i_Num ,v_Digit);
+                
+                if ( v_NumSimplify == 0 && Double.parseDouble(i_Num) != 0 )
                 {
-                    int v_Digit = i_AllowLen - v_NumArr[0].length();
-                    v_NumSimplify = new BigDecimal(Help.round(i_Num ,v_Digit));
-                    
-                    if ( v_NumSimplify.equals(BigDecimal.ZERO) && !(new BigDecimal(i_Num).equals(BigDecimal.ZERO)) )
-                    {
-                        // 高精度值为0.0001，四舍五入后为0.000时，显示科学记数法 ZhengWei(HY) Add 2018-10-15
-                        return toScientificNotation(i_Num ,v_Digit + 1 ,i_RoundScientific ,v_Digit + 1);
-                    }
+                    // 高精度值为0.0001，四舍五入后为0.000时，显示科学记数法 ZhengWei(HY) Add 2018-10-15
+                    return toScientificNotation(i_Num ,v_Digit + 1 ,i_RoundScientific ,v_Digit + 1);
                 }
                 
-                return v_NumSimplify.toString();
+                return v_NumSimplify + "";
             }
         }
         
