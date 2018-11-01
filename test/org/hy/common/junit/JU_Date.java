@@ -10,6 +10,14 @@ import org.junit.Test;
 public class JU_Date
 {
     
+    @Test
+    public void test_Format()
+    {
+        System.out.println((new Date("2018-11-01 01:01:01.0")).getFull());
+    }
+    
+    
+    
     public void test01(String i_Text)
     {
        

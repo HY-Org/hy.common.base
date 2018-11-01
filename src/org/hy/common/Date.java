@@ -22,6 +22,8 @@ import java.util.Map;
  *              v1.3  2018-05-04  添加：时:分:秒 格式的自动识别转换功能。共支持  7 + 3 + 3 + 1 = 14 种格式。
  *              v1.4  2018-05-15  修复：yyyy年MM月dd日多了一个 "日"，而引起的转换异常。
  *                                添加：yyyy-MM、yyyyMM两种格式的转换。共支持  7 + 3 + 3 + 1 + 3 + 3 = 20 种格式。
+ *              v1.5  2018-11-01  添加：yyyy-MM-dd HH:mm:ss.S格式的转换。共支持 7 + 3 + 3 + 1 + 3 + 3 + 3 = 23 种格式。
+ *                                     建议人：邹德福
  */
 public final class Date extends java.util.Date
 {
@@ -29,6 +31,8 @@ public final class Date extends java.util.Date
     private static final long serialVersionUID = 8529353384393262590L;
     
     public  static final String               $FORMAT_Milli    = "yyyy-MM-dd HH:mm:ss.SSS"; // length=23  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+    
+    public  static final String               $FORMAT_Milli2   = "yyyy-MM-dd HH:mm:ss.S";   // length=21  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
     public  static final String               $FORMAT_MilliID  = "yyyyMMddHHmmssSSS";       // length=17
     
@@ -66,9 +70,11 @@ public final class Date extends java.util.Date
     static
     {
         // 只为少一点IF判断，多一点速度提升
-        $FORMATS = new Hashtable<Integer ,String>(6);
+        $FORMATS = new Hashtable<Integer ,String>();
         $FORMATS.put($FORMAT_Milli  .length()     ,$FORMAT_Milli);
         $FORMATS.put($FORMAT_Milli  .length() + 1 ,$FORMAT_Milli);    // yyyy年MM月dd日多了一个 "日"
+        $FORMATS.put($FORMAT_Milli2 .length()     ,$FORMAT_Milli2);
+        $FORMATS.put($FORMAT_Milli2 .length() + 1 ,$FORMAT_Milli2);   // yyyy年MM月dd日多了一个 "日"
         $FORMATS.put($FORMAT_MilliID.length()     ,$FORMAT_MilliID);
         $FORMATS.put($FORMAT_Normal .length()     ,$FORMAT_Normal);
         $FORMATS.put($FORMAT_Normal .length() + 1 ,$FORMAT_Normal);   // yyyy年MM月dd日多了一个 "日"
