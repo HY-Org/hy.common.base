@@ -14,6 +14,7 @@ import java.net.JarURLConnection;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.sql.Timestamp;
@@ -2092,6 +2093,7 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2017-05-10
      * @version     v1.0
+     *              v2.0  2018-11-08  添加：防止路径中有中文或空格
      *
      * @param i_Obj
      * @return
@@ -2100,7 +2102,8 @@ public class Help
     {
         try
         {
-            return i_Obj.getClass().getResource("").getFile().toString();
+            URI v_URI = new URI(i_Obj.getClass().getResource("").getFile().toString());
+            return v_URI.getPath();
         }
         catch (Exception exce)
         {
@@ -2116,13 +2119,16 @@ public class Help
      * 获取class目录位置。
      * 如 C:/xx/bin/
      * 
+     * v2.0  2018-11-08  添加：防止路径中有中文或空格
+     * 
      * @return
      */
     public final static String getClassHomePath()
     {
         try
         {
-            return Thread.currentThread().getContextClassLoader().getResource("").getFile().toString();
+            URI v_URI = new URI(Thread.currentThread().getContextClassLoader().getResource("").getFile().toString());
+            return v_URI.getPath();
         }
         catch (Exception exce)
         {
@@ -2139,6 +2145,8 @@ public class Help
      * 获取Web服务的class目录位置。
      * 如 C:/Tomcat/Webapps/Web项目名称/WEB-INF/classes/
      * 
+     * v2.0  2018-11-08  添加：防止路径中有中文或空格
+     * 
      * @return
      */
     public final static String getWebClassPath()
@@ -2150,12 +2158,11 @@ public class Help
             String v_Ret = Thread.currentThread().getContextClassLoader().getResource("").getFile().toString();
             if ( v_Ret.indexOf(":") >= 0 )
             {
-                return v_Ret.substring(1);
+                v_Ret = v_Ret.substring(1);
             }
-            else
-            {
-                return v_Ret;
-            }
+            
+            URI v_URI = new URI(v_Ret);
+            return v_URI.getPath();
         }
         catch (Exception exce)
         {
