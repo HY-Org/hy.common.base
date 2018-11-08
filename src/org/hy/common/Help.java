@@ -70,6 +70,7 @@ import org.hy.common.app.Param;
  *               2018-06-19  1. 添加：max()、min()多值一起比较最大值、最小值的系统方法。
  *               2018-09-26  1. 添加：对Map集合的Values排序。
  *               2018-09-30  1. 添加：执行操作系统命令的方法executeCommand()
+ *               2018-11-08  1. 添加：getClassPath()等相关方法支持中文路径和路径中有空格。
  */
 public class Help
 {
