@@ -25,6 +25,17 @@ public class JU_StringHelp
 {
     
     @Test
+    public void test_encode()
+    {
+        String v_Charset = "UTF-8";
+        
+        System.out.println(StringHelp.decode(StringHelp.encode("ABCDEFG hiklmn 1234567890 `~!@#$%^&*()-_=+[]{},./<>?;':\"" ,v_Charset ,"=&?") ,v_Charset));
+        System.out.println(StringHelp.decode(StringHelp.encode("中华人民共和国" ,v_Charset ,"=&?") ,v_Charset));
+    }
+    
+    
+    
+    @Test
     public void test_toNumberSimplify()
     {
         System.out.println(StringHelp.toNumberSimplify("1234567890.1" ,6 ,2));

@@ -3,6 +3,8 @@ package org.hy.common;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.math.BigDecimal;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -46,6 +48,7 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.10 2018-05-23   1.添加 trim(String ,String)去掉字符串前后两端的指定的子字符。
  *              v1.11 2018-10-17   1.添加 toNumberSimplify()简化显示数字，显示允许的长度。
  *                                 2.添加 toScientificNotation()特殊的科学计数显示数字。
+ *              v1.12 2018-11-15   1.添加 encode() decode()两种转义方法。可对指定字符串排除转义的功能。
  *              
  * @createDate  2009-08-21
  */
@@ -922,6 +925,98 @@ public final class StringHelp
         }
         
         return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 字符串转义。
+     * 
+     * 在 URLEncoder.encode() 功能略加改造。
+     * 
+     * @param i_String        需要转义的字符串
+     * @param i_Charset       字符集名称(默认:UTF-8)
+     * @return
+     */
+    public final static String encode(String i_String ,String i_Charset)
+    {
+        return encode(i_String ,i_Charset ,"");
+    }
+    
+    
+    
+    /**
+     * 字符串转义。
+     * 
+     * 在 URLEncoder.encode() 功能略加改造。
+     * 
+     * @param i_String        需要转义的字符串
+     * @param i_Charset       字符集名称(默认:UTF-8)
+     * @param i_NotInStrings  转义时被排除的字符
+     * @return
+     */
+    public final static String encode(String i_String ,String i_Charset ,String i_NotInStrings)
+    {
+        String        v_Charset = Help.NVL(i_Charset ,"UTF-8");
+        StringBuilder v_Buffer  = new StringBuilder();
+        v_Buffer.ensureCapacity(i_String.length() * 8);
+        
+        for (int i=0; i<i_String.length(); i++)
+        {
+            String v_One = i_String.substring(i ,i+1);
+            
+            if ( i_NotInStrings.indexOf(v_One) >= 0 )
+            {
+                v_Buffer.append(v_One);
+            }
+            else
+            {
+                try
+                {
+                    v_Buffer.append(URLEncoder.encode(v_One ,v_Charset));
+                }
+                catch (Exception exce)
+                {
+                    v_Buffer.append(v_One);
+                }
+            }
+        }
+        
+        return v_Buffer.toString();  
+    }
+    
+    
+    
+    /**
+     * 与 encode() 成对出现的逆向转义(默认:UTF-8)
+     * 
+     * @param i_String        需要转义的字符串
+     * @return
+     */
+    public final static String decode(String i_String)
+    {
+        return decode(i_String ,null);
+    }
+    
+    
+    
+    /**
+     * 与 encode() 成对出现的逆向转义
+     * 
+     * @param i_String        需要转义的字符串
+     * @param i_Charset       字符集名称(默认:UTF-8)
+     * @return
+     */
+    public final static String decode(String i_String ,String i_Charset)
+    {
+        try
+        {
+            return URLDecoder.decode(i_String ,Help.NVL(i_Charset ,"UTF-8"));
+        }
+        catch (Exception exce)
+        {
+            return i_String;
+        }
     }
     
     
