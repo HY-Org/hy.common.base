@@ -14,6 +14,7 @@ public class JU_Date
     public void test_Format()
     {
         System.out.println((new Date("2018-11-01 01:01:01.0")).getFull());
+        System.out.println((new Date("9999-12-31 23:59:59")).getFull());
     }
     
     
