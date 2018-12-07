@@ -65,6 +65,21 @@ public class Comparate
             return v_CResult;
         }
         
+        if ( i_A.size() == 1 && i_B.size() == 1)
+        {
+            if ( i_A.iterator().next().equals(i_B.iterator().next()) )
+            {
+                v_CResult.setSameData(i_B);
+            }
+            else
+            {
+                v_CResult.setNewData(i_B);
+                v_CResult.setDelData(i_A);
+            }
+            
+            return v_CResult;
+        }
+        
         Iterator<V> v_AIter     = i_A.iterator();
         Iterator<V> v_BIter     = i_B.iterator();
         Set<V>      v_NewDatas  = new HashSet<V>();
@@ -152,6 +167,21 @@ public class Comparate
             return v_CResult;
         }
         
+        if ( i_A.size() == 1 && i_B.size() == 1)
+        {
+            if ( i_A.get(0).equals(i_B.get(0)) )
+            {
+                v_CResult.setSameData(i_B);
+            }
+            else
+            {
+                v_CResult.setNewData(i_B);
+                v_CResult.setDelData(i_A);
+            }
+            
+            return v_CResult;
+        }
+        
         Map<V ,Integer> v_AMap = new HashMap<V ,Integer>();
         Map<V ,Integer> v_BMap = new HashMap<V ,Integer>();
         for (int i=i_B.size()-1; i>=0; i--)
@@ -234,6 +264,7 @@ public class Comparate
      * @param i_B
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static <V> ComparateResult<V []> comparate(V [] i_A ,V [] i_B)
     {
         ComparateResult<V []> v_CResult = new ComparateResult<V []>();
@@ -255,6 +286,21 @@ public class Comparate
         else if ( !Help.isNull(i_A) && Help.isNull(i_B) )
         {
             v_CResult.setDelData(i_A);
+            return v_CResult;
+        }
+        
+        if ( i_A.length == 1 && i_B.length == 1)
+        {
+            if ( i_A[0].equals(i_B[0]) )
+            {
+                v_CResult.setSameData(i_B);
+            }
+            else
+            {
+                v_CResult.setNewData(i_B);
+                v_CResult.setDelData(i_A);
+            }
+            
             return v_CResult;
         }
         
@@ -307,15 +353,15 @@ public class Comparate
         
         if ( !Help.isNull(v_NewDatas) )
         {
-            v_CResult.setNewData(v_NewDatas.toArray(i_A));
+            v_CResult.setNewData((V [])(v_NewDatas.toArray()));
         }
         if ( !Help.isNull(v_SameDatas) )
         {
-            v_CResult.setSameData(v_SameDatas.toArray(i_A));
+            v_CResult.setSameData((V [])(v_SameDatas.toArray()));
         }
         if ( !Help.isNull(v_DelDatas) )
         {
-            v_CResult.setDelData(v_DelDatas.toArray(i_A));
+            v_CResult.setDelData((V [])(v_DelDatas.toArray()));
         }
         
         return v_CResult;
