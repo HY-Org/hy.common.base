@@ -1,5 +1,6 @@
 package org.hy.common.comparate;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -353,15 +354,18 @@ public class Comparate
         
         if ( !Help.isNull(v_NewDatas) )
         {
-            v_CResult.setNewData((V [])(v_NewDatas.toArray()));
+            V [] v_ArrData = (V [])(Array.newInstance(i_A.getClass() ,v_NewDatas.size()));
+            v_CResult.setNewData(v_NewDatas.toArray(v_ArrData));
         }
         if ( !Help.isNull(v_SameDatas) )
         {
-            v_CResult.setSameData((V [])(v_SameDatas.toArray()));
+            V [] v_ArrData = (V [])(Array.newInstance(i_A.getClass() ,v_SameDatas.size()));
+            v_CResult.setSameData(v_SameDatas.toArray(v_ArrData));
         }
         if ( !Help.isNull(v_DelDatas) )
         {
-            v_CResult.setDelData((V [])(v_DelDatas.toArray()));
+            V [] v_ArrData = (V [])(Array.newInstance(i_A.getClass() ,v_DelDatas.size()));
+            v_CResult.setDelData(v_DelDatas.toArray(v_ArrData));
         }
         
         return v_CResult;
