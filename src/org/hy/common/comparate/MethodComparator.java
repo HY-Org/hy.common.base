@@ -1,4 +1,4 @@
-package org.hy.common;
+package org.hy.common.comparate;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;

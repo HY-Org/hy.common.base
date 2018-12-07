@@ -16,9 +16,11 @@
 	* [ClassReflect 类的反射](src/org/hy/common/ClassReflect.java)
 	* [StaticReflect 静态字段(成员属性)的反射](src/org/hy/common/StaticReflect.java)
 * 比较器
-	* [MethodComparator "方法"类的排序比较器](src/org/hy/common/MethodComparator.java)
-	* [ObjectComparator 对象多维的排序比较器](src/org/hy/common/ObjectComparator.java)
-	* [SerializableComparator 序列化对象多维的排序比较器](src/org/hy/common/SerializableComparator.java)
+	* [MethodComparator "方法"类的排序比较器](src/org/hy/common/comparate/MethodComparator.java)
+	* [MethodFieldComparator "方法成员属性"类的排序比较器](src/org/hy/common/comparate/MethodFieldComparator.java)
+	* [ObjectComparator 对象多维的排序比较器](src/org/hy/common/comparate/ObjectComparator.java)
+	* [SerializableComparator 序列化对象多维的排序比较器](src/org/hy/common/comparate/SerializableComparator.java)
+	* [Comparate 两个相同元素类型的集合（数组、List、Set、Map）对比](src/org/hy/common/comparate/Comparate.java)
 * 集合类
     * [CycleList 轮转、周而复始的循环](src/org/hy/common/CycleList.java)
     * [ExpireMap 有生存时间的Map，当生存时间期满时，Map.key就失效了](src/org/hy/common/ExpireMap.java)

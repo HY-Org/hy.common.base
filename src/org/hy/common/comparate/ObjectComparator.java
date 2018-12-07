@@ -1,8 +1,9 @@
-package org.hy.common;
+package org.hy.common.comparate;
 
 import java.util.Comparator;
 
 import org.hy.common.Help;
+import org.hy.common.MethodReflect;
 
 
 

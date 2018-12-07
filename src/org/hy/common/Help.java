@@ -37,6 +37,9 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.hy.common.app.Param;
+import org.hy.common.comparate.MethodComparator;
+import org.hy.common.comparate.ObjectComparator;
+import org.hy.common.comparate.SerializableComparator;
 
 
 
