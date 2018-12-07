@@ -200,6 +200,11 @@ public class Comparate
             }
         }
         
+        v_AMap.clear();
+        v_BMap.clear();
+        v_AMap = null;
+        v_BMap = null;
+        
         if ( !Help.isNull(v_NewDatas) )
         {
             v_CResult.setNewData(v_NewDatas);
@@ -294,6 +299,11 @@ public class Comparate
                 v_NewDatas.add(i_B[i]);
             }
         }
+        
+        v_AMap.clear();
+        v_BMap.clear();
+        v_AMap = null;
+        v_BMap = null;
         
         if ( !Help.isNull(v_NewDatas) )
         {
