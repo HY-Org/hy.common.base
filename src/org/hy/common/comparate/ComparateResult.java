@@ -31,7 +31,7 @@ public class ComparateResult<R> implements Serializable
     /** 两对象A与B对比时，A、B均有并相同的数据 */
     private R sameData;
     
-    /** 两对象A与B对比时，A、B均有，但不相同的数据 */
+    /** 两对象A与B对比时，A、B均有，但不相同的数据（仅用于Map集合的对比）。记录B的值Map.value */
     private R diffData;
     
     /** 两对象A与B对比时，A中有，B中没有的数据 */

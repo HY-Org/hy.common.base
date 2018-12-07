@@ -32,6 +32,104 @@ public class Comparate
 {
     
     /**
+     * 对比两元素类型相同的Map集合
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-12-07
+     * @version     v1.0
+     *
+     * @param i_A
+     * @param i_B
+     * @return
+     */
+    public static <K ,V> ComparateResult<Map<K ,V>> comparate(Map<K ,V> i_A ,Map<K ,V> i_B)
+    {
+        ComparateResult<Map<K ,V>> v_CResult = new ComparateResult<Map<K ,V>>();
+        
+        if ( i_A == i_B )
+        {
+            v_CResult.setSameData(i_B);
+            return v_CResult;
+        }
+        else if ( Help.isNull(i_A) && Help.isNull(i_B) )
+        {
+            return v_CResult;
+        }
+        else if ( Help.isNull(i_A) && !Help.isNull(i_B) )
+        {
+            v_CResult.setNewData(i_B);
+            return v_CResult;
+        }
+        else if ( !Help.isNull(i_A) && Help.isNull(i_B) )
+        {
+            v_CResult.setDelData(i_A);
+            return v_CResult;
+        }
+        
+        Map<K ,V> v_NewDatas  = new HashMap<K ,V>();
+        Map<K ,V> v_SameDatas = new HashMap<K ,V>();
+        Map<K ,V> v_DiffDatas = new HashMap<K ,V>();
+        Map<K ,V> v_DelDatas  = new HashMap<K ,V>();
+        for (Map.Entry<K ,V> v_AItem : i_A.entrySet())
+        {
+            V v_BValue = i_B.get(v_AItem.getKey());
+            
+            if ( v_AItem.getValue() == null && v_BValue == null )
+            {
+                continue;
+            }
+            else if ( v_AItem.getValue() == null && v_BValue != null )
+            {
+                v_NewDatas.put(v_AItem.getKey() ,v_BValue);
+            }
+            else if ( v_AItem.getValue() != null && v_BValue == null )
+            {
+                v_DelDatas.put(v_AItem.getKey() ,v_AItem.getValue());
+            }
+            else if ( v_AItem.getValue().equals(v_BValue) )
+            {
+                v_SameDatas.put(v_AItem.getKey() ,v_BValue);
+            }
+            else
+            {
+                v_DiffDatas.put(v_AItem.getKey() ,v_BValue);
+            }
+        }
+        
+        for (Map.Entry<K ,V> v_BItem : i_B.entrySet())
+        {
+            if ( !i_A.containsKey(v_BItem.getKey()) )
+            {
+                if ( v_BItem.getValue() != null )
+                {
+                    v_NewDatas.put(v_BItem.getKey() ,v_BItem.getValue());
+                }
+            }
+        }
+        
+        if ( !Help.isNull(v_NewDatas) )
+        {
+            v_CResult.setNewData(v_NewDatas);
+        }
+        if ( !Help.isNull(v_SameDatas) )
+        {
+            v_CResult.setSameData(v_SameDatas);
+        }
+        if ( !Help.isNull(v_DiffDatas) )
+        {
+            v_CResult.setDiffData(v_DiffDatas);
+        }
+        if ( !Help.isNull(v_DelDatas) )
+        {
+            v_CResult.setDelData(v_DelDatas);
+        }
+        
+        return v_CResult;
+    }
+    
+    
+    
+    /**
      * 对比两元素类型相同的Set集合
      * 
      * @author      ZhengWei(HY)
