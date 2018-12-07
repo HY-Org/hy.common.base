@@ -238,12 +238,16 @@ public class Comparate
             v_CResult.setSameData(i_B);
             return v_CResult;
         }
-        else if ( i_A == null && i_B != null )
+        else if ( Help.isNull(i_A) && Help.isNull(i_B) )
+        {
+            return v_CResult;
+        }
+        else if ( Help.isNull(i_A) && !Help.isNull(i_B) )
         {
             v_CResult.setNewData(i_B);
             return v_CResult;
         }
-        else if ( i_A != null && i_B == null )
+        else if ( !Help.isNull(i_A) && Help.isNull(i_B) )
         {
             v_CResult.setDelData(i_A);
             return v_CResult;
