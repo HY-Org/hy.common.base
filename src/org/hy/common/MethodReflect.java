@@ -667,7 +667,7 @@ public class MethodReflect implements Serializable
     
     
     
-    public static Class<?> getGenerics(ArrayList<?> i_List)
+    public static <V> Class<?> getGenerics(List<V> i_List)
     {
         try
         {

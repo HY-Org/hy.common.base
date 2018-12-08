@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -74,6 +75,8 @@ import org.hy.common.comparate.SerializableComparator;
  *               2018-09-26  1. 添加：对Map集合的Values排序。
  *               2018-09-30  1. 添加：执行操作系统命令的方法executeCommand()
  *               2018-11-08  1. 添加：getClassPath()等相关方法支持中文路径和路径中有空格。
+ *               2018-12-08  1. 添加：toArray()将List\Set集合转成数组。
+ *                                   比JDK优于：支持泛型，并且保证数组中元素类型不变，与集合元素类型一样。
  */
 public class Help
 {
@@ -3868,6 +3871,96 @@ public class Help
         }
         
         return v_Name;
+    }
+    
+    
+    
+    /**
+     * 将List集合转成数组，并且保证数组中元素类型不变，与集合元素类型一样。
+     * 
+     * 其实List集合可通过List.toArray(new T []{})来实现数组的转换。
+     * 那为什么还要实现本类呢？
+     * 原因是：
+     *       List.toArray(new T []{})中的T必须是一个明确的类型，不能是泛型。
+     *       而本方法支持泛型的转换。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-12-08
+     * @version     v1.0
+     *
+     * @param i_List
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public final static <V> V [] toArray(List<V> i_List)
+    {
+        if ( Help.isNull(i_List) )
+        {
+            return null;
+        }
+        
+        Class<?> v_ItemClass = null;
+        for (V v_Item : i_List)
+        {
+            if ( v_Item != null )
+            {
+                v_ItemClass = v_Item.getClass();
+                break;
+            }
+        }
+        if ( v_ItemClass == null )
+        {
+            v_ItemClass = Object.class;
+        }
+        
+        V [] v_ArrData = (V [])(Array.newInstance(v_ItemClass ,0));
+        return i_List.toArray(v_ArrData); 
+    }
+    
+    
+    
+    /**
+     * 将Set集合转成数组，并且保证数组中元素类型不变，与集合元素类型一样。
+     * 
+     * 其实Set集合可通过Set.toArray(new T []{})来实现数组的转换。
+     * 那为什么还要实现本类呢？
+     * 原因是：
+     *       Set.toArray(new T []{})中的T必须是一个明确的类型，不能是泛型。
+     *       而本方法支持泛型的转换。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-12-08
+     * @version     v1.0
+     *
+     * @param i_Set
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public final static <V> V [] toArray(Set<V> i_Set)
+    {
+        if ( Help.isNull(i_Set) )
+        {
+            return null;
+        }
+        
+        Iterator<V> v_Iter = i_Set.iterator();
+        Class<?> v_ItemClass = null;
+        for ( ; v_Iter.hasNext() ; )
+        {
+            V v_Item = v_Iter.next();
+            if ( v_Item != null )
+            {
+                v_ItemClass = v_Item.getClass();
+                break;
+            }
+        }
+        if ( v_ItemClass == null )
+        {
+            v_ItemClass = Object.class;
+        }
+        
+        V [] v_ArrData = (V [])(Array.newInstance(v_ItemClass ,0));
+        return i_Set.toArray(v_ArrData); 
     }
     
     

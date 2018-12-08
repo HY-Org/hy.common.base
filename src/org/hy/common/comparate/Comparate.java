@@ -1,6 +1,5 @@
 package org.hy.common.comparate;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -363,7 +362,6 @@ public class Comparate
      * @param i_B
      * @return
      */
-    @SuppressWarnings("unchecked")
     public static <V> ComparateResult<V []> comparate(V [] i_A ,V [] i_B)
     {
         ComparateResult<V []> v_CResult = new ComparateResult<V []>();
@@ -452,19 +450,23 @@ public class Comparate
         
         if ( !Help.isNull(v_NewDatas) )
         {
-            V [] v_ArrData = (V [])(Array.newInstance(i_A.getClass() ,v_NewDatas.size()));
-            v_CResult.setNewData(v_NewDatas.toArray(v_ArrData));
+            v_CResult.setNewData(Help.toArray(v_NewDatas));
         }
         if ( !Help.isNull(v_SameDatas) )
         {
-            V [] v_ArrData = (V [])(Array.newInstance(i_A.getClass() ,v_SameDatas.size()));
-            v_CResult.setSameData(v_SameDatas.toArray(v_ArrData));
+            v_CResult.setSameData(Help.toArray(v_SameDatas));
         }
         if ( !Help.isNull(v_DelDatas) )
         {
-            V [] v_ArrData = (V [])(Array.newInstance(i_A.getClass() ,v_DelDatas.size()));
-            v_CResult.setDelData(v_DelDatas.toArray(v_ArrData));
+            v_CResult.setDelData(Help.toArray(v_DelDatas));
         }
+        
+        v_NewDatas .clear();
+        v_SameDatas.clear();
+        v_DelDatas .clear();
+        v_NewDatas  = null;
+        v_SameDatas = null;
+        v_DelDatas  = null;
         
         return v_CResult;
     }
