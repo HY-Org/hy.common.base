@@ -24,37 +24,40 @@ import java.util.Map;
  *                                添加：yyyy-MM、yyyyMM两种格式的转换。共支持  7 + 3 + 3 + 1 + 3 + 3 = 20 种格式。
  *              v1.5  2018-11-01  添加：yyyy-MM-dd HH:mm:ss.S格式的转换。共支持 7 + 3 + 3 + 1 + 3 + 3 + 3 = 23 种格式。
  *                                     建议人：邹德福
+ *              v1.6  2018-12-17  添加：UTC（$FORMAT_UTC_ID）格式的转换。累计共支持 7 + 3 + 3 + 1 + 3 + 3 + 3 + 1 = 24 种格式。
  */
 public final class Date extends java.util.Date
 {
     
     private static final long serialVersionUID = 8529353384393262590L;
     
-    public  static final String               $FORMAT_Milli    = "yyyy-MM-dd HH:mm:ss.SSS"; // length=23  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+    public  static final String               $FORMAT_Milli       = "yyyy-MM-dd HH:mm:ss.SSS"; // length=23  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
-    public  static final String               $FORMAT_Milli2   = "yyyy-MM-dd HH:mm:ss.S";   // length=21  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+    public  static final String               $FORMAT_Milli2      = "yyyy-MM-dd HH:mm:ss.S";   // length=21  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
-    public  static final String               $FORMAT_MilliID  = "yyyyMMddHHmmssSSS";       // length=17
+    public  static final String               $FORMAT_MilliID     = "yyyyMMddHHmmssSSS";       // length=17
     
-    public  static final String               $FORMAT_Normal   = "yyyy-MM-dd HH:mm:ss";     // length=19  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+    public  static final String               $FORMAT_Normal      = "yyyy-MM-dd HH:mm:ss";     // length=19  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
-    public  static final String               $FROMAT_ID       = "yyyyMMddHHmmss";          // length=14
+    public  static final String               $FORMAT_UTC_ID      = "yyyyMMddHHmmssZ";         // length=15
     
-    public  static final String               $FORMAT_YMD      = "yyyy-MM-dd";              // length=10  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+    public  static final String               $FROMAT_ID          = "yyyyMMddHHmmss";          // length=14
     
-    public  static final String               $FORMAT_YMD_ID   = "yyyyMMdd";                // length=8   需特殊处理
+    public  static final String               $FORMAT_YMD         = "yyyy-MM-dd";              // length=10  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
-    public  static final String               $FORMAT_HMS      = "HH:mm:ss";                // length=8   需特殊处理
+    public  static final String               $FORMAT_YMD_ID      = "yyyyMMdd";                // length=8   需特殊处理
     
-    public  static final String               $FORMAT_YM       = "yyyy-MM";                 // length=7   需特殊处理   同时支持 yyyy/MM 、yyyy年MM月 的格式
+    public  static final String               $FORMAT_HMS         = "HH:mm:ss";                // length=8   需特殊处理
     
-    public  static final String               $FORMAT_YM_ID    = "yyyyMM";                  // length=6   需特殊处理   同时支持 yyyy/MM 、yyyy年MM月 的格式
+    public  static final String               $FORMAT_YM          = "yyyy-MM";                 // length=7   需特殊处理   同时支持 yyyy/MM 、yyyy年MM月 的格式
+    
+    public  static final String               $FORMAT_YM_ID       = "yyyyMM";                  // length=6   需特殊处理   同时支持 yyyy/MM 、yyyy年MM月 的格式
     
     /** 实现上面7 + 3 + 3 + 1种时间格式的快速检索 */
     private static final Map<Integer ,String> $FORMATS;
     
     /** 需要有Locale.US的配合 */
-    public  static final String               $FORMAT_US     = "EEE MMM dd HH:mm:ss zzz yyyy";
+    public  static final String               $FORMAT_US          = "EEE MMM dd HH:mm:ss zzz yyyy";
     
     /** 一周的第一天，按星期天为第一天 */
     public  static final int                  WEEK_FIRST_EN  = 0;
@@ -78,6 +81,7 @@ public final class Date extends java.util.Date
         $FORMATS.put($FORMAT_MilliID.length()     ,$FORMAT_MilliID);
         $FORMATS.put($FORMAT_Normal .length()     ,$FORMAT_Normal);
         $FORMATS.put($FORMAT_Normal .length() + 1 ,$FORMAT_Normal);   // yyyy年MM月dd日多了一个 "日"
+        $FORMATS.put($FORMAT_UTC_ID .length()     ,$FORMAT_UTC_ID);
         $FORMATS.put($FROMAT_ID     .length()     ,$FROMAT_ID);
         $FORMATS.put($FORMAT_YMD    .length()     ,$FORMAT_YMD);
         $FORMATS.put($FORMAT_YMD    .length() + 1 ,$FORMAT_YMD);      // yyyy年MM月dd日多了一个 "日"
@@ -219,8 +223,15 @@ public final class Date extends java.util.Date
         
         try
         {
-            v_Date = new Date(StringHelp.replaceAll(i_StrDateFormat ,new String[]{"日" ,"/" ,"年" ,"月"} ,new String[]{"" ,"-"})
-                             ,$FORMATS.get(i_StrDateFormat.trim().length()));
+            String v_DateStr    = StringHelp.replaceAll(i_StrDateFormat ,new String[]{"日" ,"/" ,"年" ,"月"} ,new String[]{"" ,"-"});
+            String v_DateFormat = $FORMATS.get(i_StrDateFormat.trim().length());
+            
+            if ( $FORMAT_UTC_ID == v_DateFormat )
+            {
+                v_DateStr = StringHelp.replaceAll(v_DateStr ,"Z" ,"UTC");
+            }
+            
+            v_Date = new Date(v_DateStr ,v_DateFormat);
         }
         catch (Exception exce)
         {
