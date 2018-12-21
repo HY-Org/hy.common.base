@@ -49,6 +49,7 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.11 2018-10-17   1.添加 toNumberSimplify()简化显示数字，显示允许的长度。
  *                                 2.添加 toScientificNotation()特殊的科学计数显示数字。
  *              v1.12 2018-11-15   1.添加 encode() decode()两种转义方法。可对指定字符串排除转义的功能。
+ *              v1.13 2018-12-21   1.添加 trimToDistinct()去掉某些连续重复出现的字符。如“A...B..C”，去掉重复连续的.点，就变成：“A.B.C”
  *              
  * @createDate  2009-08-21
  */
@@ -1220,6 +1221,37 @@ public final class StringHelp
         }
         
         return v_Buffer.toString();  
+    }
+    
+    
+    
+    /**
+     * 去掉某些连续重复出现的字符。如“A...B..C”，去掉重复连续的.点，就变成：“A.B.C”
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-12-21
+     * @version     v1.0
+     *
+     * @param i_Text        被去重的字符串
+     * @param i_DoubleText  去重的字符串是哪个
+     * @return
+     */
+    public static String trimToDistinct(String i_Text ,String i_DoubleText)
+    {
+        if ( i_Text == null || i_DoubleText == null )
+        {
+            return i_Text;
+        }
+        
+        String v_Ret        = i_Text;
+        String v_DoubleInfo = i_DoubleText + i_DoubleText;
+        do
+        {
+            v_Ret = StringHelp.replaceAll(v_Ret ,v_DoubleInfo ,i_DoubleText);
+        } 
+        while ( v_Ret.indexOf(v_DoubleInfo) >= 0 );
+        
+        return v_Ret;
     }
     
     
