@@ -77,6 +77,8 @@ import org.hy.common.comparate.SerializableComparator;
  *               2018-11-08  1. 添加：getClassPath()等相关方法支持中文路径和路径中有空格。
  *               2018-12-08  1. 添加：toArray()将List\Set集合转成数组。
  *                                   比JDK优于：支持泛型，并且保证数组中元素类型不变，与集合元素类型一样。
+ *               2018-12-22  1. 添加：executeCommand()方法添加：超时后自动结束命令的执行
+ *                           2. 添加：executeCommand()方法添加：标准输出流与错误输出流均要处理，这里通过异步处理错误输出流，保证输出缓冲区不会被堵住
  */
 public class Help
 {
@@ -7349,7 +7351,7 @@ public class Help
      */
     public final static List<String> executeCommand(String ... i_Commands)
     {
-        return executeCommand("UTF-8" ,false ,true ,i_Commands);
+        return executeCommand("UTF-8" ,false ,true ,0 ,i_Commands);
     }
     
     
@@ -7375,7 +7377,7 @@ public class Help
      */
     public final static List<String> executeCommand(boolean i_IsWaitProcess ,String ... i_Commands)
     {
-        return executeCommand("UTF-8" ,i_IsWaitProcess ,true ,i_Commands);
+        return executeCommand("UTF-8" ,i_IsWaitProcess ,true ,0 ,i_Commands);
     }
     
     
@@ -7402,7 +7404,35 @@ public class Help
      */
     public final static List<String> executeCommand(boolean i_IsWaitProcess ,boolean i_IsReturnInfo ,String ... i_Commands)
     {
-        return executeCommand("UTF-8" ,i_IsWaitProcess ,i_IsReturnInfo ,i_Commands);
+        return executeCommand("UTF-8" ,i_IsWaitProcess ,i_IsReturnInfo ,0 ,i_Commands);
+    }
+    
+    
+    
+    /**
+     * 执行操作系统命令。
+     * 
+     * 如MacOS系统上查看目录列表的命令："ls -aln /" 有下面两种写法
+     *   1. Help.executeCommand("ls" ,"-aln" ,"/");
+     *   2. Help.executeCommand("ls -aln /");
+     *   
+     * 如Windows系统上查看目录列表的命令："dir c:\\" 有下面两种写法
+     *   1. Help.executeCommand("cmd.exe /c dir c:\\");
+     *   2. Help.executeCommand("cmd.exe" ,"/c" ,"dir" ,"c:\\");
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-12-22
+     * @version     v1.0
+     *
+     * @param i_CharEncoding   命令结果返回时字符集
+     * @param i_IsWaitProcess  是否等待命令执行完成。当等待时调用线程将被阻塞
+     * @param i_IsReturnInfo   是否返回执行结果
+     * @param i_Commands
+     * @return
+     */
+    public final static List<String> executeCommand(String i_CharEncoding ,boolean i_IsWaitProcess ,boolean i_IsReturnInfo ,String ... i_Commands)
+    {
+        return executeCommand(i_CharEncoding ,i_IsWaitProcess ,i_IsReturnInfo ,0 ,i_Commands);
     }
     
     
@@ -7423,18 +7453,20 @@ public class Help
      * @version     v1.0
      *
      * @param i_CharEncoding   命令结果返回时字符集
-     * @param i_IsReturnInfo   是否返回执行结果
      * @param i_IsWaitProcess  是否等待命令执行完成。当等待时调用线程将被阻塞
+     * @param i_IsReturnInfo   是否返回执行结果
+     * @param i_Timeout        超时时长。超时后执行将被结束。（单位：秒）
      * @param i_Commands       执行命令 
      * @return
      */
-    public final static List<String> executeCommand(String i_CharEncoding ,boolean i_IsReturnInfo ,boolean i_IsWaitProcess ,String ... i_Commands)
+    public final static List<String> executeCommand(String i_CharEncoding ,boolean i_IsWaitProcess ,boolean i_IsReturnInfo ,long i_Timeout ,String ... i_Commands)
     {
-        Runtime        v_Runtime = Runtime.getRuntime();
-        Process        v_Process = null;
-        InputStream    v_Input   = null;
-        BufferedReader v_Reader  = null;
-        List<String>   v_Ret     = new ArrayList<String>();
+        Runtime        v_Runtime   = Runtime.getRuntime();
+        Process        v_Process   = null;
+        InputStream    v_Input     = null;
+        BufferedReader v_Reader    = null;
+        InputStream    v_ErrInput  = null;
+        List<String>   v_Ret       = new ArrayList<String>();
         
         try 
         {
@@ -7451,8 +7483,71 @@ public class Help
                 v_Process = v_Runtime.exec(i_Commands);
             }
             
+            // 超时后自动结束命令的执行 Add 2018-12-22
+            if ( i_Timeout > 0 )
+            {
+                final Process   v_FinalProcess = v_Process;
+                final long      v_Timeout      = i_Timeout;
+                final String [] v_Cmds         = i_Commands;
+                new Thread(new Runnable() 
+                {
+                    public void run() 
+                    {
+                        try 
+                        {
+                            Thread.sleep(v_Timeout * 1000);
+                            if ( v_FinalProcess != null )
+                            {
+                                System.err.println("Execute(" + StringHelp.toString(v_Cmds) +") is Timeout(" + v_Timeout + " sec) by destroy.");
+                                v_FinalProcess.destroy();  // destroyForcibly(); 1.7没有此强制方法
+                            }
+                        } 
+                        catch (Exception e) 
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+            
             if ( i_IsReturnInfo )
             {
+                v_ErrInput  = v_Process.getErrorStream();
+                final BufferedReader v_ErrReader = new BufferedReader(new InputStreamReader(v_ErrInput ,i_CharEncoding));
+                
+                // 标准输出流与错误输出流均要处理，这里通过异步处理错误输出流，保证输出缓冲区不会被堵住。Add 2018-12-22
+                new Thread(new Runnable() 
+                {
+                    public void run() 
+                    {
+                        try 
+                        {
+                            while ( v_ErrReader.read() != -1 )
+                            {
+                                // Nothing.
+                            }
+                        } 
+                        catch (Exception e) 
+                        {
+                            e.printStackTrace();
+                        }
+                        finally
+                        {
+                            if ( v_ErrReader != null )
+                            {
+                                try
+                                {
+                                    v_ErrReader.close();
+                                }
+                                catch (Exception exce)
+                                {
+                                    // Nothing.
+                                }
+                            }
+                        }
+                    }
+                }).start();
+                
                 v_Input  = v_Process.getInputStream();
                 v_Reader = new BufferedReader(new InputStreamReader(v_Input ,i_CharEncoding));
                 
@@ -7474,6 +7569,20 @@ public class Help
         }
         finally
         {
+            if ( v_ErrInput != null )
+            {
+                try
+                {
+                    v_ErrInput.close();
+                }
+                catch (Exception exce)
+                {
+                    // Nothing.
+                }
+                
+                v_ErrInput = null;
+            }
+            
             if ( v_Reader != null )
             {
                 try
