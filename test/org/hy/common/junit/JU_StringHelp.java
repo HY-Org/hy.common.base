@@ -25,6 +25,26 @@ public class JU_StringHelp
 {
     
     @Test
+    public void test_replaceFirst()
+    {
+        System.out.println("非首位时：" + StringHelp.replaceFirst("#$%_ABC_123_ABC_456_ABC_789" ,"ABC" ,"XYZ"));
+        System.out.println("在首位时：" + StringHelp.replaceFirst("ABC_123_ABC_456_ABC_789"     ,"ABC" ,"XYZ"));
+        System.out.println("在末尾时：" + StringHelp.replaceFirst("#$%_123_ABC"                 ,"ABC" ,"XYZ"));
+    }
+    
+    
+    
+    @Test
+    public void test_replaceLast()
+    {
+        System.out.println("非末尾时：" + StringHelp.replaceLast("#$%_ABC_123_ABC_456_ABC_789" ,"ABC" ,"XYZ"));
+        System.out.println("在末尾时：" + StringHelp.replaceLast("#$%_ABC_123_ABC"             ,"ABC" ,"XYZ"));
+        System.out.println("在首位时：" + StringHelp.replaceLast("ABC_123_#$%"                 ,"ABC" ,"XYZ"));
+    }
+    
+    
+    
+    @Test
     public void test_encode()
     {
         String v_Charset = "UTF-8";

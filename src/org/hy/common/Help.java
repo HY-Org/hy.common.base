@@ -7529,7 +7529,7 @@ public class Help
                         } 
                         catch (Exception e) 
                         {
-                            e.printStackTrace();
+                            // Nothing.
                         }
                         finally
                         {

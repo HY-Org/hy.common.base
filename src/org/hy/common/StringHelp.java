@@ -42,7 +42,7 @@ import org.hy.common.SplitSegment.InfoType;
  *                                 1.添加 trim() 方法，去掉空格、回车、换行字符串
  *              v1.6  2018-03-22   1.添加 isContains() 支持有先、后顺序匹配查找关键字的功能。
  *                                 1.添加 比正则表达式性能更高的统计getCount(...)。
- *              v1.7  2018-04-13   1.添加 replaceFirst(...)系统方法
+ *              v1.7  2018-04-13   1.添加 replaceFirst(...) 系列方法
  *              v1.8  2018-05-04   1.添加 isEquals()、isEqualsIgnoreCase() 比较多个关键字，判定是否只少有一个相等。
  *              v1.9  2018-05-16   1.添加 支持中文占位符。建议人：邹德福
  *              v1.10 2018-05-23   1.添加 trim(String ,String)去掉字符串前后两端的指定的子字符。
@@ -50,6 +50,7 @@ import org.hy.common.SplitSegment.InfoType;
  *                                 2.添加 toScientificNotation()特殊的科学计数显示数字。
  *              v1.12 2018-11-15   1.添加 encode() decode()两种转义方法。可对指定字符串排除转义的功能。
  *              v1.13 2018-12-21   1.添加 trimToDistinct()去掉某些连续重复出现的字符。如“A...B..C”，去掉重复连续的.点，就变成：“A.B.C”
+ *              v1.14 2018-12-27   1.添加 replaceLast(...) 系列方法
  *              
  * @createDate  2009-08-21
  */
@@ -657,7 +658,7 @@ public final class StringHelp
 	/**
      * 批量替换字符串（每个关键字只替换一次）
      * 
-     * Java自带的String.replaceFirst()方法，是通过正则表达式做的替换动作，
+     * Java自带的String.replace()方法，是通过正则表达式做的替换动作，
      * 对于一些特殊字符，要做十分复杂的处理，并不好用。
      * 
      * 比如说："Q美元Q".replaceFirst("美元" ,"$"); 方法会出错。
@@ -684,7 +685,7 @@ public final class StringHelp
     /**
      * 批量替换字符串（每个关键字只替换一次）
      * 
-     * Java自带的String.replaceFirst()方法，是通过正则表达式做的替换动作，
+     * Java自带的String.replace()方法，是通过正则表达式做的替换动作，
      * 对于一些特殊字符，要做十分复杂的处理，并不好用。
      * 
      * 比如说："Q美元Q".replaceFirst("美元" ,"$"); 方法会出错。
@@ -740,7 +741,7 @@ public final class StringHelp
 	/**
      * 批量替换字符串（每个关键字只替换一次）
      * 
-     * Java自带的String.replaceFirst()方法，是通过正则表达式做的替换动作，
+     * Java自带的String.replace()方法，是通过正则表达式做的替换动作，
      * 对于一些特殊字符，要做十分复杂的处理，并不好用。
      * 
      * 比如说："Q美元Q".replaceFirst("美元" ,"$"); 方法会出错。
@@ -791,7 +792,7 @@ public final class StringHelp
 	/**
      * 替换字符串（每个关键字只替换一次）
      * 
-     * Java自带的String.replaceFirst()方法，是通过正则表达式做的替换动作，
+     * Java自带的String.replace()方法，是通过正则表达式做的替换动作，
      * 对于一些特殊字符，要做十分复杂的处理，并不好用。
      * 
      * 比如说："Q美元Q".replaceFirst("美元" ,"$"); 方法会出错。
@@ -821,25 +822,200 @@ public final class StringHelp
         StringBuilder v_Buffer    = new StringBuilder();
         int           v_RLen      = i_Replace.length();
         int           v_FromIndex = i_Info.indexOf(i_Replace);
-        int           v_LastIndex = 0 - v_RLen;
-        boolean       v_IsReplace = false;
         
         if ( v_FromIndex >= 0 )
         {
-            v_LastIndex += v_RLen;
-            v_Buffer.append(i_Info.substring(v_LastIndex ,v_FromIndex)).append(i_ReplaceBy);
-            v_LastIndex = v_FromIndex;
-            v_FromIndex = i_Info.indexOf(i_Replace ,v_FromIndex + v_RLen);
-            v_IsReplace = true;
-        }
-        
-        if ( !v_IsReplace )
-        {
-            return i_Info;
+            v_Buffer.append(i_Info.substring(0 ,v_FromIndex));
+            v_Buffer.append(i_ReplaceBy);
+            v_Buffer.append(i_Info.substring(v_FromIndex + v_RLen));
         }
         else
         {
-            v_Buffer.append(i_Info.substring(v_LastIndex + v_RLen));
+            return i_Info;
+        }
+        
+        return v_Buffer.toString();
+    }
+    
+    
+    
+    /**
+     * 批量替换字符串（每个关键字只替换一次，从末尾替换起）
+     * 
+     * Java自带的String.replace()方法，是通过正则表达式做的替换动作，
+     * 对于一些特殊字符，要做十分复杂的处理，并不好用。
+     * 
+     * 比如说："Q美元Q".replaceLast("美元" ,"$"); 方法会出错。
+     * 
+     * 测试环境为：Mac:OSX EI Capitan , JDK:1.7.0_45-b18
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-12-27
+     * @version     v1.0
+     *
+     * @param i_Info
+     * @param i_Replaces  Map.key 替换字符串。Map.value 被替换字符串。
+     *                    当 Map.value 为 NULL 时，自动用空字符串""替换。这也是与replaceAll(String ,[] ,[])不同的地点之一。
+     *                    内部对i_Replaces有降序排序顺序的动作，并形成有有顺序的LinkedMap。用于解决 :A、:AA 同时存在时的混乱
+     * @return
+     */
+    public final static String replaceLast(final String i_Info ,final Map<String ,?> i_Replaces)
+    {
+        return StringHelp.replaceLast(i_Info ,i_Replaces ,true);
+    }
+    
+    
+    
+    /**
+     * 批量替换字符串（每个关键字只替换一次，从末尾替换起）
+     * 
+     * Java自带的String.replace()方法，是通过正则表达式做的替换动作，
+     * 对于一些特殊字符，要做十分复杂的处理，并不好用。
+     * 
+     * 比如说："Q美元Q".replaceLast("美元" ,"$"); 方法会出错。
+     * 
+     * 测试环境为：Mac:OSX EI Capitan , JDK:1.7.0_45-b18
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-12-27
+     * @version     v1.0
+     *
+     * @param i_Info
+     * @param i_Replaces  Map.key 替换字符串。Map.value 被替换字符串。
+     *                    当 Map.value 为 NULL 时，自动用空字符串""替换。这也是与replaceAll(String ,[] ,[])不同的地点之一。
+     *                    内部对i_Replaces有降序排序顺序的动作，并形成有有顺序的LinkedMap。用于解决 :A、:AA 同时存在时的混乱
+     * @param i_OrderBy   是否降序排序顺序
+     * @return
+     */
+    public final static String replaceLast(final String i_Info ,final Map<String ,?> i_Replaces ,boolean i_OrderBy)
+    {
+        if ( Help.isNull(i_Replaces) )
+        {
+            return i_Info;
+        }
+        
+        Map<String ,?> v_RRS = null;
+        if ( i_OrderBy )
+        {
+            v_RRS = Help.toReverse(i_Replaces);
+        }
+        else
+        {
+            v_RRS = i_Replaces;
+        }
+
+        String v_Ret = i_Info;
+        for (Map.Entry<String, ?> v_RR : v_RRS.entrySet())
+        {
+            if ( v_RR.getValue() == null )
+            {
+                v_Ret = StringHelp.replaceLast(v_Ret ,v_RR.getKey() ,"");
+            }
+            else
+            {
+                v_Ret = StringHelp.replaceLast(v_Ret ,v_RR.getKey() ,v_RR.getValue().toString());
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 批量替换字符串（每个关键字只替换一次，从末尾替换起）
+     * 
+     * Java自带的String.replace()方法，是通过正则表达式做的替换动作，
+     * 对于一些特殊字符，要做十分复杂的处理，并不好用。
+     * 
+     * 比如说："Q美元Q".replaceLast("美元" ,"$"); 方法会出错。
+     * 
+     * 测试环境为：Mac:OSX EI Capitan , JDK:1.7.0_45-b18
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-12-27
+     * @version     v1.0
+     *
+     * @param i_Info        
+     * @param i_Replaces    有替换先后顺序的替换字符串
+     * @param i_ReplaceBys  有替换先后顺序的被替换字符串
+     *                      当i_ReplaceBys.length小于i_Replaces.length时，i_Replaces大于i_ReplaceBys的部分，
+     *                      全部用i_ReplaceBys的最后一个元素替换，
+     *                      如，replaceFirst("ABC" ,new String[]{"A" ,"B" ,"C"} ,new String[]{" "}) 将返回三个空格。
+     * @return
+     */
+    public final static String replaceLast(final String i_Info ,final String [] i_Replaces ,final String [] i_ReplaceBys)
+    {
+        if ( Help.isNull(i_Replaces) || Help.isNull(i_ReplaceBys) )
+        {
+            return i_Info;
+        }
+        
+        String v_Ret   = i_Info;
+        int    v_Size  = Math.min(i_Replaces.length ,i_ReplaceBys.length);
+        int    v_Index = 0;
+        
+        for (v_Index=0; v_Index<v_Size; v_Index++)
+        {
+            v_Ret = StringHelp.replaceLast(v_Ret ,i_Replaces[v_Index] ,i_ReplaceBys[v_Index]);
+        }
+        
+        if ( i_Replaces.length > i_ReplaceBys.length )
+        {
+            for (; v_Index<i_Replaces.length; v_Index++)
+            {
+                v_Ret = StringHelp.replaceLast(v_Ret ,i_Replaces[v_Index] ,i_ReplaceBys[i_ReplaceBys.length - 1]);
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 替换字符串（每个关键字只替换一次，从末尾替换起）
+     * 
+     * Java自带的String.replace()方法，是通过正则表达式做的替换动作，
+     * 对于一些特殊字符，要做十分复杂的处理，并不好用。
+     * 
+     * 比如说："Q美元Q".replaceLast("美元" ,"$"); 方法会出错。
+     * 
+     * 测试环境为：Mac:OSX EI Capitan , JDK:1.7.0_45-b18
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-12-27
+     * @version     v1.0
+     *
+     * @param i_Info       
+     * @param i_Replace    
+     * @param i_ReplaceBy  
+     * @return
+     */
+    public final static String replaceLast(final String i_Info ,final String i_Replace ,final String i_ReplaceBy)
+    {
+        if ( null == i_Info 
+          || null == i_Replace 
+          || null == i_ReplaceBy 
+          || 0    >= i_Info.length()
+          || 0    >= i_Replace.length() )
+        {
+            return i_Info;
+        }
+        
+        StringBuilder v_Buffer    = new StringBuilder();
+        int           v_RLen      = i_Replace.length();
+        int           v_FromIndex = i_Info.lastIndexOf(i_Replace);
+        
+        if ( v_FromIndex >= 0 )
+        {
+            v_Buffer.append(i_Info.substring(0 ,v_FromIndex));
+            v_Buffer.append(i_ReplaceBy);
+            v_Buffer.append(i_Info.substring(v_FromIndex + v_RLen));
+        }
+        else
+        {
+            return i_Info;
         }
         
         return v_Buffer.toString();
