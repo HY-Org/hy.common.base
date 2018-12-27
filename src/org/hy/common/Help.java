@@ -2192,7 +2192,7 @@ public class Help
      */
     public final static String getWebINFPath()
     {
-        return StringHelp.replaceAll(Help.getWebClassPath() ,"classes/" ,"");
+        return StringHelp.replaceLast(Help.getWebClassPath() ,"classes/" ,"");
     }
     
     
@@ -2205,7 +2205,7 @@ public class Help
      */
     public final static String getWebHomePath()
     {
-        return StringHelp.replaceAll(Help.getWebClassPath() ,"WEB-INF/classes/" ,"");
+        return StringHelp.replaceLast(Help.getWebClassPath() ,"WEB-INF/classes/" ,"");
     }
     
     
