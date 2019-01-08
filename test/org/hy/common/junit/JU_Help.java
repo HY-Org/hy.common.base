@@ -1,6 +1,8 @@
 package org.hy.common.junit;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +25,16 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING) 
 public class JU_Help
 {
+ 
+    @Test
+    public void test_URI() throws URISyntaxException
+    {
+        URI v_URI = new URI("D:/Software/Java/jdk1.8.0_202/bin/java.exe");
+        
+        System.out.println(v_URI.getPath());
+    }
+    
+    
     
     @Test
     public void test_executeCommand()
