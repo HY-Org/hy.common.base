@@ -1,5 +1,5 @@
-Manifest-Version: 1.0.141
+Manifest-Version: 1.0.142
 Created-By: HY.ZhengWei@qq.com  2008
-Specification-Version: 1.0.141  2018-12-22
+Specification-Version: 1.0.142  2019-01-08
 SourceCode: https://github.com/HY-ZhengWei/hy.common.base
 Build-JDK: 1.6

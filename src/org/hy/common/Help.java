@@ -2111,8 +2111,30 @@ public class Help
     {
         try
         {
-            URI v_URI = new URI(i_Obj.getClass().getResource("").getFile().toString());
-            return v_URI.getPath();
+            String v_Ret  = i_Obj.getClass().getResource("").getFile().toString();
+            URI    v_URI  = null;
+            String v_Head = "";
+            
+            if ( v_Ret.indexOf(":") >= 0 )
+            {
+                v_Ret  = v_Ret.substring(1);
+                v_Head = v_Ret.split(":")[0];
+            }
+            
+            v_URI = new URI(v_Ret);
+            v_Ret = v_URI.getPath();
+            
+            // 2019-01-08 发现  v_URI.getPath("C:\xxx\yyy") 会返回 "\xxx\yyy"，丢失了 c:。
+            // 问题的原因不明，但均有一个共同点：只在IDEA (测试版本2018.1、OpenJDK 1.8.0_152)的开发工具上出现。
+            // 同样的电脑、同样的项目、同样的Java环境下的Eclipse是正常的。
+            // 因此通过下面的方面弥补一下。
+            if ( !Help.isNull(v_Head) )
+            {
+                if ( !v_Ret.startsWith(v_Head) )
+                {
+                    v_Ret = v_Head + ":" + v_Ret;
+                }
+            }
         }
         catch (Exception exce)
         {
@@ -2136,8 +2158,30 @@ public class Help
     {
         try
         {
-            URI v_URI = new URI(Thread.currentThread().getContextClassLoader().getResource("").getFile().toString());
-            return v_URI.getPath();
+            String v_Ret  = Thread.currentThread().getContextClassLoader().getResource("").getFile().toString();
+            URI    v_URI  = null;
+            String v_Head = "";
+            
+            if ( v_Ret.indexOf(":") >= 0 )
+            {
+                v_Ret  = v_Ret.substring(1);
+                v_Head = v_Ret.split(":")[0];
+            }
+            
+            v_URI = new URI(v_Ret);
+            v_Ret = v_URI.getPath();
+            
+            // 2019-01-08 发现  v_URI.getPath("C:\xxx\yyy") 会返回 "\xxx\yyy"，丢失了 c:。
+            // 问题的原因不明，但均有一个共同点：只在IDEA (测试版本2018.1、OpenJDK 1.8.0_152)的开发工具上出现。
+            // 同样的电脑、同样的项目、同样的Java环境下的Eclipse是正常的。
+            // 因此通过下面的方面弥补一下。
+            if ( !Help.isNull(v_Head) )
+            {
+                if ( !v_Ret.startsWith(v_Head) )
+                {
+                    v_Ret = v_Head + ":" + v_Ret;
+                }
+            }
         }
         catch (Exception exce)
         {
@@ -2164,14 +2208,32 @@ public class Help
         // Help.class.getResource("/").getFile().toString();
         try
         {
-            String v_Ret = Thread.currentThread().getContextClassLoader().getResource("").getFile().toString();
+            String v_Ret  = Thread.currentThread().getContextClassLoader().getResource("").getFile().toString();
+            URI    v_URI  = null;
+            String v_Head = "";
+            
             if ( v_Ret.indexOf(":") >= 0 )
             {
-                v_Ret = v_Ret.substring(1);
+                v_Ret  = v_Ret.substring(1);
+                v_Head = v_Ret.split(":")[0];
             }
             
-            URI v_URI = new URI(v_Ret);
-            return v_URI.getPath();
+            v_URI = new URI(v_Ret);
+            v_Ret = v_URI.getPath();
+            
+            // 2019-01-08 发现  v_URI.getPath("C:\xxx\yyy") 会返回 "\xxx\yyy"，丢失了 c:。
+            // 问题的原因不明，但均有一个共同点：只在IDEA (测试版本2018.1、OpenJDK 1.8.0_152)的开发工具上出现。
+            // 同样的电脑、同样的项目、同样的Java环境下的Eclipse是正常的。
+            // 因此通过下面的方面弥补一下。
+            if ( !Help.isNull(v_Head) )
+            {
+                if ( !v_Ret.startsWith(v_Head) )
+                {
+                    v_Ret = v_Head + ":" + v_Ret;
+                }
+            }
+            
+            return v_Ret;
         }
         catch (Exception exce)
         {
