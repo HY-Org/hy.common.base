@@ -2135,6 +2135,8 @@ public class Help
                     v_Ret = v_Head + ":" + v_Ret;
                 }
             }
+            
+            return v_Ret;
         }
         catch (Exception exce)
         {
@@ -2182,6 +2184,8 @@ public class Help
                     v_Ret = v_Head + ":" + v_Ret;
                 }
             }
+            
+            return v_Ret;
         }
         catch (Exception exce)
         {
