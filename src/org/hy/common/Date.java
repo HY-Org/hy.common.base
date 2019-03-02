@@ -25,6 +25,7 @@ import java.util.Map;
  *              v1.5  2018-11-01  添加：yyyy-MM-dd HH:mm:ss.S格式的转换。共支持 7 + 3 + 3 + 1 + 3 + 3 + 3 = 23 种格式。
  *                                     建议人：邹德福
  *              v1.6  2018-12-17  添加：UTC（$FORMAT_UTC_ID）格式的转换。累计共支持 7 + 3 + 3 + 1 + 3 + 3 + 3 + 1 = 24 种格式。
+ *              v1.7  2019-03-02  添加：getNextYear()、getPreviousYear()、getNextMinutes()、getPreviousMinutes()四个方法。
  */
 public final class Date extends java.util.Date
 {
@@ -1353,6 +1354,84 @@ public final class Date extends java.util.Date
         {
             return v_NextMax;
         }
+    }
+    
+    
+    
+    /**
+     * 获取下一个年的今天this。如果今天是31号，而下一年的月份最大天数为30天时，那么就返回下一年的月的最后一天。
+     * 
+     * 会返回一个新的实例。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-03-02
+     * @version     v1.0
+     *
+     * @return
+     */
+    public Date getPreviousYear()
+    {
+        Date v_New = new Date(this.getTime());
+        
+        v_New.setYear(this.getYear() - 1);
+        
+        return v_New;
+    }
+    
+    
+    
+    /**
+     * 获取下一个年的今天this。如果今天是31号，而下一年的月份最大天数为30天时，那么就返回下一年的月的最后一天。
+     * 
+     * 会返回一个新的实例。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-03-02
+     * @version     v1.0
+     *
+     * @return
+     */
+    public Date getNextYear()
+    {
+        Date v_New = new Date(this.getTime());
+        
+        v_New.setYear(this.getYear() + 1);
+        
+        return v_New;
+    }
+    
+    
+    
+    /**
+     * 获取上一分钟
+     * 
+     * 会返回一个新的实例。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-03-02
+     * @version     v1.0
+     *
+     * @return
+     */
+    public Date getPreviousMinutes()
+    {
+        return this.getMinutes(-1);
+    }
+    
+    
+    
+    /**
+     * 获取下一分钟
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-03-02
+     * @version     v1.0
+     *
+     * @return
+     */
+    public Date getNextMinutes()
+    {
+        return this.getMinutes(1);
     }
     
     
