@@ -11,10 +11,12 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.JarURLConnection;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -79,6 +81,8 @@ import org.hy.common.comparate.SerializableComparator;
  *                                   比JDK优于：支持泛型，并且保证数组中元素类型不变，与集合元素类型一样。
  *               2018-12-22  1. 添加：executeCommand()方法添加：超时后自动结束命令的执行
  *                           2. 添加：executeCommand()方法添加：标准输出流与错误输出流均要处理，这里通过异步处理错误输出流，保证输出缓冲区不会被堵住
+ *               2019-03-06  1. 添加：isAllowConnect()方法：测试服务及端口是否允许连接（或网络连路是正常的）。
+ *                           2. 添加：getSocket()方法添加：超时时长的功能。
  */
 public class Help
 {
@@ -2626,6 +2630,50 @@ public class Help
     
     
     /**
+     * 测试服务及端口是否允许连接（或网络连路是正常的）
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-03-06
+     * @version     v1.0
+     *
+     * @param i_HostName  主机名称
+     * @param i_Port      端口号
+     * @param i_Timeout   超时时长（单位：毫秒）。当为0时，表示最大超时时长。
+     * @return
+     */
+    public final static boolean isAllowConnect(String i_HostName ,int i_Port ,int i_Timeout)
+    {
+        SocketAddress v_Endpoint = new InetSocketAddress(i_HostName ,i_Port); 
+        Socket        v_TestConn = new Socket();
+        
+        try
+        {
+            v_TestConn.connect(v_Endpoint ,i_Timeout);
+        }
+        catch (Throwable error)
+        {
+            return false;
+        }
+        finally
+        {
+            try
+            {
+                v_TestConn.close();
+            }
+            catch (Throwable error)
+            {
+                
+            }
+            v_TestConn = null;
+            v_Endpoint = null;
+        }
+        
+        return true;
+    }
+    
+    
+    
+    /**
      * 通过主机名称和端口，获取Socket对象
      * 
      * @author      ZhengWei(HY)
@@ -2638,6 +2686,25 @@ public class Help
      */
     public final static Socket getSocket(String i_HostName ,int i_Port)
     {
+        return getSocket(i_HostName ,i_Port ,0);
+    }
+    
+    
+    
+    /**
+     * 通过主机名称和端口，获取Socket对象
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-03-06
+     * @version     v1.0
+     *
+     * @param i_HostName  主机名称
+     * @param i_Port      端口号
+     * @param i_Timeout   超时时长（单位：毫秒）。当为0时，表示最大超时时长。
+     * @return            异常时返回空
+     */
+    public final static Socket getSocket(String i_HostName ,int i_Port ,int i_Timeout)
+    {
         if ( i_Port <= 0 || i_Port > 65535 )
         {
             throw new IndexOutOfBoundsException("Port isn't between 0 and 65535.");
@@ -2646,11 +2713,14 @@ public class Help
         Socket v_Ret = null;
         try
         {
-            InetAddress v_InetAddress = InetAddress.getByName(i_HostName);
-            
-            if ( v_InetAddress != null )
+            if ( isAllowConnect(i_HostName ,i_Port ,i_Timeout) )
             {
-                v_Ret = new Socket(v_InetAddress ,i_Port);
+                InetAddress v_InetAddress = InetAddress.getByName(i_HostName);
+                
+                if ( v_InetAddress != null )
+                {
+                    v_Ret = new Socket(v_InetAddress ,i_Port);
+                }
             }
         }
         catch (Exception exce)
