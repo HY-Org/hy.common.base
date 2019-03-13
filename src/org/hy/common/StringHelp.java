@@ -51,6 +51,7 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.12 2018-11-15   1.添加 encode() decode()两种转义方法。可对指定字符串排除转义的功能。
  *              v1.13 2018-12-21   1.添加 trimToDistinct()去掉某些连续重复出现的字符。如“A...B..C”，去掉重复连续的.点，就变成：“A.B.C”
  *              v1.14 2018-12-27   1.添加 replaceLast(...) 系列方法
+ *              v1.15 2019-03-13   1.添加 parsePlaceholdersSequence() 占位符命名是否要求严格的规则
  *              
  * @createDate  2009-08-21
  */
@@ -3387,9 +3388,35 @@ public final class StringHelp
      *              v4.0  2018-05-16  添加：支持中文占位符
      *
      * @param i_Placeholders
+     * @param i_StrictRules   占位符命名是否要求严格的规则。
      * @return
      */
     public final static Map<String ,Object> parsePlaceholdersSequence(String i_Placeholders)
+    {
+        return parsePlaceholdersSequence(i_Placeholders ,false);
+    }
+    
+    
+    
+    /**
+     * 解释占位符。:xx （保持占位符原顺序不变）
+     * 
+     * Map.key    为占位符。前缀为:符号
+     * Map.Value  为占位符原文本信息
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2012-10-30
+     * @version     v1.0  
+     *              v2.0  2014-07-30
+     *              v3.0  2015-12-10  支持 :A.B.C 的解释（对点.的解释）。
+     *              v4.0  2018-05-16  添加：支持中文占位符
+     *              v5.0  2019-03-13  添加：占位符命名是否要求严格的规则
+     *
+     * @param i_Placeholders
+     * @param i_StrictRules   占位符命名是否要求严格的规则。
+     * @return
+     */
+    public final static Map<String ,Object> parsePlaceholdersSequence(String i_Placeholders ,boolean i_StrictRules)
     {
         // 匹配占位符
         List<SplitSegment>  v_Segments = StringHelp.SplitOnlyFind("[ (,='%_\\s]?:[\\w\\.\\u4e00-\\u9fa5]+[ ),='%_\\s]?" ,i_Placeholders);
@@ -3398,6 +3425,20 @@ public final class StringHelp
         for (SplitSegment v_Segment : v_Segments)
         {
             String v_PlaceHolder = StringHelp.SplitOnlyFind(":[\\w\\.\\u4e00-\\u9fa5]+" ,v_Segment.getInfo().trim()).get(0).getInfo();
+            v_PlaceHolder = v_PlaceHolder.substring(1);
+            
+            if ( i_StrictRules )
+            {
+                // 严格规则：占位符的命名，不能是小于等于2位的纯数字
+                //            防止将类似于时间格式 00:00:00 的字符解释为占位符 
+                if ( v_PlaceHolder.length() <= 2 )
+                {
+                    if ( Help.isNumber(v_PlaceHolder) )
+                    {
+                        continue;
+                    }
+                }
+            }
             
             v_Ret.put(v_PlaceHolder.substring(1) ,v_Segment.getInfo());
         }
