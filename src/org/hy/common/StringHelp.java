@@ -3440,7 +3440,7 @@ public final class StringHelp
                 }
             }
             
-            v_Ret.put(v_PlaceHolder.substring(1) ,v_Segment.getInfo());
+            v_Ret.put(v_PlaceHolder ,v_Segment.getInfo());
         }
         
         return v_Ret;
