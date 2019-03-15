@@ -3472,6 +3472,31 @@ public final class StringHelp
     
     
     /**
+     * 解释占位符。:xx
+     * 
+     *   placeholders属性为有降序排序顺序的LinkedMap。
+     *   用于解决 :A、:AA 同时存在时的混乱。
+     * 
+     * Map.key    为占位符。前缀为:符号
+     * Map.Value  为占位符原文本信息
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2014-10-08
+     * @version     v1.0  
+     *              v2.0  2019-03-15  添加：占位符命名是否要求严格的规则
+     *
+     * @param i_Placeholders
+     * @param i_StrictRules
+     * @return
+     */
+    public final static Map<String ,Object> parsePlaceholders(String i_Placeholders ,boolean i_StrictRules)
+    {
+        return Help.toReverse(parsePlaceholdersSequence(i_Placeholders ,i_StrictRules));
+    }
+    
+    
+    
+    /**
      * 通过指定正则表达式对信息分割后的重新组合
      * 
      * 即分割的反向操作
