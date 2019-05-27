@@ -1,6 +1,7 @@
 package org.hy.common;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 
@@ -15,6 +16,7 @@ import java.lang.reflect.Method;
  * @author      ZhengWei(HY)
  * @version     v1.0  
  * @createDate  2013-08-01
+ *              2019-05-27  v2.0  添加：执行静态方法
  */
 public final class StaticReflect
 {
@@ -69,6 +71,27 @@ public final class StaticReflect
         }
         
         return null;
+    }
+    
+    
+    
+    /**
+     * 执行静态方法
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-05-27
+     * @version     v1.0
+     *
+     * @param i_StaticMethod               静态方法
+     * @param i_ParameterTypes             静态方法的参数
+     * @return                             返回静态方法的返回值 
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
+    public static Object invoke(Method i_StaticMethod ,Object ... i_Parameters) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
+    {
+        return i_StaticMethod.invoke(null ,i_Parameters);
     }
     
     

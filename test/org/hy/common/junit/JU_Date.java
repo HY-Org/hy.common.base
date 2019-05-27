@@ -1,6 +1,8 @@
 package org.hy.common.junit;
 
 import org.hy.common.Date;
+import org.hy.common.Lunar;
+import org.hy.common.SolarTerm;
 import org.junit.Test;
 
 
@@ -50,6 +52,15 @@ public class JU_Date
                 System.out.println("");
             }
         }
+    }
+    
+    
+    
+    @Test
+    public void test_Lunar()
+    {
+        System.out.println(new Lunar(new Date()));
+        System.out.println(SolarTerm.getSoralTerm(new Date("2019-06-22")));
     }
     
 }
