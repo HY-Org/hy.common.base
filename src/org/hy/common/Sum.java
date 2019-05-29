@@ -240,8 +240,8 @@ public class Sum<K> extends ListMap<K ,Double> implements Map<K ,Double>
     @Override
     public synchronized Double remove(Object i_Key)
     {
-        Double v_RemoveValue = this.remove(i_Key);
-        this.sumValue -= this.remove(i_Key);
+        Double v_RemoveValue = super.remove(i_Key);
+        this.sumValue -= v_RemoveValue;
         return v_RemoveValue;
     }
 
