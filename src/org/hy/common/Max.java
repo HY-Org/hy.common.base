@@ -14,8 +14,9 @@ import java.util.Map;
  * 与org.hy.common.Counter类似
  * 
  * @author      ZhengWei(HY)
- * @version     v1.0
  * @createDate  2017-01-21
+ * @version     v1.0
+ *              v2.0  2019-05-29  添加：remove() 方法。删除时，重新计算最大值
  */
 public class Max<K> extends Hashtable<K ,Double>
 {
@@ -192,6 +193,39 @@ public class Max<K> extends Hashtable<K ,Double>
             Map.Entry<? extends K, ? extends Double> e = i.next();
             set(e.getKey(), e.getValue());
         }
+    }
+    
+    
+    
+    /**
+     * 删除时，重新计算最大值
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-05-29
+     * @version     v1.0
+     *
+     * @param i_Key
+     * @return
+     */
+    @Override
+    public synchronized Double remove(Object i_Key)
+    {
+        Double v_RemoveValue = super.remove(i_Key);
+        
+        if ( this.maxValue <= v_RemoveValue.doubleValue() )
+        {
+            double v_MaxValue = 0;
+            for (Double v_Item : super.values())
+            {
+                if ( v_Item.doubleValue() > v_MaxValue )
+                {
+                    v_MaxValue = v_Item.doubleValue();
+                }
+            }
+            this.maxValue = v_MaxValue;
+        }
+        
+        return v_RemoveValue;
     }
 
 

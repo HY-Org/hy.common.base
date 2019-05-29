@@ -12,8 +12,10 @@ import java.util.Map;
  * 计数器 -- Mini型的。只是最单纯的计数
  * 
  * @author      ZhengWei(HY)
- * @version     v1.0
  * @createDate  2014-12-15
+ * @version     v1.0
+ *              v2.0  2019-05-29  添加：remove() 方法。删除时，减合计值，同时重新计算最大值、最小值
+ *              
  */
 public class Counter<K> extends Hashtable<K ,Long>
 {
@@ -180,6 +182,57 @@ public class Counter<K> extends Hashtable<K ,Long>
             Map.Entry<? extends K, ? extends Long> e = i.next();
             set(e.getKey(), e.getValue());
         }
+    }
+    
+    
+
+    /**
+     * 删除时，减合计值，同时重新计算最大值、最小值
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-05-29
+     * @version     v1.0
+     *
+     * @param i_Key
+     * @return
+     */
+    @Override
+    public synchronized Long remove(Object i_Key)
+    {
+        Long v_RemoveValue = super.remove(i_Key);
+        
+        if ( v_RemoveValue != null )
+        {
+            this.sumValue -= v_RemoveValue.longValue();
+        }
+        
+        if ( this.maxValue <= v_RemoveValue.longValue() )
+        {
+            long v_MaxValue = 0;
+            for (Long v_Item : super.values())
+            {
+                if ( v_Item.longValue() > v_MaxValue )
+                {
+                    v_MaxValue = v_Item.longValue();
+                }
+            }
+            this.maxValue = v_MaxValue;
+        }
+        
+        if ( this.minValue >= v_RemoveValue.longValue() )
+        {
+            long v_MinValue = 0;
+            for (Long v_Item : super.values())
+            {
+                if ( v_Item.longValue() < v_MinValue )
+                {
+                    v_MinValue = v_Item.longValue();
+                }
+            }
+            this.minValue = v_MinValue;
+        }
+        
+        return v_RemoveValue;
     }
 
 

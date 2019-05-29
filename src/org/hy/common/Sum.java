@@ -17,6 +17,7 @@ import java.util.Map;
  * @createDate  2016-07-15
  *              2016-08-28  1.添加：平均数计算功能。
  *                          2.添加：最大长度，Map集合的最大长度限定，当超过这个长度时，就删除最早的元素。类似于队列
+ *              2019-05-29  1.添加：remove() 方法。删除时，减合计值
  */
 public class Sum<K> extends ListMap<K ,Double> implements Map<K ,Double>
 {
@@ -222,6 +223,26 @@ public class Sum<K> extends ListMap<K ,Double> implements Map<K ,Double>
             Map.Entry<? extends K, ? extends Double> e = i.next();
             set(e.getKey(), e.getValue());
         }
+    }
+    
+    
+    
+    /**
+     * 删除时，减合计值
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-05-29
+     * @version     v1.0
+     *
+     * @param i_Key
+     * @return
+     */
+    @Override
+    public synchronized Double remove(Object i_Key)
+    {
+        Double v_RemoveValue = this.remove(i_Key);
+        this.sumValue -= this.remove(i_Key);
+        return v_RemoveValue;
     }
 
 
