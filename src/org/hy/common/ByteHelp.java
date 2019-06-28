@@ -1,5 +1,7 @@
 package org.hy.common;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 
@@ -10,8 +12,10 @@ import java.io.UnsupportedEncodingException;
  * 字节类型的工具类
  * 
  * @author      ZhengWei(HY)
- * @version     v1.0  
  * @createDate  2012-07-27
+ * @version     v1.0  
+ *              v2.0  2019-06-18  添加：输入流（文件流）转为二进制数据的方法toByte(...)
+ *              
  */
 public final class ByteHelp 
 {
@@ -352,6 +356,76 @@ public final class ByteHelp
     public static byte [] hexToBytes(String i_HexStr)
     {
         return StringHelp.hexToBytes(i_HexStr);
+    }
+    
+    
+    
+    /**
+     * 将输入流（文件流）转为二进制数据
+     * 
+     * 注：内部会自动关闭流。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-06-18
+     * @version     v1.0
+     *
+     * @param i_Input        输入流（文件流）
+     * @param i_BufferSize   读取流时，用的缓存大小
+     * @return
+     */
+    public static byte [] toByte(InputStream i_Input)
+    {
+        return toByte(i_Input ,1024 * 100);
+    }
+    
+    
+    
+    /**
+     * 将输入流（文件流）转为二进制数据
+     * 
+     * 注：内部会自动关闭流。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-06-18
+     * @version     v1.0
+     *
+     * @param i_Input        输入流（文件流）
+     * @param i_BufferSize   读取流时，用的缓存大小
+     * @return
+     */
+    public static byte [] toByte(InputStream i_Input ,int i_BufferSize)
+    {
+        ByteArrayOutputStream v_Out    = new ByteArrayOutputStream();
+        byte []               v_Buffer = new byte[i_BufferSize];
+        int                   v_Len    = 0;
+        
+        if ( i_Input != null )
+        {
+            try
+            {
+                while ( (v_Len = i_Input.read(v_Buffer)) != -1 )
+                {
+                    v_Out.write(v_Buffer ,0 ,v_Len);
+                }
+            }
+            catch (Exception exce)
+            {
+                exce.printStackTrace();
+            }
+            finally
+            {
+                try
+                {
+                    i_Input.close();
+                }
+                catch (Exception exce)
+                {
+                    exce.printStackTrace();
+                }
+            }
+        }
+        
+        return v_Out.toByteArray();
     }
 	
 	
