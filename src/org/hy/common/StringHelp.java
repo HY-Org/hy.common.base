@@ -2257,6 +2257,60 @@ public final class StringHelp
     
     
     /**
+     * 转码
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-08-19
+     * @version     v1.0
+     *
+     * @param i_Text
+     * @param i_Len
+     * @return
+     */
+    public final static String toCode(String i_Text ,int i_Len)
+    {
+        StringBuilder v_Buffer = new StringBuilder();
+        String        v_Text   = i_Text + "\n";
+        
+        String [] v_Rows = v_Text.split("\n");
+        for (int x=0; x<v_Rows.length; x++)
+        {
+            v_Text = v_Rows[x];
+            int v_AddC = 0;
+            if ( v_Text.length() % i_Len > 0 )
+            {
+                v_AddC = i_Len - v_Text.length() % i_Len;
+                
+                for (;v_AddC>0; v_AddC--)
+                {
+                    v_Text += " ";
+                }
+            }
+            
+            int v_Count  = v_Text.length() / i_Len;
+            for (int i=0; i<v_Count; i++)
+            {
+                String v_Sub = "";
+                if ( i * i_Len + i_Len > v_Text.length() )
+                {
+                    v_Sub = v_Text.substring(i * i_Len ,v_Text.length());
+                }
+                else
+                {
+                    v_Sub = v_Text.substring(i * i_Len ,i * i_Len + i_Len);
+                }
+                
+                v_Buffer.append(ByteHelp.byteToString(ByteHelp.xorMV(ByteHelp.toByte(v_Sub))));
+            }
+            v_Buffer.append("\n");
+        }
+        
+        return v_Buffer.toString();
+    }
+    
+    
+    
+    /**
      * 用于MD5功能中Byte转字符
      * 
      * @param from

@@ -49,6 +49,7 @@ public class JU_StringHelp
     {
         String v_Charset = "UTF-8";
         
+        System.out.println(StringHelp.encode("ABCDEFG hiklmn 1234567890 `~!@#$%^&*()-_=+[]{},./<>?;':\"" ,v_Charset ,"=&?"));
         System.out.println(StringHelp.decode(StringHelp.encode("ABCDEFG hiklmn 1234567890 `~!@#$%^&*()-_=+[]{},./<>?;':\"" ,v_Charset ,"=&?") ,v_Charset));
         System.out.println(StringHelp.decode(StringHelp.encode("中华人民共和国" ,v_Charset ,"=&?") ,v_Charset));
     }
@@ -146,6 +147,18 @@ public class JU_StringHelp
         
         System.out.println(StringHelp.md5("getData=;getDataType=1D;getDeviceNo=867246023785125;getDeviceType=android;" + "@20170801"));
         System.out.println("yGSajQF/npSzjy179WP01Q__");
+    }
+    
+    
+    
+    @Test
+    public void test_toCode()
+    {
+        System.out.println(StringHelp.toCode("12" ,4));
+        System.out.println(StringHelp.toCode(StringHelp.toCode("12" ,4) ,4));
+        
+        System.out.println(StringHelp.toCode("1234567890-=`~!@#$%^&*()_+[]{};:'\",./<>?" ,8));
+        System.out.println(StringHelp.toCode(StringHelp.toCode("1234567890-=`~!@#$%^&*()_+[]{};:'\",./<>?" ,8) ,8));
     }
     
     
