@@ -3727,7 +3727,7 @@ public class Help
         
         if ( io_Map == null )
         {
-            v_Ret = new Hashtable<T ,Object>(i_Datas.size());
+            v_Ret = new HashMap<T ,Object>(i_Datas.size());
         }
         else
         {
