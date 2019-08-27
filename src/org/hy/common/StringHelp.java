@@ -52,6 +52,7 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.13 2018-12-21   1.添加 trimToDistinct()去掉某些连续重复出现的字符。如“A...B..C”，去掉重复连续的.点，就变成：“A.B.C”
  *              v1.14 2018-12-27   1.添加 replaceLast(...) 系列方法
  *              v1.15 2019-03-13   1.添加 parsePlaceholdersSequence() 占位符命名是否要求严格的规则
+ *              v1.16 2019-08-27   1.添加 扩展 getComputeUnit() 方法，带小数精度。 
  *              
  * @createDate  2009-08-21
  */
@@ -2086,9 +2087,22 @@ public final class StringHelp
      */
     public final static String getComputeUnit(long i_ByteSize)
     {
-    	String [] v_UnitArr = {"Byte" ,"KB" ,"MB" ,"GB" ,"TB"};
-    	
-    	return getComputeUnit(i_ByteSize ,v_UnitArr);
+    	return getComputeUnit(i_ByteSize ,2);
+    }
+    
+    
+    
+    /**
+     * 获取对应的计算单位
+     * 
+     * @param i_ByteSize  字节大小
+     * @return
+     */
+    public final static String getComputeUnit(long i_ByteSize ,int i_Digit)
+    {
+        String [] v_UnitArr = {"Byte" ,"KB" ,"MB" ,"GB" ,"TB"};
+        
+        return getComputeUnit(i_ByteSize ,i_Digit ,v_UnitArr);
     }
     
     
@@ -2102,20 +2116,35 @@ public final class StringHelp
      */
     public final static String getComputeUnit(long i_ByteSize ,String [] i_UnitArr)
     {
-    	if ( i_ByteSize <= 0  )
-    	{
-    		return "0 Byte";
-    	}
-    	
-    	int    v_UnitIndex = 0;
-    	double v_Size      = i_ByteSize;
-    	
-    	for (; v_Size > 1024d && v_UnitIndex<i_UnitArr.length; v_UnitIndex++)
-    	{
-    		v_Size = v_Size / 1024d;
-    	}
-    	   	
-    	return doubleParse(v_Size ,2) + " " + i_UnitArr[v_UnitIndex];
+        return getComputeUnit(i_ByteSize ,2 ,i_UnitArr);
+    }
+    
+    
+    
+    /**
+     * 获取对应的计算单位
+     * 
+     * @param i_ByteSize  字节大小
+     * @param i_Digit     精确度。四舍五入的位数
+     * @param i_UnitArr   单位数据。下标越大单位级别越大
+     * @return
+     */
+    public final static String getComputeUnit(long i_ByteSize ,int i_Digit ,String [] i_UnitArr)
+    {
+        if ( i_ByteSize <= 0  )
+        {
+            return "0 Byte";
+        }
+        
+        int    v_UnitIndex = 0;
+        double v_Size      = i_ByteSize;
+        
+        for (; v_Size > 1024d && v_UnitIndex<i_UnitArr.length; v_UnitIndex++)
+        {
+            v_Size = v_Size / 1024d;
+        }
+            
+        return doubleParse(v_Size ,i_Digit) + " " + i_UnitArr[v_UnitIndex];
     }
     
     
