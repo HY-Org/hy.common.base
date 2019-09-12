@@ -14,8 +14,9 @@ import java.util.Map;
  * 与 TablePartition 一样，唯一的不同是：它继承于 LinkedHashMap
  *  
  * @author      ZhengWei(HY)
- * @version     v1.0  
  * @createDate  2014-12-24
+ * @version     v1.0  
+ *              v2.0  2019-09-12  添加：允许建立空的分区。即Map.value.size() == 0
  */
 public class TablePartitionLink<P ,R> extends LinkedHashMap<P ,List<R>> implements PartitionMap<P ,R>
 {
@@ -50,35 +51,40 @@ public class TablePartitionLink<P ,R> extends LinkedHashMap<P ,List<R>> implemen
 	 * @param i_Partition  表分区信息
 	 * @param i_Row        一行数据信息
 	 * @return
+	 * 
+	 * 2019-09-12  添加：允许i_Row为NULL时建立空的分区。
 	 */
 	public synchronized R putRow(P i_Partition ,R i_Row)
 	{
 		if ( i_Partition == null )
 		{
-			throw new java.lang.NullPointerException("Partition  is null.");
+			throw new java.lang.NullPointerException("Partition is null.");
 		}
-		if ( i_Row == null )
-		{
-			throw new java.lang.NullPointerException("Row is null.");
-		}
-		
 		
 		List<R> v_TabPart = null;
 		
 		if ( this.containsKey(i_Partition) )
 		{
-			v_TabPart = super.get(i_Partition);
-			v_TabPart.add(i_Row);
+		    if ( i_Row != null )
+		    {
+		        v_TabPart = super.get(i_Partition);
+			    v_TabPart.add(i_Row);
+			    this.rowCount++;
+		    }
 		}
 		else
 		{
 			v_TabPart = new ArrayList<R>();
-			v_TabPart.add(i_Row);
+			
+			if ( i_Row != null )
+			{
+			    v_TabPart.add(i_Row);
+			    this.rowCount++;
+			}
+			
 			super.put(i_Partition, v_TabPart);
 		}
 		
-		
-		this.rowCount++;
 		return i_Row;
 	}
 	
@@ -91,25 +97,29 @@ public class TablePartitionLink<P ,R> extends LinkedHashMap<P ,List<R>> implemen
 	 * @param i_RowList    一批记录数据
 	 * @return
 	 * 
-	 * @see 建议使用 putRows(P ,List<R>) 方法。因为此方法在多数情况下是无法达到预想目的的。 
+	 * @see 建议使用 putRows(P ,List<R>) 方法。因为此方法在多数情况下是无法达到预想目的的。
+	 * 
+	 * 2019-09-12  添加：允许i_RowList为NULL时建立空的分区。 
 	 */
 	public synchronized List<R> put(P i_Partition ,List<R> i_RowList) 
 	{
 		if ( i_Partition == null )
 		{
-			throw new java.lang.NullPointerException("Partition  is null.");
+			throw new java.lang.NullPointerException("Partition is null.");
 		}
+		
 		if ( Help.isNull(i_RowList) )
-		{
-			throw new java.lang.NullPointerException("RowList is null.");
-		}
-		
-		
-		Iterator <R> Iter = i_RowList.iterator();
-		while ( Iter.hasNext() )
-		{
-			this.putRow(i_Partition ,Iter.next());
-		}
+        {
+            this.putRow(i_Partition ,(R)null);
+        }
+        else
+        {
+    		Iterator <R> Iter = i_RowList.iterator();
+    		while ( Iter.hasNext() )
+    		{
+    			this.putRow(i_Partition ,Iter.next());
+    		}
+        }
 		
 		return this.get(i_Partition);
 	}
@@ -141,23 +151,27 @@ public class TablePartitionLink<P ,R> extends LinkedHashMap<P ,List<R>> implemen
 	 * @param i_Partition
 	 * @param i_RowList
 	 * @return
+	 * 
+	 * 2019-09-12  添加：允许i_RowList为NULL时建立空的分区。
 	 */
 	public synchronized List<R> putRows(P i_Partition ,List<R> i_RowList) 
     {
         if ( i_Partition == null )
         {
-            throw new java.lang.NullPointerException("Partition  is null.");
+            throw new java.lang.NullPointerException("Partition is null.");
         }
+        
         if ( Help.isNull(i_RowList) )
         {
-            throw new java.lang.NullPointerException("RowList is null.");
+            this.putRow(i_Partition ,(R)null);
         }
-        
-        
-        Iterator <R> Iter = i_RowList.iterator();
-        while ( Iter.hasNext() )
+        else
         {
-            this.putRow(i_Partition ,Iter.next());
+            Iterator <R> Iter = i_RowList.iterator();
+            while ( Iter.hasNext() )
+            {
+                this.putRow(i_Partition ,Iter.next());
+            }
         }
         
         return this.get(i_Partition);
@@ -171,22 +185,26 @@ public class TablePartitionLink<P ,R> extends LinkedHashMap<P ,List<R>> implemen
 	 * @param i_Partition
 	 * @param i_Rows
 	 * @return
+	 * 
+	 * 2019-09-12  添加：允许i_Rows为NULL时建立空的分区。
 	 */
 	public synchronized List<R> putRows(P i_Partition ,R [] i_Rows) 
     {
         if ( i_Partition == null )
         {
-            throw new java.lang.NullPointerException("Partition  is null.");
+            throw new java.lang.NullPointerException("Partition is null.");
         }
+        
         if ( Help.isNull(i_Rows) )
         {
-            throw new java.lang.NullPointerException("RowList is null.");
+            this.putRow(i_Partition ,(R)null);
         }
-        
-        
-        for (int i=0; i<i_Rows.length; i++)
+        else
         {
-            this.putRow(i_Partition ,i_Rows[i]);
+            for (int i=0; i<i_Rows.length; i++)
+            {
+                this.putRow(i_Partition ,i_Rows[i]);
+            }
         }
         
         return this.get(i_Partition);
@@ -223,18 +241,15 @@ public class TablePartitionLink<P ,R> extends LinkedHashMap<P ,List<R>> implemen
      * @param i_Partition
      * @param i_Rows
      * @return
+     * 
+     * 2019-09-12  添加：允许i_Row为NULL时建立空的分区。
      */
     public synchronized List<R> putRows(P i_Partition ,R i_Row) 
     {
         if ( i_Partition == null )
         {
-            throw new java.lang.NullPointerException("Partition  is null.");
+            throw new java.lang.NullPointerException("Partition is null.");
         }
-        if ( i_Row == null )
-        {
-            throw new java.lang.NullPointerException("Row is null.");
-        }
-        
         
         this.putRow(i_Partition ,i_Row);
         
@@ -254,7 +269,7 @@ public class TablePartitionLink<P ,R> extends LinkedHashMap<P ,List<R>> implemen
 	{
 		if ( i_Partition == null )
 		{
-			throw new java.lang.NullPointerException("Partition  is null.");
+			throw new java.lang.NullPointerException("Partition is null.");
 		}
 		
 		
@@ -290,7 +305,7 @@ public class TablePartitionLink<P ,R> extends LinkedHashMap<P ,List<R>> implemen
 	{
 		if ( i_Partition == null )
 		{
-			throw new java.lang.NullPointerException("Partition  is null.");
+			throw new java.lang.NullPointerException("Partition is null.");
 		}
 		if ( i_Row == null )
 		{
@@ -331,7 +346,7 @@ public class TablePartitionLink<P ,R> extends LinkedHashMap<P ,List<R>> implemen
 	{
 		if ( i_Partition == null )
 		{
-			throw new java.lang.NullPointerException("Partition  is null.");
+			throw new java.lang.NullPointerException("Partition is null.");
 		}
 		
 		
