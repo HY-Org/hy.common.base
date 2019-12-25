@@ -238,6 +238,48 @@ public class Max<K> extends Hashtable<K ,Double>
     
     
     /**
+     * 模糊查询所有键值，取满足条件键值的最大值
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-12-25
+     * @version     v1.0
+     *
+     * @param i_KeyLike   模糊查询最大值的键（区分大小写）
+     * @return
+     */
+    public double getMaxValueByLike(K i_KeyLike)
+    {
+        if ( Help.isNull(i_KeyLike) || this.isEmpty() )
+        {
+            return 0L;
+        }
+        
+        double v_Max  = Double.MIN_VALUE;
+        String v_Like = i_KeyLike.toString();
+        for (Map.Entry<K ,Double> v_Item : this.entrySet())
+        {
+            if ( v_Item.getKey().equals(i_KeyLike) )
+            {
+                if ( v_Max < v_Item.getValue() )
+                {
+                    v_Max = v_Item.getValue();
+                }
+            }
+            else if ( v_Item.getKey().toString().indexOf(v_Like) >= 0 )
+            {
+                if ( v_Max < v_Item.getValue() )
+                {
+                    v_Max = v_Item.getValue();
+                }
+            }
+        }
+        
+        return v_Max;
+    }
+    
+    
+    
+    /**
      * 求某个键值的最大值（分类的最大值）
      * 
      * @author      ZhengWei(HY)
@@ -247,7 +289,7 @@ public class Max<K> extends Hashtable<K ,Double>
      * @param i_Key
      * @return
      */
-    public Double getMaxValue(String i_Key)
+    public Double getMaxValue(K i_Key)
     {
         if ( Help.isNull(i_Key) )
         {
@@ -271,7 +313,7 @@ public class Max<K> extends Hashtable<K ,Double>
      * @param i_Keys
      * @return
      */
-    public Double getMaxValue(String [] i_Keys)
+    public Double getMaxValue(K [] i_Keys)
     {
         Double v_Max = 0D;
         

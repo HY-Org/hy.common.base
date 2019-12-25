@@ -284,12 +284,48 @@ public class CounterMap<K> extends InterconnectMap<K ,Long>
     
     
     /**
+     * 模糊查询所有键值，合计满足条件的键值
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-12-25
+     * @version     v1.0
+     *
+     * @param i_KeyLike   模糊查询合计的键（区分大小写）
+     * @return
+     */
+    public long getSumValueByLike(K i_KeyLike)
+    {
+        if ( Help.isNull(i_KeyLike) || this.isEmpty() )
+        {
+            return 0L;
+        }
+        
+        long v_Sum    = 0L;
+        String v_Like = i_KeyLike.toString();
+        for (Map.Entry<K ,Long> v_Item : this.entrySet())
+        {
+            if ( v_Item.getKey().equals(i_KeyLike) )
+            {
+                v_Sum += v_Item.getValue();
+            }
+            else if ( v_Item.getKey().toString().indexOf(v_Like) >= 0 )
+            {
+                v_Sum += v_Item.getValue();
+            }
+        }
+        
+        return v_Sum;
+    }
+    
+    
+    
+    /**
      * 求某些键值的合计次数
      * 
      * @param i_Keys
      * @return
      */
-    public long getSumValue(String [] i_Keys)
+    public long getSumValue(K [] i_Keys)
     {
         long v_Sum = 0;
         
@@ -322,7 +358,7 @@ public class CounterMap<K> extends InterconnectMap<K ,Long>
      * @param i_Keys
      * @return
      */
-    public long getSumValueExclude(String [] i_Keys)
+    public long getSumValueExclude(K [] i_Keys)
     {
         return this.sumValue - this.getSumValue(i_Keys);
     }

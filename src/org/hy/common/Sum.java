@@ -298,6 +298,42 @@ public class Sum<K> extends ListMap<K ,Double> implements Map<K ,Double>
     
     
     /**
+     * 模糊查询所有键值，合计满足条件的键值
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-12-25
+     * @version     v1.0
+     *
+     * @param i_KeyLike   模糊查询合计的键（区分大小写）
+     * @return
+     */
+    public double getSumValueByLike(K i_KeyLike)
+    {
+        if ( Help.isNull(i_KeyLike) || this.isEmpty() )
+        {
+            return 0L;
+        }
+        
+        double v_Sum  = 0D;
+        String v_Like = i_KeyLike.toString();
+        for (Map.Entry<K ,Double> v_Item : this.entrySet())
+        {
+            if ( v_Item.getKey().equals(i_KeyLike) )
+            {
+                v_Sum += v_Item.getValue();
+            }
+            else if ( v_Item.getKey().toString().indexOf(v_Like) >= 0 )
+            {
+                v_Sum += v_Item.getValue();
+            }
+        }
+        
+        return v_Sum;
+    }
+    
+    
+    
+    /**
      * 求某个键值的合计次数
      * 
      * @author      ZhengWei(HY)
@@ -307,7 +343,7 @@ public class Sum<K> extends ListMap<K ,Double> implements Map<K ,Double>
      * @param i_Key
      * @return
      */
-    public double getSumValue(String i_Key)
+    public double getSumValue(K i_Key)
     {
         if ( Help.isNull(i_Key) )
         {
@@ -331,7 +367,7 @@ public class Sum<K> extends ListMap<K ,Double> implements Map<K ,Double>
      * @param i_Keys
      * @return
      */
-    public double getSumValue(String [] i_Keys)
+    public double getSumValue(K [] i_Keys)
     {
         double v_Sum = 0;
         
@@ -364,7 +400,7 @@ public class Sum<K> extends ListMap<K ,Double> implements Map<K ,Double>
      * @param i_Keys
      * @return
      */
-    public double getSumValueExclude(String [] i_Keys)
+    public double getSumValueExclude(K [] i_Keys)
     {
         return this.sumValue - this.getSumValue(i_Keys);
     }

@@ -238,6 +238,48 @@ public class Min<K> extends Hashtable<K ,Double>
     
     
     /**
+     * 模糊查询所有键值，取满足条件键值的最小值
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-12-25
+     * @version     v1.0
+     *
+     * @param i_KeyLike   模糊查询最小值的键（区分大小写）
+     * @return
+     */
+    public double getMinValueByLike(K i_KeyLike)
+    {
+        if ( Help.isNull(i_KeyLike) || this.isEmpty() )
+        {
+            return 0L;
+        }
+        
+        double v_Min  = Double.MAX_VALUE;
+        String v_Like = i_KeyLike.toString();
+        for (Map.Entry<K ,Double> v_Item : this.entrySet())
+        {
+            if ( v_Item.getKey().equals(i_KeyLike) )
+            {
+                if ( v_Min > v_Item.getValue() )
+                {
+                    v_Min = v_Item.getValue();
+                }
+            }
+            else if ( v_Item.getKey().toString().indexOf(v_Like) >= 0 )
+            {
+                if ( v_Min > v_Item.getValue() )
+                {
+                    v_Min = v_Item.getValue();
+                }
+            }
+        }
+        
+        return v_Min;
+    }
+    
+    
+    
+    /**
      * 求某个键值的最小值（分类的最小值）
      * 
      * @author      ZhengWei(HY)
@@ -247,7 +289,7 @@ public class Min<K> extends Hashtable<K ,Double>
      * @param i_Key
      * @return
      */
-    public Double getMinValue(String i_Key)
+    public Double getMinValue(K i_Key)
     {
         if ( Help.isNull(i_Key) )
         {
@@ -271,7 +313,7 @@ public class Min<K> extends Hashtable<K ,Double>
      * @param i_Keys
      * @return
      */
-    public Double getMinValue(String [] i_Keys)
+    public Double getMinValue(K [] i_Keys)
     {
         Double v_Min = 0D;
         
