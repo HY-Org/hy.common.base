@@ -2,6 +2,8 @@ package org.hy.common.junit;
 
 import static org.junit.Assert.*;
 
+import java.net.ServerSocket;
+
 import org.hy.common.Date;
 import org.hy.common.Help;
 import org.junit.Test;
@@ -30,4 +32,59 @@ public class JU_Socket
         assertTrue(v_IsAllowConnect);
     }
     
+    
+    
+    /**
+     * 测试同一端口，在“端口可重用”的情况下，是否可以重用？
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2019-12-28
+     * @version     v1.0
+     *
+     */
+    @Test
+    public void test_ServerSocket()
+    {
+        ServerSocket v_ServerSocket1 = null;
+        ServerSocket v_ServerSocket2 = null;
+        
+        try
+        {
+            v_ServerSocket1 = Help.getServerSocket(12345 ,true);
+            System.out.println("12345打开" + (v_ServerSocket1 != null ? "成功" : "失败"));
+            
+            v_ServerSocket2 = Help.getServerSocket(12345 ,true);
+            System.out.println("重复打开" + (v_ServerSocket2 != null ? "成功" : "失败")); 
+        }
+        catch (Exception exce)
+        {
+            exce.printStackTrace();
+        }
+        finally
+        {
+            if ( v_ServerSocket1 != null )
+            {
+                try
+                {
+                    v_ServerSocket1.close();
+                }
+                catch (Exception exce)
+                {
+                    exce.printStackTrace();
+                }
+            }
+            
+            if ( v_ServerSocket2 != null )
+            {
+                try
+                {
+                    v_ServerSocket2.close();
+                }
+                catch (Exception exce)
+                {
+                    exce.printStackTrace();
+                }
+            }
+        }
+    }
 }

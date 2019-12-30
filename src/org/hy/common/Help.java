@@ -2565,10 +2565,10 @@ public class Help
     
     
     /**
-     * 获取本机服务端的ServerSocket对象
+     * 获取本机服务端的ServerSocket对象（默认端口不可重用）
      * 
      * @author      ZhengWei(HY)
-     * @createDate  2017-01-12
+     * @createDate  2019-12-28
      * @version     v1.0
      *
      * @param i_Port  本机的端口号
@@ -2576,10 +2576,30 @@ public class Help
      */
     public final static ServerSocket getServerSocket(int i_Port)
     {
+        return getServerSocket(i_Port ,false);
+    }
+    
+    
+    
+    /**
+     * 获取本机服务端的ServerSocket对象
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-01-12
+     * @version     v1.0
+     *
+     * @param i_Port    本机的端口号
+     * @param i_IsReuse 是否端口重用
+     * @return
+     */
+    public final static ServerSocket getServerSocket(int i_Port ,boolean i_IsReuse)
+    {
         ServerSocket v_Ret = null;
         try
         {
-            v_Ret = new ServerSocket(i_Port);
+            v_Ret = new ServerSocket();
+            v_Ret.setReuseAddress(i_IsReuse);                  // 端口重用。这个设置要放在绑定端口前 
+            v_Ret.bind(new InetSocketAddress(i_Port));
         }
         catch (Exception exce)
         {
@@ -2610,7 +2630,10 @@ public class Help
         {
             try
             {
-                v_Socket.close();
+                if ( !v_Socket.isClosed() )
+                {
+                    v_Socket.close();
+                }
             }
             catch (Exception exce)
             {
@@ -2674,7 +2697,7 @@ public class Help
     
     
     /**
-     * 通过主机名称和端口，获取Socket对象
+     * 通过主机名称和端口，获取Socket对象（默认端口不可重用）
      * 
      * @author      ZhengWei(HY)
      * @createDate  2017-01-12
