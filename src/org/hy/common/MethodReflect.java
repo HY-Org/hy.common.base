@@ -59,6 +59,7 @@ import org.hy.common.comparate.MethodFieldComparator;
  *                                修改： 当子类实现父类接口时，方法重载时，可能出现方法名称相同的两个getter方法。
  *                                      方法按修饰符排序后取首个方法，不再向外界抛错。
  *              v12.6 2018-05-15  添加：数据库java.sql.Timestamp时间的转换
+ *              v13.0 2020-01-14  添加：获取排除某些前缀的成员方法 getMethodsExcludeStart()
  */
 public class MethodReflect implements Serializable
 {
@@ -1303,6 +1304,51 @@ public class MethodReflect implements Serializable
                 {
                     v_Ret.add(v_Methods[i]);
                 }
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 获取排除某些前缀的成员方法
+     * 
+     * 获取本类以及父类或者父接口中所有的公共方法(public修饰符修饰的)
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-01-14
+     * @version     v1.0
+     *
+     * @param i_Class              Java元类
+     * @param i_StartMethodNames   不区分大小写配对
+     * @return
+     */
+    public static List<Method> getMethodsExcludeStart(Class<?> i_Class ,String [] i_StartMethodNames)
+    {
+        List<Method> v_Ret     = new ArrayList<Method>();
+        Method []    v_Methods = i_Class.getMethods();
+        String []    v_Starts  = new String[i_StartMethodNames.length];
+        
+        if ( Help.isNull(i_StartMethodNames) )
+        {
+            return v_Ret;
+        }
+        
+        // 不再区分大小写
+        for (int i=0; i<i_StartMethodNames.length; i++)
+        {
+            v_Starts[i] = i_StartMethodNames[i].toLowerCase();
+        }
+        
+        for (int i=0; i<v_Methods.length; i++)
+        {
+            String v_MName = v_Methods[i].getName().toLowerCase();
+            
+            if ( !StringHelp.isStartsWith(v_MName ,v_Starts) )
+            {
+                v_Ret.add(v_Methods[i]);
             }
         }
         
