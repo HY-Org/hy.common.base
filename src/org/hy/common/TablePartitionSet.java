@@ -262,10 +262,6 @@ public class TablePartitionSet<P ,R> extends Hashtable<P ,Set<R>> implements Map
 				this.rowCount--;
 				return i_Row;
 			}
-			else
-			{
-				return null;
-			}
 		}
 		
 		return null;

@@ -360,10 +360,7 @@ public class TablePartitionLink<P ,R> extends LinkedHashMap<P ,List<R>> implemen
 				if ( v_Ret != null )
 				{
 					this.rowCount--;
-				}
-				else
-				{
-					return null;
+					return v_Ret;
 				}
 			}
 			else
@@ -404,10 +401,6 @@ public class TablePartitionLink<P ,R> extends LinkedHashMap<P ,List<R>> implemen
 			{
 				this.rowCount--;
 				return i_Row;
-			}
-			else
-			{
-				return null;
 			}
 		}
 		

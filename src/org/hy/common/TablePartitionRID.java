@@ -275,10 +275,7 @@ public class TablePartitionRID<P ,R> extends Hashtable<P ,Map<String ,R>> implem
 				if ( v_Ret != null )
 				{
 					this.rowCount--;
-				}
-				else
-				{
-					return null;
+					return v_Ret;
 				}
 			}
 			else

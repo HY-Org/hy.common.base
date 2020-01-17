@@ -369,10 +369,7 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
 				if ( v_Ret != null )
 				{
 					this.rowCount--;
-				}
-				else
-				{
-					return null;
+					return v_Ret;
 				}
 			}
 			else
@@ -413,10 +410,6 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
 			{
 				this.rowCount--;
 				return i_Row;
-			}
-			else
-			{
-				return null;
 			}
 		}
 		
