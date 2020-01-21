@@ -83,6 +83,7 @@ import org.hy.common.comparate.SerializableComparator;
  *                           2. 添加：executeCommand()方法添加：标准输出流与错误输出流均要处理，这里通过异步处理错误输出流，保证输出缓冲区不会被堵住
  *               2019-03-06  1. 添加：isAllowConnect()方法：测试服务及端口是否允许连接（或网络连路是正常的）。
  *                           2. 添加：getSocket()方法添加：超时时长的功能。
+ *               2020-01-21  1. 添加：toObject()方法对Class.class的转换
  */
 public class Help
 {
@@ -6810,6 +6811,10 @@ public class Help
     /**
      * 将字符串转成对应的类型
      * 
+     * @author      ZhengWei(HY)
+     * @version     v1.0
+     *              v2.0  2020-01-21  添加：支持对 Class.class 类型的转换
+     *
      * @param i_Class
      * @param i_Value
      * @return
@@ -6941,6 +6946,19 @@ public class Help
         {
             return i_Value.trim().charAt(0);
         }
+        else if ( i_Class == Class.class )
+        {
+            try
+            {
+                return Help.forName(i_Value.trim());
+            }
+            catch (Exception exce)
+            {
+                exce.printStackTrace();
+            }
+            
+            return null;
+        }
         else
         {
             return i_Value.trim();
@@ -6951,6 +6969,10 @@ public class Help
     
     /**
      * 将字符串转成对应的类型的默认值 
+     * 
+     * @author      ZhengWei(HY)
+     * @version     v1.0
+     *              v2.0  2020-01-21  添加：支持对 Class.class 类型的转换
      * 
      * @param i_Class
      * @param i_Value
@@ -7053,6 +7075,10 @@ public class Help
         else if ( i_Class == char.class )
         {
             return new Character(' ');
+        }
+        else if ( i_Class == Class.class )
+        {
+            return null;
         }
         else
         {
