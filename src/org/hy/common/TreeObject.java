@@ -22,7 +22,8 @@ import java.util.Map;
  *      4. 不可递归：      不可在树结构中出现递归引用。相信大家能理解，不再赘述原因
  *      5. 重复覆盖：      重复节点ID在构建树时，相同节点ID将会覆盖，其子节点将被级联删除
  *      6. 节点顺序：      顶级根节点的顺序按 “先来后到” 排序。
- *                          子节点的顺序由最终用户决定。即实现接口 TreeObjectNode 方来维护。    
+ *                          子节点的顺序由最终用户决定。即实现接口 TreeObjectNode 方来维护。  
+ *      7. 对数据零要求：  节点ID编码无要求、数据排序无要求、树结构层次无限制。  
  *
  * @author      ZhengWei(HY)
  * @createDate  2020-04-21
@@ -119,7 +120,8 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
      * @createDate  2020-04-21
      * @version     v1.0
      *
-     * @return
+     * @return      Map.key   为节点ID
+     *              Map.value 为节点对象
      */
     public Map<String ,V> getTreeMap()
     {
