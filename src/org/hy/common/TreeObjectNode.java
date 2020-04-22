@@ -27,7 +27,7 @@ public interface TreeObjectNode<V extends TreeObjectNode<?>>
      *
      * @return
      */
-    public String getTreeObjectNodeID();
+    public String gatTreeObjectNodeID();
     
     
     
@@ -42,7 +42,7 @@ public interface TreeObjectNode<V extends TreeObjectNode<?>>
      *
      * @return
      */
-    public String getTreeObjectSuperID();
+    public String gatTreeObjectSuperID();
     
     
     
@@ -55,7 +55,7 @@ public interface TreeObjectNode<V extends TreeObjectNode<?>>
      *
      * @return
      */
-    public List<V> getTreeObjectChilds();
+    public List<V> gatTreeObjectChilds();
     
     
     

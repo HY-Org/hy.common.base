@@ -240,7 +240,7 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
      */
     public V put(V i_Node)
     {
-        return this.put(i_Node.getTreeObjectNodeID() ,i_Node.getTreeObjectSuperID() ,i_Node);
+        return this.put(i_Node.gatTreeObjectNodeID() ,i_Node.gatTreeObjectSuperID() ,i_Node);
     }
     
     
@@ -371,22 +371,22 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
             v_Remove = super.remove(i_NodeID);
             if ( v_Remove != null )
             {
-                this.superNodeIDs.remove(v_Remove.getTreeObjectNodeID());
+                this.superNodeIDs.remove(v_Remove.gatTreeObjectNodeID());
                 this.rootNodeIDs .remove(i_NodeID);
                 
-                List<String> v_ChildNodeIDs = this.childNodeIDs.get(v_Remove.getTreeObjectSuperID());
+                List<String> v_ChildNodeIDs = this.childNodeIDs.get(v_Remove.gatTreeObjectSuperID());
                 if ( !Help.isNull(v_ChildNodeIDs) )
                 {
                     v_ChildNodeIDs.remove(i_NodeID);
                 }
                
-                List<? extends TreeObjectNode<V>> v_Childs = v_Remove.getTreeObjectChilds();
+                List<? extends TreeObjectNode<V>> v_Childs = v_Remove.gatTreeObjectChilds();
                 if ( !Help.isNull(v_Childs) )
                 {
                     for (TreeObjectNode<V> v_ChildNode : v_Childs)
                     {
                         // 不判定是否删除成功
-                        this.remove(v_ChildNode.getTreeObjectNodeID());
+                        this.remove(v_ChildNode.gatTreeObjectNodeID());
                     }
                 }
             }
