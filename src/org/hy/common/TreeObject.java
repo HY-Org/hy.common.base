@@ -126,6 +126,34 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
     
     
     /**
+     * 用哪个节点下的所有子节点，生成一颗子树
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-04-22
+     * @version     v1.0
+     *
+     * @param i_SuperNodeID  树节点数据
+     * @return
+     */
+    public List<V> getTreeList(String i_SuperNodeID)
+    {
+        List<V>      v_Tree         = new ArrayList<V>();
+        List<String> v_ChildNodeIDs = this.childNodeIDs.get(i_SuperNodeID);
+        
+        if ( !Help.isNull(v_ChildNodeIDs) )
+        {
+            for (String v_ChildNodeID : v_ChildNodeIDs)
+            {
+                v_Tree.add(this.get(v_ChildNodeID));
+            }
+        }
+        
+        return v_Tree;
+    }
+    
+    
+    
+    /**
      * 生成一颗树(顶级为Map结构的，有顺序)
      * 
      * @author      ZhengWei(HY)
@@ -148,6 +176,54 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
         }
         
         return v_Tree;
+    }
+    
+    
+    
+    /**
+     * 用哪个节点下的所有子节点，生成一颗子树
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-04-22
+     * @version     v1.0
+     *
+     * @return      Map.key   为节点ID
+     *              Map.value 为节点对象
+     */
+    public Map<String ,V> getTreeMap(String i_SuperNodeID)
+    {
+        Map<String ,V> v_Tree         = new LinkedHashMap<String ,V>();
+        List<String>   v_ChildNodeIDs = this.childNodeIDs.get(i_SuperNodeID);
+        
+        if ( !Help.isNull(v_ChildNodeIDs) )
+        {
+            for (String v_ChildNodeID : v_ChildNodeIDs)
+            {
+                v_Tree.put(v_ChildNodeID ,this.get(v_ChildNodeID));
+            }
+        }
+        
+        return v_Tree;
+    }
+    
+    
+    
+    /**
+     * 获取某节点，及子子节点信息
+     *
+     * @author      ZhengWei(HY)
+     * @createDate  2020-04-22
+     * @version     v1.0
+     *
+     * @param i_NodeID
+     * @return
+     *
+     * @see java.util.Hashtable#get(java.lang.Object)
+     */
+    @Override
+    public V get(Object i_NodeID) 
+    {
+        return super.get(i_NodeID);
     }
     
     
