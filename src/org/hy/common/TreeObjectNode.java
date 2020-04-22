@@ -68,10 +68,9 @@ public interface TreeObjectNode<V extends TreeObjectNode<?>>
      * @createDate  2020-04-21
      * @version     v1.0
      *
-     * @param i_ChildNodeID  子节点ID
      * @param i_ChildNode    子节点数据 
      */
-    public void addTreeObjectChild(String i_ChildNodeID ,V i_ChildNode);
+    public void addTreeObjectChild(V i_ChildNode);
     
     
     
@@ -84,9 +83,8 @@ public interface TreeObjectNode<V extends TreeObjectNode<?>>
      * @createDate  2020-04-21
      * @version     v1.0
      *
-     * @param i_ChildNodeID  子节点ID
      * @param i_ChildNode    子节点数据 
      */
-    public void delTreeObjectChild(String i_ChildNodeID ,V i_ChildNode);
+    public void delTreeObjectChild(V i_ChildNode);
     
 }

@@ -23,7 +23,7 @@ import java.util.Map;
  *      5. 重复覆盖：      重复节点ID在构建树时，相同节点ID将会覆盖，其子节点将被级联删除
  *      6. 节点顺序：      顶级根节点的顺序按 “先来后到” 排序。
  *                          子节点的顺序由最终用户决定。即实现接口 TreeObjectNode 方来维护。  
- *      7. 对数据零要求：  节点ID编码无要求、数据排序无要求、树结构层次无限制。  
+ *      7. 对数据零要求：  节点ID编码无要求、数据排序无要求(先入父后入子性能最高)、树结构层次无限制。  
  *
  * @author      ZhengWei(HY)
  * @createDate  2020-04-21
@@ -36,20 +36,30 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
     private static final long serialVersionUID = 8613137547771634890L;
     
     /** 
-     * 树的节点ID与父节点ID的对应关系 
+     * 树的节点ID与父节点ID的对应关系
+     *  
      * Map.key    为节点ID
      * Map.value  为父节点ID
      */
-    private HashMap<String ,String>       superNodeIDs;
+    private HashMap<String ,String>        superNodeIDs;
+    
+    /**
+     * 树的节点与直属子节点的对应关系
+     * 
+     * Map.key    为节点ID
+     * Map.value  为直属子节点ID的集合
+     */
+    private PartitionMap<String ,String>   childNodeIDs;
     
     /**
      * 顶级根节点ID
+     * 
      * Map.key    为顶级根节点ID
      * Map.value  为顶级根节点ID
      * 
      * 此属性可被动态计算得出。它存在是为了查询性能的快。
      */
-    private LinkedHashMap<String ,String> rootNodeIDs;
+    private LinkedHashMap<String ,String>  rootNodeIDs;
     
     
     
@@ -71,8 +81,9 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
     {
         super();
         
-        this.superNodeIDs = new HashMap      <String ,String>();
-        this.rootNodeIDs  = new LinkedHashMap<String ,String>();
+        this.superNodeIDs = new HashMap       <String ,String>();
+        this.childNodeIDs = new TablePartition<String ,String>();
+        this.rootNodeIDs  = new LinkedHashMap <String ,String>();
     }
     
     
@@ -81,8 +92,9 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
     {
         super(i_InitialCapacity);
         
-        this.superNodeIDs = new HashMap      <String ,String>();
-        this.rootNodeIDs  = new LinkedHashMap<String ,String>();
+        this.superNodeIDs = new HashMap       <String ,String>();
+        this.childNodeIDs = new TablePartition<String ,String>();
+        this.rootNodeIDs  = new LinkedHashMap <String ,String>();
     }
     
     
@@ -144,6 +156,80 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
      * 添加树节点
      * 
      * @author      ZhengWei(HY)
+     * @createDate  2020-04-22
+     * @version     v1.0
+     *
+     * @param i_Node  树节点数据
+     * @return
+     */
+    public V put(V i_Node)
+    {
+        return this.put(i_Node.getTreeObjectNodeID() ,i_Node.getTreeObjectSuperID() ,i_Node);
+    }
+    
+    
+    
+    /**
+     * 批量添加树的节点数据
+     *
+     * @author      ZhengWei(HY)
+     * @createDate  2020-04-22
+     * @version     v1.0
+     *
+     * @param i_Nodes
+     *
+     * @see java.util.Hashtable#putAll(java.util.Map)
+     */
+    @Override
+    public void putAll(Map<? extends String, ? extends V> i_Nodes)
+    {
+        if ( Help.isNull(i_Nodes) )
+        {
+            return;
+        }
+        
+        for (V v_Node : i_Nodes.values())
+        {
+            if ( v_Node != null )
+            {
+                this.put(v_Node);
+            }
+        }
+    }
+    
+    
+    
+    /**
+     * 批量添加树的节点数据
+     *
+     * @author      ZhengWei(HY)
+     * @createDate  2020-04-22
+     * @version     v1.0
+     *
+     * @param i_Nodes
+     */
+    public void putAll(List<V> i_Nodes)
+    {
+        if ( Help.isNull(i_Nodes) )
+        {
+            return;
+        }
+        
+        for (V v_Node : i_Nodes)
+        {
+            if ( v_Node != null )
+            {
+                this.put(v_Node);
+            }
+        }
+    }
+    
+    
+    
+    /**
+     * 添加树节点
+     * 
+     * @author      ZhengWei(HY)
      * @createDate  2020-04-21
      * @version     v1.0
      *
@@ -152,7 +238,7 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
      * @param i_Node     树节点数据
      * @return
      */
-    public synchronized V put(String i_NodeID ,String i_SuperID ,V i_Node)
+    private synchronized V put(String i_NodeID ,String i_SuperID ,V i_Node)
     {
         if ( Help.isNull(i_NodeID) )
         {
@@ -172,15 +258,17 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
             }
         }
         
-        V v_Super = this.get(Help.NVL(i_SuperID));
+        String v_SuperID = Help.NVL(i_SuperID);
+        V      v_Super   = this.get(v_SuperID);
         if ( v_Super != null )
         {
-            v_Super.addTreeObjectChild(i_NodeID ,i_Node);
+            v_Super.addTreeObjectChild(i_Node);
         }
         
         v_Ret = super.put(i_NodeID ,i_Node);
-        this.superNodeIDs.put(i_NodeID ,Help.NVL(i_SuperID));
-        this.calcRootIDs(i_NodeID ,Help.NVL(i_SuperID));
+        this.superNodeIDs.put(i_NodeID ,v_SuperID);
+        this.childNodeIDs.putRow(v_SuperID ,i_NodeID);
+        this.calcRootIDs(i_NodeID ,v_SuperID ,i_Node);
         
         return v_Ret;
     }
@@ -209,6 +297,12 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
             {
                 this.superNodeIDs.remove(v_Remove.getTreeObjectNodeID());
                 this.rootNodeIDs .remove(i_NodeID);
+                
+                List<String> v_ChildNodeIDs = this.childNodeIDs.get(v_Remove.getTreeObjectSuperID());
+                if ( !Help.isNull(v_ChildNodeIDs) )
+                {
+                    v_ChildNodeIDs.remove(i_NodeID);
+                }
                
                 List<? extends TreeObjectNode<V>> v_Childs = v_Remove.getTreeObjectChilds();
                 if ( !Help.isNull(v_Childs) )
@@ -234,14 +328,30 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
      * @createDate  2020-04-21
      * @version     v1.0
      *
-     * @param i_NodeID
-     * @param i_SuperID
+     * @param i_NodeID   树节点ID。不可为空或空指针。相同i_NodeID节点将覆盖添加，其子节点也将被级联删除。
+     * @param i_SuperID  父节点ID。可为空，但空并不能被判定为顶级根节点。当任何节点均不引用它时，i_SuperID即为顶级根节点
+     * @param i_Node     树节点数据
      */
-    private void calcRootIDs(String i_NodeID ,String i_SuperID)
+    private void calcRootIDs(String i_NodeID ,String i_SuperID ,V i_Node)
     {
         if ( !this.superNodeIDs.containsKey(i_SuperID) )
         {
             this.rootNodeIDs.put(i_NodeID ,i_NodeID);
+            
+            // 处理：先put子节点，后put父节点的情况
+            List<String> v_ChildNodeIDs = this.childNodeIDs.get(i_NodeID);
+            if ( !Help.isNull(v_ChildNodeIDs) )
+            {
+                for (String i_ChildNodeID : v_ChildNodeIDs)
+                {
+                    if ( this.rootNodeIDs.containsKey(i_ChildNodeID) )
+                    {
+                        this.rootNodeIDs.remove(i_ChildNodeID);
+                        V v_ChildNode = this.get(i_ChildNodeID);
+                        i_Node.addTreeObjectChild(v_ChildNode);
+                    }
+                }
+            }
         }
         else
         {
@@ -255,6 +365,7 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
     public void clear()
     {
         this.superNodeIDs.clear();
+        this.childNodeIDs.clear();
         this.rootNodeIDs .clear();
         super.clear();
     }
@@ -267,15 +378,6 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
     {
         /** 不允许使用些方法 */
         return null;
-    }
-    
-    
-    
-    @Deprecated
-    @Override
-    public void putAll(Map<? extends String, ? extends V> i_Values)
-    {
-        /** 不允许使用些方法 */
     }
     
 }
