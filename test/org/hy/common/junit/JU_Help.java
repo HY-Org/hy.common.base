@@ -27,6 +27,14 @@ public class JU_Help
 {
  
     @Test
+    public void test_getJavaVersion()
+    {
+        System.out.println(Help.getJavaVersion());
+    }
+    
+    
+    
+    @Test
     public void test_URI() throws URISyntaxException
     {
         URI v_URI = new URI("D:/Software/Java/jdk1.8.0_202/bin/java.exe");

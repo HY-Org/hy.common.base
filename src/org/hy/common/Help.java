@@ -84,6 +84,7 @@ import org.hy.common.comparate.SerializableComparator;
  *               2019-03-06  1. 添加：isAllowConnect()方法：测试服务及端口是否允许连接（或网络连路是正常的）。
  *                           2. 添加：getSocket()方法添加：超时时长的功能。
  *               2020-01-21  1. 添加：toObject()方法对Class.class的转换
+ *               2020-06-05  1. 添加：获取运行时的JDK版本
  */
 public class Help
 {
@@ -2301,6 +2302,22 @@ public class Help
     public final static String getSysTempPath()
     {
         return System.getProperty("java.io.tmpdir");
+    }
+    
+    
+    
+    /**
+     * 判断JDK版本
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-06-05
+     * @version     v1.0
+     *
+     * @return
+     */
+    public final static String getJavaVersion()
+    {
+        return System.getProperty("java.version");
     }
     
     
