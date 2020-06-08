@@ -11,7 +11,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +52,7 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.14 2018-12-27   1.添加 replaceLast(...) 系列方法
  *              v1.15 2019-03-13   1.添加 parsePlaceholdersSequence() 占位符命名是否要求严格的规则
  *              v1.16 2019-08-27   1.添加 扩展 getComputeUnit() 方法，带小数精度。 
+ *              v1.17 2020-06-08   1.修改 解释占位符的系列方法parsePlaceholders()的返回结构改成PartitionMap
  *              
  * @createDate  2009-08-21
  */
@@ -3460,32 +3460,8 @@ public final class StringHelp
     /**
      * 解释占位符。:xx （保持占位符原顺序不变）
      * 
-     * Map.key    为占位符。前缀为:符号
-     * Map.Value  为占位符原文本信息
-     * 
-     * @author      ZhengWei(HY)
-     * @createDate  2012-10-30
-     * @version     v1.0  
-     *              v2.0  2014-07-30
-     *              v3.0  2015-12-10  支持 :A.B.C 的解释（对点.的解释）。
-     *              v4.0  2018-05-16  添加：支持中文占位符
-     *
-     * @param i_Placeholders
-     * @param i_StrictRules   占位符命名是否要求严格的规则。
-     * @return
-     */
-    public final static Map<String ,Integer> parsePlaceholdersSequence(String i_Placeholders)
-    {
-        return parsePlaceholdersSequence(i_Placeholders ,false);
-    }
-    
-    
-    
-    /**
-     * 解释占位符。:xx （保持占位符原顺序不变）
-     * 
-     * Map.key    为占位符。前缀为:符号
-     * Map.Value  为占位符在原文本信息的顺序（下标从0开始）
+     * Map.key    为占位符。前缀为:符号。不包含:符号，同时也是分区字段
+     * Map.Value  为占位符在原文本信息的顺序的集合（下标从0开始）
      * 
      * @author      ZhengWei(HY)
      * @createDate  2012-10-30
@@ -3495,17 +3471,45 @@ public final class StringHelp
      *              v4.0  2018-05-16  添加：支持中文占位符
      *              v5.0  2019-03-13  添加：占位符命名是否要求严格的规则
      *              v6.0  2020-06-08  修改：Map.value 修改为顺序。
+     *                                修改：将返回结果的Map结构，改为 TablePartitionLink 结构。
      *
      * @param i_Placeholders
      * @param i_StrictRules   占位符命名是否要求严格的规则。
      * @return
      */
-    public final static Map<String ,Integer> parsePlaceholdersSequence(String i_Placeholders ,boolean i_StrictRules)
+    public final static PartitionMap<String ,Integer> parsePlaceholdersSequence(String i_Placeholders)
+    {
+        return parsePlaceholdersSequence(i_Placeholders ,false);
+    }
+    
+    
+    
+    /**
+     * 解释占位符。:xx （保持占位符原顺序不变）
+     * 
+     * Map.key    为占位符。前缀为:符号。不包含:符号，同时也是分区字段
+     * Map.Value  为占位符在原文本信息的顺序的集合（下标从0开始）
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2012-10-30
+     * @version     v1.0  
+     *              v2.0  2014-07-30
+     *              v3.0  2015-12-10  支持 :A.B.C 的解释（对点.的解释）。
+     *              v4.0  2018-05-16  添加：支持中文占位符
+     *              v5.0  2019-03-13  添加：占位符命名是否要求严格的规则
+     *              v6.0  2020-06-08  修改：Map.value 修改为顺序。
+     *                                修改：将返回结果的Map结构，改为 TablePartitionLink 结构。
+     *
+     * @param i_Placeholders
+     * @param i_StrictRules   占位符命名是否要求严格的规则。
+     * @return
+     */
+    public final static PartitionMap<String ,Integer> parsePlaceholdersSequence(String i_Placeholders ,boolean i_StrictRules)
     {
         // 匹配占位符
-        List<SplitSegment>   v_Segments = StringHelp.SplitOnlyFind("[ (,='%_\\s]?:[\\w\\.\\u4e00-\\u9fa5]+[ ),='%_\\s]?" ,i_Placeholders);
-        Map<String ,Integer> v_Ret      = new LinkedHashMap<String ,Integer>();
-        int                  v_Index    = 0;
+        List<SplitSegment>                  v_Segments = StringHelp.SplitOnlyFind("[ (,='%_\\s]?:[\\w\\.\\u4e00-\\u9fa5]+[ ),='%_\\s]?" ,i_Placeholders);
+        TablePartitionLink<String ,Integer> v_Ret      = new TablePartitionLink<String ,Integer>();
+        int                                 v_Index    = 0;
         
         for (SplitSegment v_Segment : v_Segments)
         {
@@ -3525,7 +3529,7 @@ public final class StringHelp
                 }
             }
             
-            v_Ret.put(v_PlaceHolder ,v_Index++);
+            v_Ret.putRow(v_PlaceHolder ,v_Index++);
         }
         
         return v_Ret;
@@ -3549,7 +3553,7 @@ public final class StringHelp
      * @param i_Placeholders
      * @return
      */
-    public final static Map<String ,Integer> parsePlaceholders(String i_Placeholders)
+    public final static PartitionMap<String ,Integer> parsePlaceholders(String i_Placeholders)
     {
         return Help.toReverse(parsePlaceholdersSequence(i_Placeholders));
     }
@@ -3574,7 +3578,7 @@ public final class StringHelp
      * @param i_StrictRules
      * @return
      */
-    public final static Map<String ,Integer> parsePlaceholders(String i_Placeholders ,boolean i_StrictRules)
+    public final static PartitionMap<String ,Integer> parsePlaceholders(String i_Placeholders ,boolean i_StrictRules)
     {
         return Help.toReverse(parsePlaceholdersSequence(i_Placeholders ,i_StrictRules));
     }

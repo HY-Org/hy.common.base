@@ -85,6 +85,7 @@ import org.hy.common.comparate.SerializableComparator;
  *                           2. 添加：getSocket()方法添加：超时时长的功能。
  *               2020-01-21  1. 添加：toObject()方法对Class.class的转换
  *               2020-06-05  1. 添加：获取运行时的JDK版本
+ *                           2. 添加：支持 PartitionMap 结构的排序
  */
 public class Help
 {
@@ -6561,86 +6562,6 @@ public class Help
     
     
     /**
-     * 对Map集合的Values排序生成一个新的LinkedMap。
-     * 
-     * 当Map.value相同时，Map.key也按规则排序后返回。
-     * 
-     * @author      ZhengWei(HY)
-     * @createDate  2018-09-26
-     * @version     v1.0
-     *
-     * @param i_Map
-     * @return
-     */
-    public final static <K extends Comparable<? super K> ,V extends Comparable<? super V>> Map<K ,V> toSortByMap(Map<K ,V> i_Map)
-    {
-        return toSortReverseByMap(i_Map ,1);
-    }
-    
-    
-    
-    /**
-     * 对Map集合的Values排序生成一个新的LinkedMap
-     * 
-     * 当Map.value相同时，Map.key也按规则排序后返回。
-     * 
-     * @author      ZhengWei(HY)
-     * @createDate  2018-09-26
-     * @version     v1.0
-     *
-     * @param i_Map
-     * @return
-     */
-    public final static <K extends Comparable<? super K> ,V extends Comparable<? super V>> Map<K ,V> toReverseByMap(Map<K ,V> i_Map)
-    {
-        return toSortReverseByMap(i_Map ,-1);
-    }
-    
-    
-    
-    /**
-     * 对Map集合的Keys升序排序生成一个新的LinkedMap
-     * 
-     * 字符串转数字后，再比较排序（正序）
-     * 
-     * 优点是，不会改变原属性值的保存格式。
-     * 
-     * @author      ZhengWei(HY)
-     * @createDate  2016-12-19
-     * @version     v1.0
-     * 
-     * @param i_Map
-     * @return
-     */
-    public final static <T2> Map<String ,T2> toSortByNum(Map<String ,T2> i_Map)
-    {
-        return toSortReverseByNum(i_Map ,1);
-    }
-    
-    
-    
-    /**
-     * 对Map集合的Keys降序排序生成一个新的LinkedMap
-     * 
-     * 字符串转数字后，再比较排序（降序）
-     * 
-     * 优点是，不会改变原属性值的保存格式。
-     * 
-     * @author      ZhengWei(HY)
-     * @createDate  2016-12-19
-     * @version     v1.0
-     *
-     * @param i_Map
-     * @return
-     */
-    public final static <T2> Map<String ,T2> toReverseByNum(Map<String ,T2> i_Map)
-    {
-        return toSortReverseByNum(i_Map ,-1);
-    }
-    
-    
-    
-    /**
      * 对Map集合的Keys升序排序生成一个新的LinkedMap
      * 
      * @param i_Map
@@ -6707,6 +6628,126 @@ public class Help
     
     
     /**
+     * 对Map分区集合的Keys升序生成一个新的TablePartitionLink
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-06-08
+     * @version     v1.0
+     *
+     * @param i_Map        Map分区集合
+     * @return
+     */
+    public final static <T1 extends Comparable<? super T1> ,T2> PartitionMap<T1 ,T2> toSort(PartitionMap<T1 ,T2> i_Map)
+    {
+        return toSortReverse(i_Map ,1);
+    }
+    
+    
+    
+    /**
+     * 对Map分区集合的Keys降序生成一个新的TablePartitionLink
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-06-08
+     * @version     v1.0
+     *
+     * @param i_Map        Map分区集合
+     * @return
+     */
+    public final static <T1 extends Comparable<? super T1> ,T2> PartitionMap<T1 ,T2> toReverse(PartitionMap<T1 ,T2> i_Map)
+    {
+        return toSortReverse(i_Map ,-1);
+    }
+    
+    
+    
+    /**
+     * 对Map分区集合的Keys排序生成一个新的TablePartitionLink
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-06-08
+     * @version     v1.0
+     *
+     * @param i_Map        Map分区集合
+     * @param i_Direction  排序方向。>= 0 表示升序。 < 0表示降序
+     * @return
+     */
+    private final static <T1 extends Comparable<? super T1> ,T2> PartitionMap<T1 ,T2> toSortReverse(PartitionMap<T1 ,T2> i_Map ,int i_Direction)
+    {
+        PartitionMap<T1 ,T2> v_Ret = null;
+        
+        if ( !Help.isNull(i_Map) )
+        {
+            List<T1> v_Keys = toListKeys(i_Map);
+            v_Ret = new TablePartitionLink<T1 ,T2>(i_Map.size());
+            
+            if ( i_Direction >= 0 )
+            {
+                Collections.sort(v_Keys);
+            }
+            else
+            {
+                Collections.sort(v_Keys ,Collections.reverseOrder());
+            }
+            
+            for (T1 v_Key : v_Keys)
+            {
+                v_Ret.put(v_Key ,i_Map.get(v_Key));
+            }
+        }
+        else
+        {
+            v_Ret = i_Map;
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 对Map集合的Keys升序排序生成一个新的LinkedMap
+     * 
+     * 字符串转数字后，再比较排序（正序）
+     * 
+     * 优点是，不会改变原属性值的保存格式。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2016-12-19
+     * @version     v1.0
+     * 
+     * @param i_Map
+     * @return
+     */
+    public final static <T2> Map<String ,T2> toSortByNum(Map<String ,T2> i_Map)
+    {
+        return toSortReverseByNum(i_Map ,1);
+    }
+    
+    
+    
+    /**
+     * 对Map集合的Keys降序排序生成一个新的LinkedMap
+     * 
+     * 字符串转数字后，再比较排序（降序）
+     * 
+     * 优点是，不会改变原属性值的保存格式。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2016-12-19
+     * @version     v1.0
+     *
+     * @param i_Map
+     * @return
+     */
+    public final static <T2> Map<String ,T2> toReverseByNum(Map<String ,T2> i_Map)
+    {
+        return toSortReverseByNum(i_Map ,-1);
+    }
+    
+    
+    
+    /**
      * 对Map集合的Keys排序生成一个新的LinkedMap
      * 
      * 字符串转数字后，再比较排序（降序）
@@ -6750,6 +6791,134 @@ public class Help
         }
         
         return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 对Map分区集合的Keys升序排序生成一个新的TablePartitionLink
+     * 
+     * 字符串转数字后，再比较排序（正序）
+     * 
+     * 优点是，不会改变原属性值的保存格式。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2016-12-19
+     * @version     v1.0
+     * 
+     * @param i_Map
+     * @return
+     */
+    public final static <T2> PartitionMap<String ,T2> toSortByNum(PartitionMap<String ,T2> i_Map)
+    {
+        return toSortReverseByNum(i_Map ,1);
+    }
+    
+    
+    
+    /**
+     * 对Map分区集合的Keys降序排序生成一个新的TablePartitionLink
+     * 
+     * 字符串转数字后，再比较排序（降序）
+     * 
+     * 优点是，不会改变原属性值的保存格式。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2016-12-19
+     * @version     v1.0
+     *
+     * @param i_Map
+     * @return
+     */
+    public final static <T2> PartitionMap<String ,T2> toReverseByNum(PartitionMap<String ,T2> i_Map)
+    {
+        return toSortReverseByNum(i_Map ,-1);
+    }
+    
+    
+    
+    /**
+     * 对Map分区集合的Keys排序生成一个新的TablePartitionLink
+     * 
+     * 字符串转数字后，再比较排序（降序）
+     * 
+     * 优点是，不会改变原属性值的保存格式。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-06-08
+     * @version     v1.0
+     *
+    * @param i_Map
+     * @param i_Direction  排序方向。>= 0 表示升序。 < 0表示降序
+     * @return
+     */
+    private final static <T2> PartitionMap<String ,T2> toSortReverseByNum(PartitionMap<String ,T2> i_Map ,int i_Direction)
+    {
+        PartitionMap<String ,T2> v_Ret = null;
+        
+        if ( !Help.isNull(i_Map) )
+        {
+            List<String> v_Keys = toListKeys(i_Map);
+            v_Ret = new TablePartitionLink<String ,T2>(i_Map.size());
+            
+            if ( i_Direction >= 0 )
+            {
+                v_Keys = Help.toSortByNum(v_Keys.toArray(new String [] {}));
+            }
+            else
+            {
+                v_Keys = Help.toReverseByNum(v_Keys.toArray(new String [] {}));
+            }
+            
+            for (String v_Key : v_Keys)
+            {
+                v_Ret.put(v_Key ,i_Map.get(v_Key));
+            }
+        }
+        else
+        {
+            v_Ret = i_Map;
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 对Map集合的Values排序生成一个新的LinkedMap。
+     * 
+     * 当Map.value相同时，Map.key也按规则排序后返回。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-09-26
+     * @version     v1.0
+     *
+     * @param i_Map
+     * @return
+     */
+    public final static <K extends Comparable<? super K> ,V extends Comparable<? super V>> Map<K ,V> toSortByMap(Map<K ,V> i_Map)
+    {
+        return toSortReverseByMap(i_Map ,1);
+    }
+    
+    
+    
+    /**
+     * 对Map集合的Values排序生成一个新的LinkedMap
+     * 
+     * 当Map.value相同时，Map.key也按规则排序后返回。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-09-26
+     * @version     v1.0
+     *
+     * @param i_Map
+     * @return
+     */
+    public final static <K extends Comparable<? super K> ,V extends Comparable<? super V>> Map<K ,V> toReverseByMap(Map<K ,V> i_Map)
+    {
+        return toSortReverseByMap(i_Map ,-1);
     }
     
     
