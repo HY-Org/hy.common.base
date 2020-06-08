@@ -3474,7 +3474,7 @@ public final class StringHelp
      * @param i_StrictRules   占位符命名是否要求严格的规则。
      * @return
      */
-    public final static Map<String ,Object> parsePlaceholdersSequence(String i_Placeholders)
+    public final static Map<String ,Integer> parsePlaceholdersSequence(String i_Placeholders)
     {
         return parsePlaceholdersSequence(i_Placeholders ,false);
     }
@@ -3485,7 +3485,7 @@ public final class StringHelp
      * 解释占位符。:xx （保持占位符原顺序不变）
      * 
      * Map.key    为占位符。前缀为:符号
-     * Map.Value  为占位符原文本信息
+     * Map.Value  为占位符在原文本信息的顺序（下标从0开始）
      * 
      * @author      ZhengWei(HY)
      * @createDate  2012-10-30
@@ -3494,16 +3494,18 @@ public final class StringHelp
      *              v3.0  2015-12-10  支持 :A.B.C 的解释（对点.的解释）。
      *              v4.0  2018-05-16  添加：支持中文占位符
      *              v5.0  2019-03-13  添加：占位符命名是否要求严格的规则
+     *              v6.0  2020-06-08  修改：Map.value 修改为顺序。
      *
      * @param i_Placeholders
      * @param i_StrictRules   占位符命名是否要求严格的规则。
      * @return
      */
-    public final static Map<String ,Object> parsePlaceholdersSequence(String i_Placeholders ,boolean i_StrictRules)
+    public final static Map<String ,Integer> parsePlaceholdersSequence(String i_Placeholders ,boolean i_StrictRules)
     {
         // 匹配占位符
-        List<SplitSegment>  v_Segments = StringHelp.SplitOnlyFind("[ (,='%_\\s]?:[\\w\\.\\u4e00-\\u9fa5]+[ ),='%_\\s]?" ,i_Placeholders);
-        Map<String ,Object> v_Ret      = new LinkedHashMap<String ,Object>();
+        List<SplitSegment>   v_Segments = StringHelp.SplitOnlyFind("[ (,='%_\\s]?:[\\w\\.\\u4e00-\\u9fa5]+[ ),='%_\\s]?" ,i_Placeholders);
+        Map<String ,Integer> v_Ret      = new LinkedHashMap<String ,Integer>();
+        int                  v_Index    = 0;
         
         for (SplitSegment v_Segment : v_Segments)
         {
@@ -3523,7 +3525,7 @@ public final class StringHelp
                 }
             }
             
-            v_Ret.put(v_PlaceHolder ,v_Segment.getInfo());
+            v_Ret.put(v_PlaceHolder ,v_Index++);
         }
         
         return v_Ret;
@@ -3547,7 +3549,7 @@ public final class StringHelp
      * @param i_Placeholders
      * @return
      */
-    public final static Map<String ,Object> parsePlaceholders(String i_Placeholders)
+    public final static Map<String ,Integer> parsePlaceholders(String i_Placeholders)
     {
         return Help.toReverse(parsePlaceholdersSequence(i_Placeholders));
     }
@@ -3572,7 +3574,7 @@ public final class StringHelp
      * @param i_StrictRules
      * @return
      */
-    public final static Map<String ,Object> parsePlaceholders(String i_Placeholders ,boolean i_StrictRules)
+    public final static Map<String ,Integer> parsePlaceholders(String i_Placeholders ,boolean i_StrictRules)
     {
         return Help.toReverse(parsePlaceholdersSequence(i_Placeholders ,i_StrictRules));
     }
