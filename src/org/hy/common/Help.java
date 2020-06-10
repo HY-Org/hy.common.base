@@ -86,6 +86,7 @@ import org.hy.common.comparate.SerializableComparator;
  *               2020-01-21  1. 添加：toObject()方法对Class.class的转换
  *               2020-06-05  1. 添加：获取运行时的JDK版本
  *                           2. 添加：支持 PartitionMap 结构的排序
+ *               2020-06-10  1. 添加：数组填充方法 fillArray
  */
 public class Help
 {
@@ -141,6 +142,48 @@ public class Help
         }
         
         return v_ValueX;
+    }
+    
+    
+    
+    /**
+     * 用一个数组From填充另一个数组To。覆盖填充模式
+     * 
+     * 当数组From小于填充范围时，只填充From数组的大小。
+     * 当数组From大于填充范围时，只填充范围内的数据。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-06-10
+     * @version     v1.0
+     *
+     * @param i_FromArray           提供填充数据的数组
+     * @param io_ToArray            被填充的数组
+     * @param i_ToArrayStartIndex   填充范围，被填充数组的开始索引（包含此索引也被填充）。下标从0开始
+     * @param i_ToArrayEndIndex     填充范围，被填充数组的结束索引（包含此索引也被填充）。下标从0开始
+     * @return
+     */
+    public final static <T> boolean fillArray(T [] i_FromArray ,T [] io_ToArray ,int i_ToArrayStartIndex ,int i_ToArrayEndIndex)
+    {
+        if ( isNull(i_FromArray) )
+        {
+            return false;
+        }
+        
+        if ( i_ToArrayStartIndex >= io_ToArray.length )
+        {
+            return false;
+        }
+        
+        int v_ToArrayStartIndex = Math.max(0 ,i_ToArrayStartIndex);
+        int v_ToArrayEndIndex   = Math.min(i_ToArrayEndIndex ,io_ToArray.length - 1);
+        int v_Size              = Math.min(i_FromArray.length ,v_ToArrayEndIndex - v_ToArrayStartIndex + 1);
+        
+        for (int iFrom=0 ,iTo=v_ToArrayStartIndex; iFrom<v_Size; iFrom++ ,iTo++)
+        {
+            io_ToArray[iTo] = i_FromArray[0];
+        }
+        
+        return true;
     }
     
     
