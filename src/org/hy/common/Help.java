@@ -158,6 +158,49 @@ public class Help
      *
      * @param i_FromArray           提供填充数据的数组
      * @param io_ToArray            被填充的数组
+     * @return                      表示是否有填充动作
+     */ 
+    public final static <T> boolean fillArray(T [] i_FromArray ,T [] io_ToArray)
+    {
+        return fillArray(i_FromArray ,io_ToArray ,0 ,io_ToArray.length - 1);
+    }
+    
+    
+    
+    /**
+     * 用一个数组From填充另一个数组To。覆盖填充模式
+     * 
+     * 当数组From小于填充范围时，只填充From数组的大小。
+     * 当数组From大于填充范围时，只填充范围内的数据。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-06-10
+     * @version     v1.0
+     *
+     * @param i_FromArray           提供填充数据的数组
+     * @param io_ToArray            被填充的数组
+     * @param i_ToArrayStartIndex   填充范围，被填充数组的开始索引（包含此索引也被填充）。下标从0开始
+     * @return                      表示是否有填充动作
+     */ 
+    public final static <T> boolean fillArray(T [] i_FromArray ,T [] io_ToArray ,int i_ToArrayStartIndex)
+    {
+        return fillArray(i_FromArray ,io_ToArray ,i_ToArrayStartIndex ,io_ToArray.length - 1);
+    }
+    
+    
+    
+    /**
+     * 用一个数组From填充另一个数组To。覆盖填充模式
+     * 
+     * 当数组From小于填充范围时，只填充From数组的大小。
+     * 当数组From大于填充范围时，只填充范围内的数据。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-06-10
+     * @version     v1.0
+     *
+     * @param i_FromArray           提供填充数据的数组
+     * @param io_ToArray            被填充的数组
      * @param i_ToArrayStartIndex   填充范围，被填充数组的开始索引（包含此索引也被填充）。下标从0开始
      * @param i_ToArrayEndIndex     填充范围，被填充数组的结束索引（包含此索引也被填充）。下标从0开始
      * @return
