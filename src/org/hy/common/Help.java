@@ -87,6 +87,7 @@ import org.hy.common.comparate.SerializableComparator;
  *               2020-06-05  1. 添加：获取运行时的JDK版本
  *                           2. 添加：支持 PartitionMap 结构的排序
  *               2020-06-10  1. 添加：数组填充方法 fillArray
+ *               2020-07-21  1. 修复：数组填充方法Debug  发现人：马龙
  */
 public class Help
 {
@@ -223,7 +224,7 @@ public class Help
         
         for (int iFrom=0 ,iTo=v_ToArrayStartIndex; iFrom<v_Size; iFrom++ ,iTo++)
         {
-            io_ToArray[iTo] = i_FromArray[0];
+            io_ToArray[iTo] = i_FromArray[iFrom];
         }
         
         return true;
