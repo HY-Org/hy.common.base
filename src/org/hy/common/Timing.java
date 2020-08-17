@@ -95,7 +95,7 @@ public class Timing implements java.io.Serializable
         }
         else
         {
-            throw new VerifyError("Not start timing, cannot pause timing.");
+            throw new RuntimeException("Not start timing, cannot pause timing.");
         }
     }
     

@@ -69,17 +69,18 @@ public class ObjectComparator implements Comparator<Object>
      * @param i_MetadataObj        一个用于获取序列对象元数据的样例对象
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
      *                             没有排序标识的，默认按从小到大排序，即正序 
+     * @throws InstantiationException 
      */
     public ObjectComparator(Object i_MetadataObj ,String ... i_SortPropertyNames)
     {
         if ( i_MetadataObj == null )
         {
-            throw new InstantiationError("MetadataObj is null.");
+            throw new NullPointerException("MetadataObj is null.");
         }
         
         if ( Help.isNull(i_SortPropertyNames) )
         {
-            throw new InstantiationError("SortPropertyNames is null.");
+            throw new NullPointerException("SortPropertyNames is null.");
         }
         
         propertyNames   = new String       [i_SortPropertyNames.length];
@@ -158,7 +159,7 @@ public class ObjectComparator implements Comparator<Object>
         
         if ( propertyMethods.length <= 0 )
         {
-            throw new InstantiationError("Can't matching any Property.");
+            throw new NullPointerException("Can't matching any Property.");
         }
     }
     

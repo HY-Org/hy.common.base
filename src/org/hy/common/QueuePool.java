@@ -77,7 +77,7 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
     {
         if ( i_PoolDataClass == null )
         {
-            throw new InstantiationError("Pool data class is null.");
+            throw new NullPointerException("Pool data class is null.");
         }
         
         this.poolDataClass  = i_PoolDataClass;
@@ -271,7 +271,7 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
     {
         if ( i_PoolSize < 1 )
         {
-            throw new InstantiationError("Pool size < 1.");
+            throw new IndexOutOfBoundsException("Pool size < 1.");
         }
         
         this.poolSize = i_PoolSize;
@@ -288,7 +288,7 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
     {
         if ( i_PoolMinSize < 0 )
         {
-            throw new InstantiationError("Pool min size < 0.");
+            throw new IndexOutOfBoundsException("Pool min size < 0.");
         }
         
         this.poolMinSize = i_PoolMinSize;

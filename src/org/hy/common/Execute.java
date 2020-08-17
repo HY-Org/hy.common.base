@@ -255,7 +255,7 @@ public class Execute extends Thread
     {
         if ( i_Timeout <= 1000 )
         {
-            throw new VerifyError("Timeout is not <= 1000 millisecond.");
+            throw new RuntimeException("Timeout is not <= 1000 millisecond.");
         }
         
         Execute v_Execute = new Execute(this ,"runIsTimeout");
@@ -353,7 +353,7 @@ public class Execute extends Thread
     {
         if ( i_WatchInterval <= 10 )
         {
-            throw new VerifyError("WatchInterval is not <= 10 millisecond.");
+            throw new RuntimeException("WatchInterval is not <= 10 millisecond.");
         }
         
         this.watchInterval = i_WatchInterval;

@@ -52,7 +52,7 @@ public class DualChannel<O> implements Serializable
     {
         if ( i_ChannelSize < 1 )
         {
-            throw new InstantiationError("Channel size < 1.");
+            throw new IndexOutOfBoundsException("Channel size < 1.");
         }
         
         this.oneChannel     = new Object[i_ChannelSize];

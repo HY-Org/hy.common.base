@@ -163,7 +163,7 @@ public class I18N implements java.io.Serializable
         }
         else
         {
-            throw new VerifyError("Language[" + i_Language + "] is not find.");
+            throw new RuntimeException("Language[" + i_Language + "] is not find.");
         }
     }
     

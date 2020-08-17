@@ -80,17 +80,18 @@ public class PianoKeyboardPool<O> implements Serializable
      * @param i_PoolSize        队列缓存池的大小
      * @param i_PoolMinSize     队列缓存池的最小大小，当小于此值时，将创建新的元素并添加到池中
      * @param i_IsInitPool      构造器中是否已同步方式初始化完成队列缓存池
+     * @throws InstantiationException 
      */
     @SuppressWarnings("unchecked")
     public PianoKeyboardPool(Class<O> i_PoolDataClass ,int i_PoolSize ,boolean i_IsInitPool)
     {
         if ( i_PoolDataClass == null )
         {
-            throw new InstantiationError("Pool data class is null.");
+            throw new NullPointerException("Pool data class is null.");
         }
         if ( i_PoolSize < 1 )
         {
-            throw new InstantiationError("Pool size < 1.");
+            throw new java.lang.IndexOutOfBoundsException("Pool size < 1.");
         }
         
         this.poolSize      = i_PoolSize;

@@ -53,6 +53,7 @@ public class DualChannelPool<O> implements Serializable
      * @param i_PoolDataClass   队列缓存池中的元素类型
      * @param i_PoolSize        队列缓存池的大小
      * @param i_PoolMinSize     队列缓存池的最小大小，当小于此值时，将创建新的元素并添加到池中
+     * @throws InstantiationException 
      */
     public DualChannelPool(Class<O> i_PoolDataClass ,int i_PoolSize ,int i_PoolMinSize)
     {
@@ -72,12 +73,13 @@ public class DualChannelPool<O> implements Serializable
      * @param i_PoolSize        队列缓存池的大小
      * @param i_PoolMinSize     队列缓存池的最小大小，当小于此值时，将创建新的元素并添加到池中
      * @param i_IsInitPool      构造器中是否已同步方式初始化完成队列缓存池
+     * @throws InstantiationException 
      */
     public DualChannelPool(Class<O> i_PoolDataClass ,int i_PoolSize ,int i_PoolMinSize ,boolean i_IsInitPool)
     {
         if ( i_PoolDataClass == null )
         {
-            throw new InstantiationError("Pool data class is null.");
+            throw new NullPointerException("Pool data class is null.");
         }
         
         this.dualChannel    = new DualChannel<O>(i_PoolSize);
@@ -264,12 +266,13 @@ public class DualChannelPool<O> implements Serializable
      * 设置：队列缓存池的最小大小，当小于此值时，将创建新的元素并添加到池中
      * 
      * @param i_PoolMinSize 
+     * @throws InstantiationException 
      */
     public void setPoolMinSize(int i_PoolMinSize)
     {
         if ( i_PoolMinSize < 0 )
         {
-            throw new InstantiationError("Pool min size < 0.");
+            throw new IndexOutOfBoundsException("Pool min size < 0.");
         }
         
         this.poolMinSize = i_PoolMinSize;

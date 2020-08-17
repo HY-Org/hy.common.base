@@ -100,59 +100,59 @@ public class MethodReflect implements Serializable
     
     
     
-	/** Setter规范的方法 */
-	public final static int $NormType_Setter = 1;
-	
-	/** Getter规范的方法 */
-	public final static int $NormType_Getter = -1;
-	
-	
-	
-	/** 
-	 * i_MethodURL整体是否为规范的setter或getter方法
-	 * 
-	 * 即，当 isNorm = true  时，i_MethodURL = xxx.yyy.www 
-	 * 相等于 isNorm = false 时，i_MethodURL = getXxx.getYyy.setWww
-	 **/
-	private boolean                isNorm;
-	
-	/** 
-	 *  规范的类型
-	 *  
-	 *  1. normType =  1 为 setter 方法，如：getXxx.getYyy.setWww
-	 *  2. normType = -1 为 getter 方法，如：getXxx.getYyy.getWww
-	 **/
-	private int                    normType;
-	
-	/** 方法全路径的Mehod返回对象类型的集合 */
+    /** Setter规范的方法 */
+    public final static int $NormType_Setter = 1;
+    
+    /** Getter规范的方法 */
+    public final static int $NormType_Getter = -1;
+    
+    
+    
+    /** 
+     * i_MethodURL整体是否为规范的setter或getter方法
+     * 
+     * 即，当 isNorm = true  时，i_MethodURL = xxx.yyy.www 
+     * 相等于 isNorm = false 时，i_MethodURL = getXxx.getYyy.setWww
+     **/
+    private boolean                isNorm;
+    
+    /** 
+     *  规范的类型
+     *  
+     *  1. normType =  1 为 setter 方法，如：getXxx.getYyy.setWww
+     *  2. normType = -1 为 getter 方法，如：getXxx.getYyy.getWww
+     **/
+    private int                    normType;
+    
+    /** 方法全路径的Mehod返回对象类型的集合 */
     private List<Class<?>>         classes;
-	
-	/** 方法全路径的Mehod返回对象实例的集合。第一元素为构造器的第一个参数值 */
-	private List<Object>           instances;
-	
-	/** 
-	 * 方法全路径的Mehod的集合 
-	 * 外层List对应：方法全路径上.第几层次上方法
-	 * 内层List对应：具体层次上的多个相同重载的方法
-	 */
-	private List<List<MethodInfo>> methods;
-	
-	/**
-	 * 方法全路径的Mehod的集合的参数集合
-	 * 外层List对应：方法全路径上.第几层次上方法
-	 * 内层List对应：具体层次上的方法的多个入参参数
-	 */
-	private List<List<String>>     methodsParams;
-	
-	/** 方法全路径的分段数组 */
-	private String []              methodNames;
-	
-	/** 方法名称的全路径 */
-	private String                 methodURL;
-	
-	
-	
-	/**
+    
+    /** 方法全路径的Mehod返回对象实例的集合。第一元素为构造器的第一个参数值 */
+    private List<Object>           instances;
+    
+    /** 
+     * 方法全路径的Mehod的集合 
+     * 外层List对应：方法全路径上.第几层次上方法
+     * 内层List对应：具体层次上的多个相同重载的方法
+     */
+    private List<List<MethodInfo>> methods;
+    
+    /**
+     * 方法全路径的Mehod的集合的参数集合
+     * 外层List对应：方法全路径上.第几层次上方法
+     * 内层List对应：具体层次上的方法的多个入参参数
+     */
+    private List<List<String>>     methodsParams;
+    
+    /** 方法全路径的分段数组 */
+    private String []              methodNames;
+    
+    /** 方法名称的全路径 */
+    private String                 methodURL;
+    
+    
+    
+    /**
      * 方法填写有效性的验证
      * 
      * 如：xxx(p1 ,p2 ,... pn)
@@ -198,7 +198,7 @@ public class MethodReflect implements Serializable
             }
             else
             {
-                throw new NoSuchMethodError("Method name[" + i_Text + "] is not exist.");
+                throw new RuntimeException("Method name[" + i_Text + "] is not exist.");
             }
             
             return v_MethodName;
@@ -237,7 +237,7 @@ public class MethodReflect implements Serializable
             }
             else
             {
-                throw new NoSuchMethodError("Method name[" + i_Text + "] is not exist.");
+                throw new RuntimeException("Method name[" + i_Text + "] is not exist.");
             }
             
             
@@ -250,7 +250,7 @@ public class MethodReflect implements Serializable
         }
     }
     
-	
+    
     
     /**
      * 继承及实现的判断
@@ -680,52 +680,52 @@ public class MethodReflect implements Serializable
         }
     }
     
-	
-	
-	/**
-	 * 获取默认 Setter 方法（入参个数只有一个的）
-	 * 
-	 * @param i_Class
-	 * @param i_SetMethodName
-	 * @param i_IsNorm
-	 * @return
-	 */
-	public static Method getSetMethod(Class<?> i_Class ,String i_SetMethodName ,boolean i_IsNorm)
-	{
-		String v_SetMethodName      = i_SetMethodName.trim();
-		String v_SetMethodNameFixed = null;
-		
-		if ( i_IsNorm )
-		{
-		    if ( v_SetMethodName.startsWith($FixedMethodName) )
-		    {
-		        v_SetMethodNameFixed = "set" + v_SetMethodName;
-		        v_SetMethodName      = v_SetMethodName.substring(1);
-		    }
-		    else
-		    {
-		        v_SetMethodName = "set" + StringHelp.toUpperCaseByFirst(v_SetMethodName);
-		    }
-		}
-		
-		Method [] v_Methods = i_Class.getMethods();
-		
-		
-		for (int i=0; i<v_Methods.length; i++)
-		{
-			if ( v_Methods[i].getName().equalsIgnoreCase(v_SetMethodName) )
-			{
-				if ( v_Methods[i].getParameterTypes().length == 1 )
-				{
-					return v_Methods[i];
-				}
-			}
-		}
-		
-		// 当方法名称真的是get$xxx()、set$xxx()的形式，也是要尝试查询匹配一次的  2017-07-12
-		if ( v_SetMethodNameFixed != null )
-		{
-    		for (int i=0; i<v_Methods.length; i++)
+    
+    
+    /**
+     * 获取默认 Setter 方法（入参个数只有一个的）
+     * 
+     * @param i_Class
+     * @param i_SetMethodName
+     * @param i_IsNorm
+     * @return
+     */
+    public static Method getSetMethod(Class<?> i_Class ,String i_SetMethodName ,boolean i_IsNorm)
+    {
+        String v_SetMethodName      = i_SetMethodName.trim();
+        String v_SetMethodNameFixed = null;
+        
+        if ( i_IsNorm )
+        {
+            if ( v_SetMethodName.startsWith($FixedMethodName) )
+            {
+                v_SetMethodNameFixed = "set" + v_SetMethodName;
+                v_SetMethodName      = v_SetMethodName.substring(1);
+            }
+            else
+            {
+                v_SetMethodName = "set" + StringHelp.toUpperCaseByFirst(v_SetMethodName);
+            }
+        }
+        
+        Method [] v_Methods = i_Class.getMethods();
+        
+        
+        for (int i=0; i<v_Methods.length; i++)
+        {
+            if ( v_Methods[i].getName().equalsIgnoreCase(v_SetMethodName) )
+            {
+                if ( v_Methods[i].getParameterTypes().length == 1 )
+                {
+                    return v_Methods[i];
+                }
+            }
+        }
+        
+        // 当方法名称真的是get$xxx()、set$xxx()的形式，也是要尝试查询匹配一次的  2017-07-12
+        if ( v_SetMethodNameFixed != null )
+        {
+            for (int i=0; i<v_Methods.length; i++)
             {
                 if ( v_Methods[i].getName().equalsIgnoreCase(v_SetMethodNameFixed) )
                 {
@@ -735,14 +735,14 @@ public class MethodReflect implements Serializable
                     }
                 }
             }
-		}
-		
-		return null;
-	}
-	
-	
-	
-	/**
+        }
+        
+        return null;
+    }
+    
+    
+    
+    /**
      * 获取多个重载的 Setter 方法集合（入参个数只有一个的）
      * 
      * @param i_Class
@@ -1016,73 +1016,73 @@ public class MethodReflect implements Serializable
         
         return v_Ret;
     }
-	
-	
-	
-	/**
-	 * 获取默认 Getter 方法（无入参的）
-	 * 
-	 * @param i_Class
-	 * @param i_GetMethodName
-	 * @param i_IsNorm
-	 * @return
-	 */
-	public static Method getGetMethod(Class<?> i_Class ,String i_GetMethodName ,boolean i_IsNorm)
-	{
-		String v_GetMethodName_Get       = i_GetMethodName.trim();
-		String v_GetMethodName_Is        = i_GetMethodName.trim();
-		String v_GetMethodName_Fixed_Get = null;
+    
+    
+    
+    /**
+     * 获取默认 Getter 方法（无入参的）
+     * 
+     * @param i_Class
+     * @param i_GetMethodName
+     * @param i_IsNorm
+     * @return
+     */
+    public static Method getGetMethod(Class<?> i_Class ,String i_GetMethodName ,boolean i_IsNorm)
+    {
+        String v_GetMethodName_Get       = i_GetMethodName.trim();
+        String v_GetMethodName_Is        = i_GetMethodName.trim();
+        String v_GetMethodName_Fixed_Get = null;
         String v_GetMethodName_Fixed_Is  = null;
-		
-		if ( i_IsNorm )
-		{
-		    if ( v_GetMethodName_Get.startsWith($FixedMethodName) )
-		    {
-		        v_GetMethodName_Fixed_Get = "get" + v_GetMethodName_Get;
-		        v_GetMethodName_Fixed_Is  = "is"  + v_GetMethodName_Is;
-		        v_GetMethodName_Get       = v_GetMethodName_Get.substring(1);
+        
+        if ( i_IsNorm )
+        {
+            if ( v_GetMethodName_Get.startsWith($FixedMethodName) )
+            {
+                v_GetMethodName_Fixed_Get = "get" + v_GetMethodName_Get;
+                v_GetMethodName_Fixed_Is  = "is"  + v_GetMethodName_Is;
+                v_GetMethodName_Get       = v_GetMethodName_Get.substring(1);
                 v_GetMethodName_Is        = v_GetMethodName_Is.substring(1);
-		    }
-		    else
-		    {
-		        v_GetMethodName_Get = "get" + StringHelp.toUpperCaseByFirst(v_GetMethodName_Get);
+            }
+            else
+            {
+                v_GetMethodName_Get = "get" + StringHelp.toUpperCaseByFirst(v_GetMethodName_Get);
                 v_GetMethodName_Is  = "is"  + StringHelp.toUpperCaseByFirst(v_GetMethodName_Is);
-		    }
-		}
-		
-		Method [] v_Methods = i_Class.getMethods();
-		
-		
-		for (int i=0; i<v_Methods.length; i++)
-		{
-			if ( v_Methods[i].getName().equalsIgnoreCase(v_GetMethodName_Get)
-			  || v_Methods[i].getName().equalsIgnoreCase(v_GetMethodName_Is) )
-			{
-				if ( v_Methods[i].getParameterTypes().length == 0 )
-				{
-					return v_Methods[i];
-				}
-			}
-		}
-		
-		// 当方法名称真的是get$xxx()、set$xxx()的形式，也是要尝试查询匹配一次的  2017-07-12
-		if ( v_GetMethodName_Fixed_Get != null )
-		{
-		    for (int i=0; i<v_Methods.length; i++)
-	        {
-	            if ( v_Methods[i].getName().equalsIgnoreCase(v_GetMethodName_Fixed_Get)
-	              || v_Methods[i].getName().equalsIgnoreCase(v_GetMethodName_Fixed_Is) )
-	            {
-	                if ( v_Methods[i].getParameterTypes().length == 0 )
-	                {
-	                    return v_Methods[i];
-	                }
-	            }
-	        }
-		}
-		
-		return null;
-	}
+            }
+        }
+        
+        Method [] v_Methods = i_Class.getMethods();
+        
+        
+        for (int i=0; i<v_Methods.length; i++)
+        {
+            if ( v_Methods[i].getName().equalsIgnoreCase(v_GetMethodName_Get)
+              || v_Methods[i].getName().equalsIgnoreCase(v_GetMethodName_Is) )
+            {
+                if ( v_Methods[i].getParameterTypes().length == 0 )
+                {
+                    return v_Methods[i];
+                }
+            }
+        }
+        
+        // 当方法名称真的是get$xxx()、set$xxx()的形式，也是要尝试查询匹配一次的  2017-07-12
+        if ( v_GetMethodName_Fixed_Get != null )
+        {
+            for (int i=0; i<v_Methods.length; i++)
+            {
+                if ( v_Methods[i].getName().equalsIgnoreCase(v_GetMethodName_Fixed_Get)
+                  || v_Methods[i].getName().equalsIgnoreCase(v_GetMethodName_Fixed_Is) )
+                {
+                    if ( v_Methods[i].getParameterTypes().length == 0 )
+                    {
+                        return v_Methods[i];
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
     
     
     
@@ -1225,57 +1225,57 @@ public class MethodReflect implements Serializable
         
         return v_Ret;
     }
-	
-	
-	
-	/**
-	 * 获取某一方法名称的所有方法对象。包括重载的多个方法
-	 * 
-	 * @param i_Class
-	 * @param i_MethodName
-	 * @return
-	 */
-	public static List<Method> getMethods(Class<?> i_Class ,String i_MethodName)
-	{
-		List<Method> v_Ret     = new ArrayList<Method>();
-		Method []    v_Methods = i_Class.getMethods();
-		
-		for (int i=0; i<v_Methods.length; i++)
-		{
-		    // 不再区分大小写 2017-07-12
-			if ( v_Methods[i].getName().equalsIgnoreCase(i_MethodName) )
-			{
-				v_Ret.add(v_Methods[i]);
-			}
-		}
-		
-		return v_Ret;
-	}
-	
-	
-	
-	/**
-	 * 获取某一方法名称的所有方法对象。包括重载的多个方法。（忽然大小的匹配）
-	 * 
-	 * @param i_Class
-	 * @param i_MethodName
-	 * @return
-	 */
-	public static List<Method> getMethodsIgnoreCase(Class<?> i_Class ,String i_MethodName)
-	{
-		List<Method> v_Ret     = new ArrayList<Method>();
-		Method []    v_Methods = i_Class.getMethods();
-		
-		for (int i=0; i<v_Methods.length; i++)
-		{
-			if ( v_Methods[i].getName().equalsIgnoreCase(i_MethodName) )
-			{
-				v_Ret.add(v_Methods[i]);
-			}
-		}
-		
-		return v_Ret;
-	}
+    
+    
+    
+    /**
+     * 获取某一方法名称的所有方法对象。包括重载的多个方法
+     * 
+     * @param i_Class
+     * @param i_MethodName
+     * @return
+     */
+    public static List<Method> getMethods(Class<?> i_Class ,String i_MethodName)
+    {
+        List<Method> v_Ret     = new ArrayList<Method>();
+        Method []    v_Methods = i_Class.getMethods();
+        
+        for (int i=0; i<v_Methods.length; i++)
+        {
+            // 不再区分大小写 2017-07-12
+            if ( v_Methods[i].getName().equalsIgnoreCase(i_MethodName) )
+            {
+                v_Ret.add(v_Methods[i]);
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 获取某一方法名称的所有方法对象。包括重载的多个方法。（忽然大小的匹配）
+     * 
+     * @param i_Class
+     * @param i_MethodName
+     * @return
+     */
+    public static List<Method> getMethodsIgnoreCase(Class<?> i_Class ,String i_MethodName)
+    {
+        List<Method> v_Ret     = new ArrayList<Method>();
+        Method []    v_Methods = i_Class.getMethods();
+        
+        for (int i=0; i<v_Methods.length; i++)
+        {
+            if ( v_Methods[i].getName().equalsIgnoreCase(i_MethodName) )
+            {
+                v_Ret.add(v_Methods[i]);
+            }
+        }
+        
+        return v_Ret;
+    }
     
     
     
@@ -1489,94 +1489,94 @@ public class MethodReflect implements Serializable
         
         return v_Ret;
     }
-	
-	
-	
-	/**
-	 * 获取某一方法名称的所有方法对象。包括重载的多个方法
-	 * 
-	 * @param i_Class
-	 * @param i_MethodName
-	 * @param i_ParamSize
-	 * @return
-	 */
-	public static List<Method> getMethods(Class<?> i_Class ,String i_MethodName ,int i_ParamSize)
-	{
-		List<Method> v_Ret     = new ArrayList<Method>();
-		Method []    v_Methods = i_Class.getMethods();
-		
-		for (int i=0; i<v_Methods.length; i++)
-		{
-		    // 不再区分大小写 2017-07-12
-			if ( v_Methods[i].getName().equalsIgnoreCase(i_MethodName) )
-			{
-				if ( v_Methods[i].getParameterTypes().length == i_ParamSize )
-				{
-					v_Ret.add(v_Methods[i]);
-				}
-			}
-		}
-		
-		return v_Ret;
-	}
-	
-	
-	
-	/**
-	 * 获取某一方法名称的所有方法对象。包括重载的多个方法。（忽然大小的匹配）
-	 * 
-	 * @param i_Class
-	 * @param i_MethodName
-	 * @param i_ParamSize
-	 * @return
-	 */
-	public static List<Method> getMethodsIgnoreCase(Class<?> i_Class ,String i_MethodName ,int i_ParamSize)
-	{
-		List<Method> v_Ret     = new ArrayList<Method>();
-		Method []    v_Methods = i_Class.getMethods();
-		
-		for (int i=0; i<v_Methods.length; i++)
-		{
-			if ( v_Methods[i].getName().equalsIgnoreCase(i_MethodName) )
-			{
-				if ( v_Methods[i].getParameterTypes().length == i_ParamSize )
-				{
-					v_Ret.add(v_Methods[i]);
-				}
-			}
-		}
-		
-		return v_Ret;
-	}
-	
-	
-	
-	/**
-	 * 向数据库表插入数据时，通过Java生成主键的功能。与SQL占位符配合使用。
-	 * 
-	 * @author      ZhengWei(HY)
-	 * @createDate  2016-03-18
-	 * @version     v1.0
-	 *
-	 * @return
-	 */
-	public static MethodReflect getMethodReflectUUID()
-	{
-	    MethodReflectUUID v_MRUUID = MethodReflectUUID.getInstance();
-	    
-	    try
+    
+    
+    
+    /**
+     * 获取某一方法名称的所有方法对象。包括重载的多个方法
+     * 
+     * @param i_Class
+     * @param i_MethodName
+     * @param i_ParamSize
+     * @return
+     */
+    public static List<Method> getMethods(Class<?> i_Class ,String i_MethodName ,int i_ParamSize)
+    {
+        List<Method> v_Ret     = new ArrayList<Method>();
+        Method []    v_Methods = i_Class.getMethods();
+        
+        for (int i=0; i<v_Methods.length; i++)
+        {
+            // 不再区分大小写 2017-07-12
+            if ( v_Methods[i].getName().equalsIgnoreCase(i_MethodName) )
+            {
+                if ( v_Methods[i].getParameterTypes().length == i_ParamSize )
+                {
+                    v_Ret.add(v_Methods[i]);
+                }
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 获取某一方法名称的所有方法对象。包括重载的多个方法。（忽然大小的匹配）
+     * 
+     * @param i_Class
+     * @param i_MethodName
+     * @param i_ParamSize
+     * @return
+     */
+    public static List<Method> getMethodsIgnoreCase(Class<?> i_Class ,String i_MethodName ,int i_ParamSize)
+    {
+        List<Method> v_Ret     = new ArrayList<Method>();
+        Method []    v_Methods = i_Class.getMethods();
+        
+        for (int i=0; i<v_Methods.length; i++)
+        {
+            if ( v_Methods[i].getName().equalsIgnoreCase(i_MethodName) )
+            {
+                if ( v_Methods[i].getParameterTypes().length == i_ParamSize )
+                {
+                    v_Ret.add(v_Methods[i]);
+                }
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 向数据库表插入数据时，通过Java生成主键的功能。与SQL占位符配合使用。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2016-03-18
+     * @version     v1.0
+     *
+     * @return
+     */
+    public static MethodReflect getMethodReflectUUID()
+    {
+        MethodReflectUUID v_MRUUID = MethodReflectUUID.getInstance();
+        
+        try
         {
             return new MethodReflect(v_MRUUID ,v_MRUUID.getClass().getMethod("getUUID" ,new Class[]{}));
         }
         catch (Exception e)
         {
-            throw new java.lang.InstantiationError("");
+            throw new RuntimeException(e.getMessage());
         }
-	}
-	
-	
-	
-	/**
+    }
+    
+    
+    
+    /**
      * 从Map集合中取值。实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的解释
      * 
      * @author      ZhengWei(HY)
@@ -2176,88 +2176,88 @@ public class MethodReflect implements Serializable
     {
         this(i_Class ,i_MethodURL ,false ,i_NormType);
     }
-	
-	
-	
-	/**
-	 * 方法的反射
-	 * 
-	 * 可实现xxx.yyy.www(或getXxx.getYyy.setWww)全路径的解释
-	 * 可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的解释
-	 * 
-	 * v2.0  2017-06-15  添加：i_MethodURL方法全路径中的每个方法名称，不再区分大小写
-	 * 
-	 * @param i_Instance    最上层的实例对象实例
-	 * @param i_MethodURL   方法全路径
-	 * @param i_IsNorm      方法全路径是否符合规范
-	 * @param i_NormType    规范类型
-	 * 
-	 * @throws SecurityException
-	 * @throws IllegalArgumentException
-	 * @throws NoSuchMethodException
-	 * @throws IllegalAccessException
-	 * @throws InvocationTargetException
-	 */
-	public MethodReflect(Object i_Instance ,String i_MethodURL ,boolean i_IsNorm ,int i_NormType) throws SecurityException, IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
-	{
-	    this.classes       = new ArrayList<Class<?>>();
-		this.instances     = new ArrayList<Object>();
-		this.methods       = new ArrayList<List<MethodInfo>>();
-		this.methodsParams = new ArrayList<List<String>>();
-		this.methodURL     = i_MethodURL.trim();
-		this.methodNames   = this.methodURL.replace("." ,"@").split("@");
-		this.isNorm        = i_IsNorm;
-		this.normType      = i_NormType;
-		
-		this.instances.add(i_Instance);
-		
-		this.parser();
-	}
-	
-	
-	
-	/**
-	 * 方法的反射
-	 * 
-	 * 可实现getXxx.getYyy.setWww全路径的解释
-	 * 可实现getXxx.getYyy.getWww全路径的解释
-	 * 
-	 * v2.0  2017-06-15  添加：i_MethodURL方法全路径中的每个方法名称，不再区分大小写
-	 * 
-	 * @param i_Instance    最上层的实例对象实例
-	 * @param i_MethodURL   方法全路径
-	 * @param i_NormType    规范类型
-	 * 
-	 * @throws SecurityException
-	 * @throws NoSuchMethodException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 * @throws InvocationTargetException
-	 */
-	public MethodReflect(Object i_Instance ,String i_MethodURL ,int i_NormType) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
-	{
-		this(i_Instance ,i_MethodURL ,false ,i_NormType);
-	}
-	
-	
-	
-	/**
-	 * 无须反射，只许简单的执行方法就成。
-	 * 
-	 * 应用于：外界已明确了待执行的方法（通常是getter方法）。
-	 * 
-	 * 已用在：DBSQL.getSQL(Map)方法。
-	 *
-	 * @author      ZhengWei(HY)
-	 * @createDate  2016-03-18
-	 * @version     v1.0
-	 *
-	 * @param i_Instance
-	 * @param i_Method
-	 */
-	public MethodReflect(Object i_Instance ,Method i_Method)
-	{
-	    this.instances     = new ArrayList<Object>();
+    
+    
+    
+    /**
+     * 方法的反射
+     * 
+     * 可实现xxx.yyy.www(或getXxx.getYyy.setWww)全路径的解释
+     * 可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的解释
+     * 
+     * v2.0  2017-06-15  添加：i_MethodURL方法全路径中的每个方法名称，不再区分大小写
+     * 
+     * @param i_Instance    最上层的实例对象实例
+     * @param i_MethodURL   方法全路径
+     * @param i_IsNorm      方法全路径是否符合规范
+     * @param i_NormType    规范类型
+     * 
+     * @throws SecurityException
+     * @throws IllegalArgumentException
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
+    public MethodReflect(Object i_Instance ,String i_MethodURL ,boolean i_IsNorm ,int i_NormType) throws SecurityException, IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
+    {
+        this.classes       = new ArrayList<Class<?>>();
+        this.instances     = new ArrayList<Object>();
+        this.methods       = new ArrayList<List<MethodInfo>>();
+        this.methodsParams = new ArrayList<List<String>>();
+        this.methodURL     = i_MethodURL.trim();
+        this.methodNames   = this.methodURL.replace("." ,"@").split("@");
+        this.isNorm        = i_IsNorm;
+        this.normType      = i_NormType;
+        
+        this.instances.add(i_Instance);
+        
+        this.parser();
+    }
+    
+    
+    
+    /**
+     * 方法的反射
+     * 
+     * 可实现getXxx.getYyy.setWww全路径的解释
+     * 可实现getXxx.getYyy.getWww全路径的解释
+     * 
+     * v2.0  2017-06-15  添加：i_MethodURL方法全路径中的每个方法名称，不再区分大小写
+     * 
+     * @param i_Instance    最上层的实例对象实例
+     * @param i_MethodURL   方法全路径
+     * @param i_NormType    规范类型
+     * 
+     * @throws SecurityException
+     * @throws NoSuchMethodException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
+    public MethodReflect(Object i_Instance ,String i_MethodURL ,int i_NormType) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+    {
+        this(i_Instance ,i_MethodURL ,false ,i_NormType);
+    }
+    
+    
+    
+    /**
+     * 无须反射，只许简单的执行方法就成。
+     * 
+     * 应用于：外界已明确了待执行的方法（通常是getter方法）。
+     * 
+     * 已用在：DBSQL.getSQL(Map)方法。
+     *
+     * @author      ZhengWei(HY)
+     * @createDate  2016-03-18
+     * @version     v1.0
+     *
+     * @param i_Instance
+     * @param i_Method
+     */
+    public MethodReflect(Object i_Instance ,Method i_Method)
+    {
+        this.instances     = new ArrayList<Object>();
         this.methods       = new ArrayList<List<MethodInfo>>();
         this.methodsParams = new ArrayList<List<String>>();
         this.methodURL     = null;
@@ -2269,32 +2269,32 @@ public class MethodReflect implements Serializable
         this.methods.add(new ArrayList<MethodInfo>());
         this.methods.get(0).add(new MethodInfo(i_Method));
         this.methodsParams.add(new ArrayList<String>());
-	}
-	
-	
-	
-	/**
-	 * 解释方法全路径
-	 * 
-	 * 2017-06-15 添加：方法名称不再区分大小写
-	 * 2018-05-08 修改：当子类实现父类接口时，方法重载时，可能出现方法名称相同的两个getter方法。
-	 *                 方法按修饰符排序后取首个方法，不再向外界抛错。
-	 * 
-	 * @throws SecurityException
-	 * @throws NoSuchMethodException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 * @throws InvocationTargetException
-	 */
+    }
+    
+    
+    
+    /**
+     * 解释方法全路径
+     * 
+     * 2017-06-15 添加：方法名称不再区分大小写
+     * 2018-05-08 修改：当子类实现父类接口时，方法重载时，可能出现方法名称相同的两个getter方法。
+     *                 方法按修饰符排序后取首个方法，不再向外界抛错。
+     * 
+     * @throws SecurityException
+     * @throws NoSuchMethodException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
     private void parser() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
-	{
-		int v_Index = 0;
-		
-		
-		// 解释出每一层次上的方法的入参参数
-		for ( ; v_Index<this.methodNames.length; v_Index++)
-		{
-		    String [] v_Params = parserMethodParams(this.methodNames[v_Index]);
+    {
+        int v_Index = 0;
+        
+        
+        // 解释出每一层次上的方法的入参参数
+        for ( ; v_Index<this.methodNames.length; v_Index++)
+        {
+            String [] v_Params = parserMethodParams(this.methodNames[v_Index]);
             
             if ( v_Params != null && v_Params.length >= 1 )
             {
@@ -2315,48 +2315,48 @@ public class MethodReflect implements Serializable
             {
                 this.methodsParams.add(new ArrayList<String>());
             }
-		}
-		
-		
-		if ( this.isNorm )
-		{
-		    // 最后方法名之前的所有方法，都自动采用Getter形式的补全方法
-			for (v_Index = 0; v_Index<this.methodNames.length - 1; v_Index++)
-			{
-			    if ( this.methodNames[v_Index].startsWith($FixedMethodName) )
-			    {
-			        this.methodNames[v_Index] = this.methodNames[v_Index].substring(1);
-			    }
-			    else
-			    {
-			        this.methodNames[v_Index] = "get" + StringHelp.toUpperCaseByFirst(this.methodNames[v_Index]);
-			    }
-			}
-			
-			// 最后一个方法，有可能是Setter方法。
-			if ( this.methodNames[v_Index].startsWith($FixedMethodName) )
-			{
-			    this.methodNames[v_Index] = this.methodNames[v_Index].substring(1);
-			}
-			else
-			{
-    			if ( this.normType == $NormType_Setter )
-    			{
-    				this.methodNames[v_Index] = "set" + StringHelp.toUpperCaseByFirst(this.methodNames[v_Index]);
-    			}
-    			else
-    			{
-    				this.methodNames[v_Index] = "get" + StringHelp.toUpperCaseByFirst(this.methodNames[v_Index]);
-    			}
-			}
-		}
-		
-		
-		boolean v_IsClass = !Help.isNull(this.classes);
-		
-		if ( v_IsClass )
-		{
-		    for (v_Index = 0; v_Index<this.methodNames.length - 1; v_Index++)
+        }
+        
+        
+        if ( this.isNorm )
+        {
+            // 最后方法名之前的所有方法，都自动采用Getter形式的补全方法
+            for (v_Index = 0; v_Index<this.methodNames.length - 1; v_Index++)
+            {
+                if ( this.methodNames[v_Index].startsWith($FixedMethodName) )
+                {
+                    this.methodNames[v_Index] = this.methodNames[v_Index].substring(1);
+                }
+                else
+                {
+                    this.methodNames[v_Index] = "get" + StringHelp.toUpperCaseByFirst(this.methodNames[v_Index]);
+                }
+            }
+            
+            // 最后一个方法，有可能是Setter方法。
+            if ( this.methodNames[v_Index].startsWith($FixedMethodName) )
+            {
+                this.methodNames[v_Index] = this.methodNames[v_Index].substring(1);
+            }
+            else
+            {
+                if ( this.normType == $NormType_Setter )
+                {
+                    this.methodNames[v_Index] = "set" + StringHelp.toUpperCaseByFirst(this.methodNames[v_Index]);
+                }
+                else
+                {
+                    this.methodNames[v_Index] = "get" + StringHelp.toUpperCaseByFirst(this.methodNames[v_Index]);
+                }
+            }
+        }
+        
+        
+        boolean v_IsClass = !Help.isNull(this.classes);
+        
+        if ( v_IsClass )
+        {
+            for (v_Index = 0; v_Index<this.methodNames.length - 1; v_Index++)
             {
                 Class<?>     v_Class   = this.classes.get(v_Index);
                 List<Method> v_Methods = getMethodsIgnoreCase(v_Class ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
@@ -2367,7 +2367,7 @@ public class MethodReflect implements Serializable
                 }
                 else if ( v_Methods.size() >= 2 )
                 {
-                    throw new VerifyError("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is more same Method name.");
+                    throw new RuntimeException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is more same Method name.");
                 }
                 
                 if ( this.methodsParams.get(v_Index).size() <= 0 )
@@ -2390,100 +2390,100 @@ public class MethodReflect implements Serializable
                     }
                 }
             }
-		}
-		else
-		{
-		    this.classes.add(this.instances.get(0).getClass());
-		    
-    		for (v_Index = 0; v_Index<this.methodNames.length - 1; v_Index++)
-    		{
-    			Class<?>     v_Class         = this.instances.get(v_Index).getClass();
-    			List<Method> v_Methods       = getMethodsIgnoreCase(v_Class ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
-    			Object       v_ChildInstance = null;
-    			
-    			if ( Help.isNull(v_Methods) )
-    			{
-    			    throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
-    			}
-    			else if ( v_Methods.size() >= 2 )
-    			{
-    			    throw new VerifyError("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is more same Method name.");
-    			}
-    			
-    			if ( this.methodsParams.get(v_Index).size() <= 0 )
-    			{
-    			    v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1));
-    			}
-    			else
-    			{
-    			    Object   [] v_ParamObjs  = new Object[this.methodsParams.get(v_Index).size()];
-    			    Class<?> [] v_ParamClass = v_Methods.get(0).getParameterTypes(); 
-    			    for (int x=0; x<v_ParamClass.length; x++)
-    			    {
-    			        v_ParamObjs[x] = Help.toObject(v_ParamClass[x] ,this.methodsParams.get(v_Index).get(x));
-    			    }
-    			    
-    			    v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1) ,v_ParamObjs);
-    			}
-    			
-    			this.methods.add(MethodInfo.toMethods(v_Methods));
-    			this.instances.add(v_ChildInstance);
-    			this.classes  .add(v_ChildInstance.getClass());
-    		}
-		}
-		
-		
-		// 解释方法名称的全路径上的最后一个
-		Class<?> v_LastClass = null;
-		if ( v_IsClass )
-		{
-		    v_LastClass = this.classes.get(v_Index);
-		}
-		else
-		{
-		    v_LastClass = this.instances.get(v_Index).getClass();
-		}
-		
- 		
-		if ( this.normType == $NormType_Setter )
-		{
-		    List<Method> v_Methods = getMethodsIgnoreCase(v_LastClass ,this.methodNames[v_Index] ,1);
-		    
-		    if ( !Help.isNull(v_Methods) )
-		    {
-		        this.methods.add(MethodInfo.toMethods(v_Methods));
-    		    return;
-		    }
-		    else
-		    {
-		        throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
-		    }
-		}
-		else
-		{
-		    List<Method> v_Methods = getMethodsIgnoreCase(v_LastClass ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
-			
-		    if ( Help.isNull(v_Methods) )
+        }
+        else
+        {
+            this.classes.add(this.instances.get(0).getClass());
+            
+            for (v_Index = 0; v_Index<this.methodNames.length - 1; v_Index++)
             {
-		        // 最后一个Getter方法支持isXXX()方法，支持逻辑方法  2018-03-11
-		        if ( this.methodNames[v_Index].startsWith("get") && this.methodNames[v_Index].length() >= 4 )
-		        {
-		            v_Methods = getMethodsIgnoreCase(v_LastClass ,"is" + this.methodNames[v_Index].substring(3) ,this.methodsParams.get(v_Index).size());
-		        }
-		        
-		        if ( Help.isNull(v_Methods) )
-		        {
-		            throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
-		        }
+                Class<?>     v_Class         = this.instances.get(v_Index).getClass();
+                List<Method> v_Methods       = getMethodsIgnoreCase(v_Class ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
+                Object       v_ChildInstance = null;
+                
+                if ( Help.isNull(v_Methods) )
+                {
+                    throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
+                }
+                else if ( v_Methods.size() >= 2 )
+                {
+                    throw new RuntimeException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is more same Method name.");
+                }
+                
+                if ( this.methodsParams.get(v_Index).size() <= 0 )
+                {
+                    v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1));
+                }
+                else
+                {
+                    Object   [] v_ParamObjs  = new Object[this.methodsParams.get(v_Index).size()];
+                    Class<?> [] v_ParamClass = v_Methods.get(0).getParameterTypes(); 
+                    for (int x=0; x<v_ParamClass.length; x++)
+                    {
+                        v_ParamObjs[x] = Help.toObject(v_ParamClass[x] ,this.methodsParams.get(v_Index).get(x));
+                    }
+                    
+                    v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1) ,v_ParamObjs);
+                }
+                
+                this.methods.add(MethodInfo.toMethods(v_Methods));
+                this.instances.add(v_ChildInstance);
+                this.classes  .add(v_ChildInstance.getClass());
+            }
+        }
+        
+        
+        // 解释方法名称的全路径上的最后一个
+        Class<?> v_LastClass = null;
+        if ( v_IsClass )
+        {
+            v_LastClass = this.classes.get(v_Index);
+        }
+        else
+        {
+            v_LastClass = this.instances.get(v_Index).getClass();
+        }
+        
+        
+        if ( this.normType == $NormType_Setter )
+        {
+            List<Method> v_Methods = getMethodsIgnoreCase(v_LastClass ,this.methodNames[v_Index] ,1);
+            
+            if ( !Help.isNull(v_Methods) )
+            {
+                this.methods.add(MethodInfo.toMethods(v_Methods));
+                return;
+            }
+            else
+            {
+                throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
+            }
+        }
+        else
+        {
+            List<Method> v_Methods = getMethodsIgnoreCase(v_LastClass ,this.methodNames[v_Index] ,this.methodsParams.get(v_Index).size());
+            
+            if ( Help.isNull(v_Methods) )
+            {
+                // 最后一个Getter方法支持isXXX()方法，支持逻辑方法  2018-03-11
+                if ( this.methodNames[v_Index].startsWith("get") && this.methodNames[v_Index].length() >= 4 )
+                {
+                    v_Methods = getMethodsIgnoreCase(v_LastClass ,"is" + this.methodNames[v_Index].substring(3) ,this.methodsParams.get(v_Index).size());
+                }
+                
+                if ( Help.isNull(v_Methods) )
+                {
+                    throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
+                }
             }
             
-		    if ( v_Methods.size() >= 2 )
+            if ( v_Methods.size() >= 2 )
             {
-		        // 当子类实现父类接口时，方法重载时，可能出现方法名称相同的两个getter方法
-		        // 这里按修饰符降序后，尝试性只保留首个元素，不再将再抛错。 ZhengWei(HY) Add 2018-05-08
-		        // throw new VerifyError("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is more same Method name.");
-		        /**
-		         * 以下为Method.getModifiers()的基本数值。
+                // 当子类实现父类接口时，方法重载时，可能出现方法名称相同的两个getter方法
+                // 这里按修饰符降序后，尝试性只保留首个元素，不再将再抛错。 ZhengWei(HY) Add 2018-05-08
+                // throw new RuntimeException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is more same Method name.");
+                /**
+                 * 以下为Method.getModifiers()的基本数值。
                     PUBLIC:        1（二进制  0000 0001）
                     PRIVATE:       2（二进制  0000 0010）
                     PROTECTED:     4（二进制  0000 0100）
@@ -2496,66 +2496,66 @@ public class MethodReflect implements Serializable
                     INTERFACE:   512（二进制  0010 0000 0000）
                     ABSTRACT:   1024（二进制  0100 0000 0000）
                     STRICT:     2048（二进制  1000 0000 0000）
-		         */
-		        Help.toSort(v_Methods ,"modifiers");
-		        for (int i=v_Methods.size()-1; i>=1; i--)
-		        {
-		            v_Methods.remove(i);
-		        }
-		        this.methods.add(MethodInfo.toMethods(v_Methods));
+                 */
+                Help.toSort(v_Methods ,"modifiers");
+                for (int i=v_Methods.size()-1; i>=1; i--)
+                {
+                    v_Methods.remove(i);
+                }
+                this.methods.add(MethodInfo.toMethods(v_Methods));
             }
             else
             {
                 this.methods.add(MethodInfo.toMethods(v_Methods));
             }
-		}
-	}
-	
-	
-	
-	/**
-	 * 方法全路径的赋值(Setter)
-	 * 
-	 * 支持 Setter 方法的多个重载
-	 * 
-	 * @param i_ParamValue  方法的入参参数
-	 * 
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 * @throws InvocationTargetException
-	 */
-	public void invoke(Object i_ParamValue) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
-	{
-		int v_Index = this.instances.size() - 1;
-		
-		if ( this.normType == $NormType_Setter )
-		{
-		    if ( !Help.isNull(this.methods) )
-		    {
-    			List<MethodInfo> v_Methods = this.methods.get(v_Index);
-    			for (int i=0; i<v_Methods.size(); i++)
-    		    {
-    			    if ( isExtendImplement(i_ParamValue ,v_Methods.get(i).getParameterTypes()[0]) )
-    			    {
-    			        v_Methods.get(i).toMethod().invoke(this.instances.get(v_Index) ,i_ParamValue);
-    			        return;
-    			    }
-    		    }
-		    }
-		}
-	}
-	
-	
-	
-	/**
-	 * 方法全路径的返回值类型
-	 * 
-	 * @author      ZhengWei(HY)
-	 * @createDate  2015-12-10
-	 * @version     v1.0
-	 *
-	 * @return
-	 */
+        }
+    }
+    
+    
+    
+    /**
+     * 方法全路径的赋值(Setter)
+     * 
+     * 支持 Setter 方法的多个重载
+     * 
+     * @param i_ParamValue  方法的入参参数
+     * 
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
+    public void invoke(Object i_ParamValue) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
+    {
+        int v_Index = this.instances.size() - 1;
+        
+        if ( this.normType == $NormType_Setter )
+        {
+            if ( !Help.isNull(this.methods) )
+            {
+                List<MethodInfo> v_Methods = this.methods.get(v_Index);
+                for (int i=0; i<v_Methods.size(); i++)
+                {
+                    if ( isExtendImplement(i_ParamValue ,v_Methods.get(i).getParameterTypes()[0]) )
+                    {
+                        v_Methods.get(i).toMethod().invoke(this.instances.get(v_Index) ,i_ParamValue);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    
+    /**
+     * 方法全路径的返回值类型
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2015-12-10
+     * @version     v1.0
+     *
+     * @return
+     */
     public Class<?> getReturnType() 
     {
         if ( this.normType == $NormType_Setter )
@@ -2617,26 +2617,26 @@ public class MethodReflect implements Serializable
     
     
     
-	/**
-	 * 方法全路径的获取值(Getter)
-	 * 
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 * @throws InvocationTargetException
-	 */
-	public Object invoke() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
-	{
-		int v_Index = this.instances.size() - 1;
-		
-		if ( this.normType == $NormType_Setter )
-		{
-			return null;
-		}
-		else
-		{
-		    Method v_Method = this.methods.get(v_Index).get(0).toMethod();
-		    
-		    if ( this.methodsParams.get(v_Index).size() <= 0 )
+    /**
+     * 方法全路径的获取值(Getter)
+     * 
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
+    public Object invoke() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
+    {
+        int v_Index = this.instances.size() - 1;
+        
+        if ( this.normType == $NormType_Setter )
+        {
+            return null;
+        }
+        else
+        {
+            Method v_Method = this.methods.get(v_Index).get(0).toMethod();
+            
+            if ( this.methodsParams.get(v_Index).size() <= 0 )
             {
                 return v_Method.invoke(this.instances.get(v_Index));
             }
@@ -2651,24 +2651,24 @@ public class MethodReflect implements Serializable
                 
                 return v_Method.invoke(this.instances.get(v_Index) ,v_ParamObjs);
             }
-		}
-	}
-	
-	
-	
-	/**
-	 * 方法全路径的获取值(Getter)
-	 * 
-	 * @author      ZhengWei(HY)
-	 * @createDate  2017-03-17
-	 * @version     v1.0
-	 *
-	 * @param i_Instance  实例对象
-	 * @return
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 * @throws InvocationTargetException
-	 */
+        }
+    }
+    
+    
+    
+    /**
+     * 方法全路径的获取值(Getter)
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2017-03-17
+     * @version     v1.0
+     *
+     * @param i_Instance  实例对象
+     * @return
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
     public Object invokeForInstance(Object i_Instance) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
     {
         if ( this.normType == $NormType_Setter )
@@ -2853,12 +2853,12 @@ public class MethodReflect implements Serializable
         }
     }
     
-	
-	
-	public String getMethodURL()
-	{
-		return methodURL;
-	}
+    
+    
+    public String getMethodURL()
+    {
+        return methodURL;
+    }
 
 
 
@@ -2868,15 +2868,15 @@ public class MethodReflect implements Serializable
     它会在元素还有用，但集合对象本身没有用时，释放元素对象
     
     一些与finalize相关的方法，由于一些致命的缺陷，已经被废弃了
-	protected void finalize() throws Throwable 
-	{
-		this.instances.clear();
-		this.methods.clear();
-		
-		super.finalize();
-	}
-	*/
-	
+    protected void finalize() throws Throwable 
+    {
+        this.instances.clear();
+        this.methods.clear();
+        
+        super.finalize();
+    }
+    */
+    
 }
 
 

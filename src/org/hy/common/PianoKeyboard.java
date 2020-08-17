@@ -49,7 +49,7 @@ public class PianoKeyboard<O> implements Runnable ,Serializable
     {
         if ( i_Pool == null )
         {
-            throw new java.lang.InstantiationError("PianoKeyboardPool is null.");
+            throw new NullPointerException("PianoKeyboardPool is null.");
         }
         
         this.pool    = i_Pool;

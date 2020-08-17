@@ -70,7 +70,7 @@ public class Busway<O> extends Queue<O>
     {
         if ( i_WayLength <= 0 )
         {
-            throw new VerifyError("Way length is not less than or equal 0.");
+            throw new IndexOutOfBoundsException("Way length is not less than or equal 0.");
         }
         
         this.wayLength = i_WayLength;
