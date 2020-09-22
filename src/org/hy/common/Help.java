@@ -2168,6 +2168,125 @@ public class Help
     
     
     /**
+     * 判定集合中的所有元素是否均为 NULL
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-09-22
+     * @version     v1.0
+     *
+     * @param i_List
+     * @return        元素均为空时，返回真
+     */
+    public final static boolean isNullByAll(Collection<?> i_List)
+    {
+        if ( Help.isNull(i_List) )
+        {
+            return true;
+        }
+        
+        Iterator<?> v_Iterator = i_List.iterator();
+        while ( v_Iterator.hasNext() )
+        {
+            Object v_ListItem = v_Iterator.next();
+            
+            if ( v_ListItem != null )
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    
+    /**
+     * 判定数组中的所有元素是否均为 NULL
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-09-22
+     * @version     v1.0
+     *
+     * @param i_List
+     * @return        元素均为空时，返回真
+     */
+    public final static <T> boolean isNullByAll(T [] i_List)
+    {
+        if ( Help.isNull(i_List) )
+        {
+            return true;
+        }
+        
+        for (int i=0; i<i_List.length; i++)
+        {
+            if ( i_List[i] != null )
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    
+    /**
+     * 判定数组中的所有元素是否均为 NULL
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-09-22
+     * @version     v1.0
+     *
+     * @param i_List
+     * @return        元素均为空时，返回真
+     */
+    public final static <T> boolean isNullByAll(T [][] i_List)
+    {
+        if ( Help.isNull(i_List) )
+        {
+            return true;
+        }
+        
+        for (int i=0; i<i_List.length; i++)
+        {
+            if ( !Help.isNull(i_List[i]) )
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    
+    /**
+     * 判定数组中的所有元素是否均为 NULL
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2020-09-22
+     * @version     v1.0
+     *
+     * @param i_List
+     * @return        元素均为空时，返回真
+     */
+    public final static <T> boolean isNullByAll(T [][][] i_List)
+    {
+        if ( Help.isNull(i_List) )
+        {
+            return true;
+        }
+        
+        for (int i=0; i<i_List.length; i++)
+        {
+            if ( !Help.isNull(i_List[i]) )
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    
+    /**
      * 获取操作系统的文件路径的分割符
      * 
      * @return
