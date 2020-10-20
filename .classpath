@@ -7,7 +7,7 @@
 			<accessrule kind="accessible" pattern="**"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/junit-4.11.jar"/>
 	<classpathentry kind="lib" path="lib/pinyin4j-2.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.13.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
