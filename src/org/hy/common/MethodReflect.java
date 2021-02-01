@@ -60,6 +60,7 @@ import org.hy.common.comparate.MethodFieldComparator;
  *                                      方法按修饰符排序后取首个方法，不再向外界抛错。
  *              v12.6 2018-05-15  添加：数据库java.sql.Timestamp时间的转换
  *              v13.0 2020-01-14  添加：获取排除某些前缀的成员方法 getMethodsExcludeStart()
+ *              v13.1 2021-02-01  修正：解释xx.yy.zz时，当yy为空指针时的解释异常
  */
 public class MethodReflect implements Serializable
 {
@@ -2426,6 +2427,11 @@ public class MethodReflect implements Serializable
                     v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1) ,v_ParamObjs);
                 }
                 
+                if ( v_ChildInstance == null )
+                {
+                    return;
+                }
+                
                 this.methods.add(MethodInfo.toMethods(v_Methods));
                 this.instances.add(v_ChildInstance);
                 this.classes  .add(v_ChildInstance.getClass());
@@ -2528,6 +2534,11 @@ public class MethodReflect implements Serializable
     {
         int v_Index = this.instances.size() - 1;
         
+        if ( v_Index >= this.methods.size() )
+        {
+            return;
+        }
+        
         if ( this.normType == $NormType_Setter )
         {
             if ( !Help.isNull(this.methods) )
@@ -2626,14 +2637,18 @@ public class MethodReflect implements Serializable
      */
     public Object invoke() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException
     {
-        int v_Index = this.instances.size() - 1;
-        
         if ( this.normType == $NormType_Setter )
         {
             return null;
         }
         else
         {
+            int v_Index = this.instances.size() - 1;
+            if ( v_Index >= this.methods.size() )
+            {
+                return null;
+            }
+            
             Method v_Method = this.methods.get(v_Index).get(0).toMethod();
             
             if ( this.methodsParams.get(v_Index).size() <= 0 )
