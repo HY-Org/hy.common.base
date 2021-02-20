@@ -2532,7 +2532,7 @@ public class Help
     /**
      * 获得本机IP
      * 
-     * @param i_Split  分割符中多少
+     * @param i_Split  分割符是多少。如，用.分割
      * @param i_IsPad  是否填充 0
      * @return
      */

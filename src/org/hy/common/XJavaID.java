@@ -12,6 +12,7 @@ package org.hy.common;
  * @author      ZhengWei(HY)
  * @createDate  2018-03-09
  * @version     v1.0
+ *              v2.0  2021-02-20  添加：comment属性
  */
 public interface XJavaID
 {
@@ -31,5 +32,23 @@ public interface XJavaID
      * @return
      */
     public String getXJavaID();
+    
+    
+    
+    /**
+     * 注释。可用于日志的输出等帮助性的信息
+     * 
+     * @param i_Comment
+     */
+    public void setComment(String i_Comment);
+    
+    
+    
+    /**
+     * 注释。可用于日志的输出等帮助性的信息
+     *
+     * @return
+     */
+    public String getComment();
     
 }

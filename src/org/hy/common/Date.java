@@ -227,12 +227,23 @@ public final class Date extends java.util.Date
             String v_DateStr    = StringHelp.replaceAll(i_StrDateFormat ,new String[]{"日" ,"/" ,"年" ,"月"} ,new String[]{"" ,"-"});
             String v_DateFormat = $FORMATS.get(i_StrDateFormat.trim().length());
             
-            if ( $FORMAT_UTC_ID == v_DateFormat )
+            if ( v_DateFormat == null )
             {
-                v_DateStr = StringHelp.replaceAll(v_DateStr ,"Z" ,"UTC");
+                if ( i_StrDateFormat.length() == 13 && Help.isNumber(i_StrDateFormat) )
+                {
+                    this.setTime(Long.parseLong(i_StrDateFormat));
+                    return;
+                }
             }
-            
-            v_Date = new Date(v_DateStr ,v_DateFormat);
+            else
+            {
+                if ( $FORMAT_UTC_ID == v_DateFormat )
+                {
+                    v_DateStr = StringHelp.replaceAll(v_DateStr ,"Z" ,"UTC");
+                }
+                
+                v_Date = new Date(v_DateStr ,v_DateFormat);
+            }
         }
         catch (Exception exce)
         {

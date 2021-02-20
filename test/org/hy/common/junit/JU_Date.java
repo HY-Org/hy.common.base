@@ -1,5 +1,7 @@
 package org.hy.common.junit;
 
+import java.time.LocalDateTime;
+
 import org.hy.common.Date;
 import org.hy.common.Lunar;
 import org.hy.common.SolarTerm;
@@ -61,6 +63,13 @@ public class JU_Date
     {
         System.out.println(new Lunar(new Date()));
         System.out.println(SolarTerm.getSoralTerm(new Date("2019-06-22")));
+    }
+    
+    
+    
+    public void test_LocalDateTime()
+    {
+        LocalDateTime v_Now = LocalDateTime.now();
     }
     
 }
