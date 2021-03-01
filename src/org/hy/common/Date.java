@@ -26,6 +26,8 @@ import java.util.Map;
  *                                     建议人：邹德福
  *              v1.6  2018-12-17  添加：UTC（$FORMAT_UTC_ID）格式的转换。累计共支持 7 + 3 + 3 + 1 + 3 + 3 + 3 + 1 = 24 种格式。
  *              v1.7  2019-03-02  添加：getNextYear()、getPreviousYear()、getNextMinutes()、getPreviousMinutes()四个方法。
+ *              v2.0  2021-03-01  添加：将原先 setDate(...) 的方法重写，其它方法均改为toDate(...)方法。
+ *                                      只保留这一个setDate(String)方法。为了方便SpringBoot中的FashJson类的序列化对象
  */
 public final class Date extends java.util.Date
 {
@@ -176,6 +178,18 @@ public final class Date extends java.util.Date
     
     
     /**
+     * 将自己转为自己
+     * 
+     * @param i_Date
+     */
+    public Date(Date i_Date)
+    {
+        super(i_Date.getTime());
+    }
+    
+    
+    
+    /**
      * Java标准时间转为本类时间
      * 
      * @param i_Date
@@ -220,37 +234,7 @@ public final class Date extends java.util.Date
      */
     public Date(String i_StrDateFormat)
     {
-        Date v_Date = null;
-        
-        try
-        {
-            String v_DateStr    = StringHelp.replaceAll(i_StrDateFormat ,new String[]{"日" ,"/" ,"年" ,"月"} ,new String[]{"" ,"-"});
-            String v_DateFormat = $FORMATS.get(i_StrDateFormat.trim().length());
-            
-            if ( v_DateFormat == null )
-            {
-                if ( i_StrDateFormat.length() == 13 && Help.isNumber(i_StrDateFormat) )
-                {
-                    this.setTime(Long.parseLong(i_StrDateFormat));
-                    return;
-                }
-            }
-            else
-            {
-                if ( $FORMAT_UTC_ID == v_DateFormat )
-                {
-                    v_DateStr = StringHelp.replaceAll(v_DateStr ,"Z" ,"UTC");
-                }
-                
-                v_Date = new Date(v_DateStr ,v_DateFormat);
-            }
-        }
-        catch (Exception exce)
-        {
-            v_Date = new Date(i_StrDateFormat ,$FORMAT_US ,Locale.US);
-        }
-        
-        this.setTime(v_Date.getTime());
+        this.toDate(i_StrDateFormat);
     }
     
     
@@ -265,60 +249,22 @@ public final class Date extends java.util.Date
     {
         super();
         
-        
-        if ( i_StrFullFormat == null || "".equals(i_StrFullFormat.trim()) )
+        if ( Help.isNull(i_StrFullFormat) )
         {
-            throw new java.lang.NullPointerException("StrFullFormat Param is null.");
+            throw new java.lang.NullPointerException("Date value param is null.");
         }
         
-        String v_StrFullFormat = i_StrFullFormat;
-        String v_Format        = i_Format;
-        
-        if ( v_StrFullFormat.endsWith("-") )
+        if ( Help.isNull(i_Format) )
         {
-            // 支持 yyyy-MM
-            v_StrFullFormat = v_StrFullFormat.substring(0 ,v_StrFullFormat.length() - 1);
+            throw new java.lang.NullPointerException("Date format param is null.");
         }
         
-        if ( v_Format == null || "".equals(v_Format.trim()) )
-        {
-            int v_Len = v_StrFullFormat.length();
-            if ( v_Len <= $FORMAT_YM_ID.length() )
-            {
-                v_StrFullFormat += "01";
-                v_Format         = $FORMAT_YMD_ID;
-            }
-            else if ( v_Len <= $FORMAT_YM.length() )
-            {
-                v_StrFullFormat += "-01";
-                v_Format         = $FORMAT_YMD;
-            }
-            else if ( v_Len <= $FORMAT_HMS.length() )
-            {
-                // 支持 时:分:秒 格式的转换  ZhengWei(HY) Add 2018-05-04
-                if ( i_StrFullFormat.contains(":") )
-                {
-                    v_Format        = $FORMAT_Normal;
-                    v_StrFullFormat = "2000-01-01 " + v_StrFullFormat;
-                }
-                else
-                {
-                    v_Format = $FORMAT_YMD_ID;
-                }
-            }
-            else
-            {
-                throw new java.lang.NullPointerException("Format Param is null.");
-            }
-        }
-        
-        
-        SimpleDateFormat SDF_FULL = new SimpleDateFormat(v_Format);
+        SimpleDateFormat SDF_FULL = new SimpleDateFormat(i_Format);
         try
         {
-            java.util.Date v_Date = SDF_FULL.parse(v_StrFullFormat);
+            java.util.Date v_Date = SDF_FULL.parse(i_StrFullFormat);
             
-            this.setDate(v_Date);
+            this.toDate(v_Date);
         }
         catch (Exception exce)
         {
@@ -339,24 +285,22 @@ public final class Date extends java.util.Date
     {
         super();
         
-        
-        if ( i_StrFullFormat == null || "".equals(i_StrFullFormat.trim()) )
+        if ( Help.isNull(i_StrFullFormat) )
         {
-            throw new java.lang.NullPointerException("StrFullFormat Param is null.");
+            throw new java.lang.NullPointerException("Date value param is null.");
         }
         
-        if ( i_Format == null || "".equals(i_Format.trim()) )
+        if ( Help.isNull(i_Format) )
         {
-            throw new java.lang.NullPointerException("Format Param is null.");
+            throw new java.lang.NullPointerException("Date format param is null.");
         }
-        
         
         SimpleDateFormat SDF_FULL = new SimpleDateFormat(i_Format ,i_Locale);
         try
         {
             java.util.Date v_Date = SDF_FULL.parse(i_StrFullFormat);
             
-            this.setDate(v_Date);
+            this.toDate(v_Date);
         }
         catch (Exception exce)
         {
@@ -367,12 +311,16 @@ public final class Date extends java.util.Date
     
     
     /**
-     * 类型转换
+     * 自己转自己
      * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-02-22
+     * @version     v1.0
+     *
      * @param i_Date
      * @return
      */
-    public Date setDate(java.util.Date i_Date)
+    public Date toDate(Date i_Date)
     {
         this.setTime(i_Date.getTime());
         
@@ -387,7 +335,22 @@ public final class Date extends java.util.Date
      * @param i_Date
      * @return
      */
-    public Date setDate(java.sql.Date i_SQLDate)
+    public Date toDate(java.util.Date i_Date)
+    {
+        this.setTime(i_Date.getTime());
+        
+        return this;
+    }
+    
+    
+    
+    /**
+     * 类型转换
+     * 
+     * @param i_Date
+     * @return
+     */
+    public Date toDate(java.sql.Date i_SQLDate)
     {
         this.setTime(i_SQLDate.getTime());
         
@@ -402,7 +365,7 @@ public final class Date extends java.util.Date
      * @param i_Date
      * @return
      */
-    public Date setDate(Timestamp i_SQLTimestamp)
+    public Date toDate(Timestamp i_SQLTimestamp)
     {
         this.setTime(i_SQLTimestamp.getTime());
         
@@ -412,32 +375,97 @@ public final class Date extends java.util.Date
     
     
     /**
-     * 类型转换。如果异常则返回 null
+     * 类型转换
      * 
-     * @param i_Str
+     * @param i_StrDateFormat
      * @return
      */
-    public Date setDate(String i_Str)
+    public Date toDate(String i_StrDateFormat)
     {
-        if ( i_Str == null || "".equals(i_Str.trim()) )
+        Date v_Date = null;
+        
+        if ( Help.isNull(i_StrDateFormat) )
         {
-            return null;
+            v_Date = new Date();
+        }
+        else
+        {
+            try
+            {
+                String v_DateStr    = StringHelp.replaceAll(i_StrDateFormat ,new String[]{"日" ,"/" ,"年" ,"月"} ,new String[]{"" ,"-"});
+                String v_DateFormat = $FORMATS.get(i_StrDateFormat.trim().length());
+                
+                if ( v_DateFormat == null )
+                {
+                    if ( i_StrDateFormat.length() == 13 && Help.isNumber(i_StrDateFormat) )
+                    {
+                        this.setTime(Long.parseLong(i_StrDateFormat));
+                        return this;
+                    }
+                    
+                    String v_StrFullFormat = i_StrDateFormat.trim();
+                    int    v_Len           = v_StrFullFormat.length();
+                    if ( v_Len <= $FORMAT_YM_ID.length() )
+                    {
+                        v_StrFullFormat += "01";
+                        v_DateFormat     = $FORMAT_YMD_ID;
+                    }
+                    else if ( v_Len <= $FORMAT_YM.length() )
+                    {
+                        v_StrFullFormat += "-01";
+                        v_DateFormat     = $FORMAT_YMD;
+                    }
+                    else if ( v_Len <= $FORMAT_HMS.length() )
+                    {
+                        // 支持 时:分:秒 格式的转换  ZhengWei(HY) Add 2018-05-04
+                        if ( v_StrFullFormat.contains(":") )
+                        {
+                            v_DateFormat    = $FORMAT_Normal;
+                            v_StrFullFormat = "2000-01-01 " + v_StrFullFormat;
+                        }
+                        else
+                        {
+                            v_DateFormat = $FORMAT_YMD_ID;
+                        }
+                    }
+                    
+                    v_Date = new Date(v_DateStr ,v_DateFormat);
+                }
+                else
+                {
+                    if ( $FORMAT_UTC_ID == v_DateFormat )
+                    {
+                        v_DateStr = StringHelp.replaceAll(v_DateStr ,"Z" ,"UTC");
+                    }
+                    
+                    v_Date = new Date(v_DateStr ,v_DateFormat);
+                }
+            }
+            catch (Exception exce)
+            {
+                v_Date = new Date(i_StrDateFormat ,$FORMAT_US ,Locale.US);
+            }
         }
         
-        
-        SimpleDateFormat SDF_FULL = new SimpleDateFormat($FORMAT_Normal);
-        try
-        {
-            java.util.Date v_Date = SDF_FULL.parse(i_Str);
-            
-            this.setDate(v_Date);
-            
-            return this;
-        }
-        catch (Exception exce)
-        {
-            return null;
-        }
+        this.setTime(v_Date.getTime());
+        return this;
+    }
+    
+    
+    
+    /**
+     * 去除其它所有 setDate(...) 的方法重写，其它方法均改为toDate(...)方法。
+     * 只保留这一个方法。为了方便SpringBoot中的FashJson类的序列化对象
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-03-01
+     * @version     v1.0
+     *
+     * @param i_StrDateFormat
+     */
+    public Date setDate(String i_StrDateFormat)
+    {
+        return this.toDate(i_StrDateFormat);
     }
     
     
@@ -464,7 +492,7 @@ public final class Date extends java.util.Date
                             ,this.getMinutes()
                             ,this.getSeconds());
             
-            this.setDate(v_New);
+            this.toDate(v_New);
         }
         else if ( v_OldMonth == 2 )
         {
@@ -472,7 +500,7 @@ public final class Date extends java.util.Date
             
             if ( v_New.getDay() == i_Day )
             {
-                this.setDate(v_New);
+                this.toDate(v_New);
             }
         }
         else
@@ -520,7 +548,7 @@ public final class Date extends java.util.Date
                                 ,this.getSeconds());
             }
             
-            this.setDate(v_New);
+            this.toDate(v_New);
         }
     }
     
@@ -582,7 +610,7 @@ public final class Date extends java.util.Date
             }
         }
         
-        this.setDate(v_New);
+        this.toDate(v_New);
     }
     
     
