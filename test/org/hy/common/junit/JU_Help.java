@@ -27,6 +27,14 @@ public class JU_Help
 {
  
     @Test
+    public void test_FatherChild()
+    {
+        new Child();
+    }
+    
+    
+    
+    @Test
     public void test_getJavaVersion()
     {
         System.out.println(Help.getJavaVersion());
