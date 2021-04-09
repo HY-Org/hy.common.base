@@ -1666,6 +1666,7 @@ public class MethodReflect implements Serializable
      * @author      ZhengWei(HY)
      * @createDate  2017-01-16
      * @version     v1.0
+     *              v2.0  2021-04-09  修正：防止i_MethodParams的某个元素为NULL的情况。
      *
      * @param i_Class         对象类型 
      * @param i_MethodName    方法名称（不区分大小写）
@@ -1692,6 +1693,10 @@ public class MethodReflect implements Serializable
                     // 先过滤出符合条件的方法  ZhengWei(HY) Add 2017-01-06
                     for (int v_PIndex=0; v_PIndex<i_MethodParams.length; v_PIndex++)
                     {
+                        if ( i_MethodParams[v_PIndex] == null )
+                        {
+                            continue;
+                        }
                         if ( i_MethodParams[v_PIndex].getClass() != v_Method.getParameterTypes()[v_PIndex] 
                           && !MethodReflect.isExtendImplement(i_MethodParams[v_PIndex] ,v_Method.getParameterTypes()[v_PIndex]) )
                         {
