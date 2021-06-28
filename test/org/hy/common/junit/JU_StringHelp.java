@@ -3,12 +3,12 @@ package org.hy.common.junit;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
 import org.hy.common.Help;
 import org.hy.common.RelationList;
 import org.hy.common.Return;
 import org.hy.common.SplitSegment;
 import org.hy.common.StringHelp;
+import org.junit.Test;
 
 
 
@@ -18,11 +18,23 @@ import org.hy.common.StringHelp;
  * 测试类：字符类型的工具类
  * 
  * @author      ZhengWei(HY)
- * @version     v1.0  
+ * @version     v1.0
  * @createDate  2014-08-12
  */
 public class JU_StringHelp
 {
+    
+    @Test
+    public void test_findLastTimeAndName()
+    {
+        String v_Name1 = "2021-06-26";
+        String v_Name2 = "2021-06-27";
+        
+        
+        System.out.println(v_Name1.compareTo(v_Name2));
+    }
+    
+    
     
     @Test
     public void test_replaceFirst()

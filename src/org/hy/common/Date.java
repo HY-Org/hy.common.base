@@ -16,7 +16,7 @@ import java.util.Map;
  * 
  * @author      ZhengWei(HY)
  * @createDate  2012-03-29
- * @version     v1.0  
+ * @version     v1.0
  *              v1.1  2016-03-01  添加：相差值differ() 、相加plus() 、相加getPlus() 三个方法。
  *              v1.2  2016-07-19  添加：获取第几个工作日的方法getDateByWork()
  *              v1.3  2018-05-04  添加：时:分:秒 格式的自动识别转换功能。共支持  7 + 3 + 3 + 1 = 14 种格式。
@@ -142,14 +142,93 @@ public final class Date extends java.util.Date
     
     
     
-    public Date() 
+    /**
+     * Date.toTimeLen() 方法的逆向操作。
+     * 
+     * 即：将 0 00:00:00.0 的字符串格式，转为时间戳
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-06-28
+     * @version     v1.0
+     * 
+     * @param i_TimeString
+     * @return              非法格式返回 null
+     */
+    public static Long toTimeValue(String i_TimeString)
+    {
+        if ( Help.isNull(i_TimeString) )
+        {
+            return null;
+        }
+        
+        String [] v_DayAndTime = i_TimeString.trim().split(" ");
+        String [] v_HMS        = null;
+        long      v_TimeValue  = 0L;
+        if ( v_DayAndTime.length == 2 )
+        {
+            // 解释天
+            v_DayAndTime[0] = v_DayAndTime[0].trim();
+            if ( Help.isNumber(v_DayAndTime[0]) )
+            {
+                v_TimeValue = Long.parseLong(v_DayAndTime[0]) * 24 * 60 * 60 * 1000;
+            }
+            
+            v_HMS = v_DayAndTime[1].trim().split(":");
+        }
+        else if ( v_DayAndTime.length == 1 )
+        {
+            v_HMS = v_DayAndTime[0].trim().split(":");
+        }
+        else
+        {
+            return null;
+        }
+        
+        if ( v_HMS.length != 3 )
+        {
+            return null;
+        }
+        
+        // 解释毫秒
+        String [] v_MilliSecond = v_HMS[2].trim().split(".");
+        if ( v_MilliSecond.length == 2 )
+        {
+            v_MilliSecond[1] = v_MilliSecond[1].trim();
+            if ( Help.isNumber(v_MilliSecond[1]) )
+            {
+                v_TimeValue += Long.parseLong(v_MilliSecond[1]);
+            }
+            
+            v_HMS[2] = v_MilliSecond[0];
+        }
+        
+        // 解释时分秒
+        int [] v_Times = {60 * 60 * 1000 ,60 * 1000 ,1000};
+        for (int i=0; i<v_HMS.length; i++)
+        {
+            v_HMS[i] = v_HMS[i].trim();
+            
+            if ( !Help.isNumber(v_HMS[i]) )
+            {
+                return null;
+            }
+            
+            v_TimeValue += Long.parseLong(v_HMS[i]) * v_Times[i];
+        }
+        
+        return v_TimeValue;
+    }
+    
+    
+    
+    public Date()
     {
         super();
     }
     
     
     
-    public Date(long date) 
+    public Date(long date)
     {
         super(date);
     }
@@ -473,6 +552,7 @@ public final class Date extends java.util.Date
     /**
      * 设置几号。一号为：1；  三十一号为：31
      */
+    @Override
     public void setDate(int i_Day)
     {
         if ( 1 > i_Day || i_Day > 31 )
@@ -515,6 +595,7 @@ public final class Date extends java.util.Date
     /**
      * 设置年份
      */
+    @Override
     public void setYear(int i_Year)
     {
         if ( this.getYear() == i_Year || i_Year < 1900 )
@@ -557,6 +638,7 @@ public final class Date extends java.util.Date
     /**
      * 设置月份。一月为：1；  十二月为：12
      */
+    @Override
     public void setMonth(int i_Month)
     {
         if ( 1 > i_Month || i_Month > 12)
@@ -572,14 +654,14 @@ public final class Date extends java.util.Date
         }
         
         
-        int  v_OldDay   = this.getDay(); 
+        int  v_OldDay   = this.getDay();
         Date v_New      = null;
         
         // 如果新的月份为31天
         // 如果新老月份相同，但不是2月
         // 如果天数小于等于28天
         if (  MONTH_LASTDAY[i_Month - 1] == 31
-          || (i_Month != 2 && MONTH_LASTDAY[i_Month - 1] == MONTH_LASTDAY[v_OldMonth - 1]) 
+          || (i_Month != 2 && MONTH_LASTDAY[i_Month - 1] == MONTH_LASTDAY[v_OldMonth - 1])
           ||  v_OldDay <= 28 )
         {
             v_New = new Date(this.getYear()
@@ -618,6 +700,7 @@ public final class Date extends java.util.Date
     /**
      * 设置小时
      */
+    @Override
     public void setHours(int i_Hour)
     {
         if ( 0 > i_Hour || i_Hour > 23 )
@@ -642,6 +725,7 @@ public final class Date extends java.util.Date
     /**
      * 设置分钟
      */
+    @Override
     public void setMinutes(int i_Minute)
     {
         if ( 0 > i_Minute || i_Minute > 59 )
@@ -666,6 +750,7 @@ public final class Date extends java.util.Date
     /**
      * 设置秒钟
      */
+    @Override
     public void setSeconds(int i_Second)
     {
         if ( 0 > i_Second || i_Second > 59 )
@@ -796,7 +881,7 @@ public final class Date extends java.util.Date
      * @createDate  2016-03-01
      * @version     v1.0
      *
-     * @param i_Offset  偏移量。可为负值 。（精度：毫秒） 
+     * @param i_Offset  偏移量。可为负值 。（精度：毫秒）
      * @return          返回自己
      */
     public Date plus(long i_Offset)
@@ -814,7 +899,7 @@ public final class Date extends java.util.Date
      * @createDate  2016-03-01
      * @version     v1.0
      *
-     * @param i_Offset  偏移量。可为负值。（精度：毫秒） 
+     * @param i_Offset  偏移量。可为负值。（精度：毫秒）
      * @return          返回一个新实例
      */
     public Date getPlus(long i_Offset)
@@ -832,7 +917,7 @@ public final class Date extends java.util.Date
      */
     public java.util.Date getDateObject()
     {
-        return (java.util.Date)this;
+        return this;
     }
     
     
@@ -840,6 +925,7 @@ public final class Date extends java.util.Date
     /**
      * 获取年份
      */
+    @Override
     public int getYear()
     {
         Calendar v_Calendar = Calendar.getInstance();
@@ -853,6 +939,7 @@ public final class Date extends java.util.Date
     /**
      * 获取月份
      */
+    @Override
     public int getMonth()
     {
         Calendar v_Calendar = Calendar.getInstance();
@@ -866,6 +953,7 @@ public final class Date extends java.util.Date
     /**
      * 获取是几号
      */
+    @Override
     public int getDay()
     {
         Calendar v_Calendar = Calendar.getInstance();
@@ -879,6 +967,7 @@ public final class Date extends java.util.Date
     /**
      * 获取是几号
      */
+    @Override
     public int getDate()
     {
         return this.getDay();
@@ -889,6 +978,7 @@ public final class Date extends java.util.Date
     /**
      * 获取小时
      */
+    @Override
     public int getHours()
     {
         Calendar v_Calendar = Calendar.getInstance();
@@ -919,6 +1009,7 @@ public final class Date extends java.util.Date
     /**
      * 获取分钟
      */
+    @Override
     public int getMinutes()
     {
         Calendar v_Calendar = Calendar.getInstance();
@@ -946,6 +1037,7 @@ public final class Date extends java.util.Date
     /**
      * 获取秒
      */
+    @Override
     public int getSeconds()
     {
         Calendar v_Calendar = Calendar.getInstance();
@@ -1016,7 +1108,7 @@ public final class Date extends java.util.Date
         
         int v_WorkDay       = Math.abs(i_WorkDay);
         int v_MoveDirection = i_WorkDay >= 1 ? 1 : -1;         // 移动方向
-        int v_MoveWeek      = (int)(v_WorkDay / 5);            // 移动的周数
+        int v_MoveWeek      = v_WorkDay / 5;            // 移动的周数
         int v_MoveWeekMod   = v_WorkDay % 5;                   // 移动的周数后的剩余天数
         int v_MoveDay       = v_MoveWeek * 7 + v_MoveWeekMod;  // 移动的天数（非工作日）
         
@@ -1071,7 +1163,7 @@ public final class Date extends java.util.Date
         {
             v_Week--;
             
-            if ( v_Week == 0 ) 
+            if ( v_Week == 0 )
             {
                 v_Week = 7;
             }
@@ -1383,7 +1475,7 @@ public final class Date extends java.util.Date
     public Date getNextMonth()
     {
         Date v_Next    = this.getLastDayOfMonth().getDate(1);
-        Date v_NextMax = v_Next.getLastDayOfMonth(); 
+        Date v_NextMax = v_Next.getLastDayOfMonth();
         
         if ( v_NextMax.getDay() >= this.getDay() )
         {
@@ -1874,6 +1966,7 @@ public final class Date extends java.util.Date
     
     
     
+    @Override
     public boolean equals(Object i_Other)
     {
         if ( i_Other == null )
@@ -2096,6 +2189,7 @@ public final class Date extends java.util.Date
     
     
     
+    @Override
     public int compareTo(java.util.Date i_Other)
     {
         return super.compareTo(i_Other);
@@ -2138,6 +2232,7 @@ public final class Date extends java.util.Date
     
     
     
+    @Override
     public String toString()
     {
         return this.getFull();
