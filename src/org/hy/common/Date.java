@@ -190,7 +190,7 @@ public final class Date extends java.util.Date
         }
         
         // 解释毫秒
-        String [] v_MilliSecond = v_HMS[2].trim().split(".");
+        String [] v_MilliSecond = v_HMS[2].trim().split("\\.");
         if ( v_MilliSecond.length == 2 )
         {
             v_MilliSecond[1] = v_MilliSecond[1].trim();
