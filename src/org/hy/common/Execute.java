@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hy.common.xml.log.Logger;
+
 
 
 
@@ -13,7 +15,7 @@ import java.util.List;
  * 线程方式执行相关的动作
  * 
  *   注意：被执行的方法必须是 public 的。
- *   
+ * 
  *   可由两种方式获取执行结果：
  *   1. 通过本类的 this.getResult() 方法。
  *   2. 通过实现事件监听接口 org.hy.common.ExecuteListener。
@@ -36,6 +38,8 @@ import java.util.List;
  */
 public class Execute extends Thread
 {
+    private static final Logger $Logger = new Logger(Execute.class);
+    
     /** 动作的实例 */
     private Object             instance;
     
@@ -69,8 +73,8 @@ public class Execute extends Thread
     /** 标记是否运行完成  */
     private boolean            isRunFinish;
     
-    /** 
-     * 等待方法 waitting() 是否运行完成 
+    /**
+     * 等待方法 waitting() 是否运行完成
      * 
      *  向外界提供一种方便"持续等待"线程运行完成的方法
      */
@@ -136,6 +140,7 @@ public class Execute extends Thread
     /**
      * 主要执行的方法或动作
      */
+    @Override
     public void run()
     {
         // 延后多长时间后再执行第三方(单位：毫秒)。默认为0，即立即执行
@@ -177,6 +182,10 @@ public class Execute extends Thread
                 }
             }
         }
+        else
+        {
+            $Logger.warn(this.instance.getClass().getName() + "的方法" + this.methodName  + "不存在或不可访问到");
+        }
         
         this.runEndTime  = new Date();
         this.isRunFinish = true;
@@ -188,7 +197,7 @@ public class Execute extends Thread
                                                  ,this.runEndTime.getTime()
                                                 - this.runBeginTime.getTime()
                                                 - this.delayedTime
-                                                 ,this.exception != null 
+                                                 ,this.exception != null
                                                  ,this.result));
         }
     }
@@ -605,7 +614,7 @@ public class Execute extends Thread
     
     
     /**
-     * 执行结果的监听事件 
+     * 执行结果的监听事件
      *
      * @author      ZhengWei(HY)
      * @createDate  2017-01-19
@@ -630,6 +639,7 @@ public class Execute extends Thread
          *
          * @param i_Event
          */
+        @Override
         public void fire(ExecuteEvent i_Event)
         {
             if ( Help.isNull(this.listeners) )

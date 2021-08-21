@@ -10,7 +10,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/hy.common.xjava.jar"/>
+	<classpathentry kind="lib" path="lib/hy.common.xjava.jar" sourcepath="/hy.common.xjava"/>
 	<classpathentry kind="lib" path="lib/hy.common.file.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
 	<classpathentry kind="output" path="bin"/>
