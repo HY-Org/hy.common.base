@@ -33,9 +33,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -66,9 +66,9 @@ import org.hy.common.comparate.SerializableComparator;
  *               2017-12-19  1. 添加：isNull(Object) 方法。
  *               2018-01-04  1. 添加：对加、减、乘、除四个系列的方法，均添加不定参数的支持。使其能多个数字运算。
  *                           2. 添加：插值法（内推法）的interpolation()方法。
- *               2018-01-18  1. 添加：支持BigDecimal类型           
- *               2018-01-26  1. 修复：Arrays.asList()生成的集合是只读，不能对集合进行add()、remove()等修改操作。 
- *               2018-05-04  1. 添加：getClass()猜测字符串值是什么类型的。 
+ *               2018-01-18  1. 添加：支持BigDecimal类型
+ *               2018-01-26  1. 修复：Arrays.asList()生成的集合是只读，不能对集合进行add()、remove()等修改操作。
+ *               2018-05-04  1. 添加：getClass()猜测字符串值是什么类型的。
  *                           2. 添加：setValues()纵向对每个集合元素中的某一个属性赋值。
  *               2018-05-07  1. 添加：setValues()、setValuesNotNull() 用Map中的值来设置对象。建议人：马龙
  *               2018-05-08  1. 添加：支持枚举toString()的匹配
@@ -96,7 +96,7 @@ public class Help
     private static final ExpireMap<Class<?> ,List<Method>> $ToMapCaches  = new ExpireMap<Class<?> ,List<Method>>();
     
     /** ToMap()方法缓存的超时时长。单位：秒 */
-    public  static       long                              $ToMapTimeOut = 30; 
+    public  static       long                              $ToMapTimeOut = 30;
     
     
     
@@ -160,7 +160,7 @@ public class Help
      * @param i_FromArray           提供填充数据的数组
      * @param io_ToArray            被填充的数组
      * @return                      表示是否有填充动作
-     */ 
+     */
     public final static <T> boolean fillArray(T [] i_FromArray ,T [] io_ToArray)
     {
         return fillArray(i_FromArray ,io_ToArray ,0 ,io_ToArray.length - 1);
@@ -182,7 +182,7 @@ public class Help
      * @param io_ToArray            被填充的数组
      * @param i_ToArrayStartIndex   填充范围，被填充数组的开始索引（包含此索引也被填充）。下标从0开始
      * @return                      表示是否有填充动作
-     */ 
+     */
     public final static <T> boolean fillArray(T [] i_FromArray ,T [] io_ToArray ,int i_ToArrayStartIndex)
     {
         return fillArray(i_FromArray ,io_ToArray ,i_ToArrayStartIndex ,io_ToArray.length - 1);
@@ -670,7 +670,7 @@ public class Help
             v_Ret = v_Ret.add(v_Value);
         }
         
-        return v_Ret.doubleValue();    
+        return v_Ret.doubleValue();
     }
     
     
@@ -744,7 +744,7 @@ public class Help
      */
     public final static double subtract(String i_Value01 ,String ... i_ValueX)
     {
-        BigDecimal v_Ret = new BigDecimal(i_Value01.trim()); 
+        BigDecimal v_Ret = new BigDecimal(i_Value01.trim());
         
         for (String v_ValueStr : i_ValueX)
         {
@@ -753,7 +753,7 @@ public class Help
             v_Ret = v_Ret.subtract(v_Value);
         }
         
-        return v_Ret.doubleValue();    
+        return v_Ret.doubleValue();
     }
     
     
@@ -836,7 +836,7 @@ public class Help
             v_Ret = v_Ret.multiply(v_Value);
         }
         
-        return v_Ret.doubleValue();    
+        return v_Ret.doubleValue();
     }
     
     
@@ -954,7 +954,7 @@ public class Help
             v_Ret = v_Ret.divide(v_Value ,i_Scale ,BigDecimal.ROUND_HALF_UP);
         }
         
-        return v_Ret.doubleValue();    
+        return v_Ret.doubleValue();
     }
     
     
@@ -992,7 +992,7 @@ public class Help
      * @return
      * @see   org.hy.common.xml.junit.JU_Round
      */
-    public final static <N extends Number> double round(N i_Value ,int i_Digit) 
+    public final static <N extends Number> double round(N i_Value ,int i_Digit)
     {
         return round(i_Value.toString() ,i_Digit);
     }
@@ -1009,7 +1009,7 @@ public class Help
      * @return
      * @see   org.hy.common.xml.junit.JU_Round
      */
-    public final static double round(String i_Value ,int i_Digit) 
+    public final static double round(String i_Value ,int i_Digit)
     {
         BigDecimal v_Value = new BigDecimal(i_Value.trim());
                 
@@ -1425,7 +1425,7 @@ public class Help
      * 重载 NVL 方法
      *
      * @param i_Obj
-     * @return Object       
+     * @return Object
      */
     public final static Object NVL(Object i_Obj)
     {
@@ -1442,7 +1442,7 @@ public class Help
      * 重载 NVL 方法
      *
      * @param i_Obj
-     * @return Object       
+     * @return Object
      */
     public final static Boolean NVL(Boolean i_Value)
     {
@@ -1459,7 +1459,7 @@ public class Help
      * 重载 NVL 方法
      *
      * @param i_Value
-     * @return Object       
+     * @return Object
      */
     public final static Object NVL(Short i_Value)
     {
@@ -1476,7 +1476,7 @@ public class Help
      * 重载 NVL 方法
      *
      * @param i_Value
-     * @return Object       
+     * @return Object
      */
     public final static Object NVL(Byte i_Value)
     {
@@ -1493,7 +1493,7 @@ public class Help
      * 重载 NVL 方法
      *
      * @param i_Value
-     * @return Object       
+     * @return Object
      */
     public final static Object NVL(Character i_Value)
     {
@@ -1510,7 +1510,7 @@ public class Help
      * 重载 NVL 方法
      *
      * @param i_Date
-     * @return Object       
+     * @return Object
      */
     public final static Object NVL(java.util.Date i_Date)
     {
@@ -1527,7 +1527,7 @@ public class Help
      * 重载 NVL 方法
      *
      * @param i_Date
-     * @return Object       
+     * @return Object
      */
     public final static Object NVL(org.hy.common.Date i_Date)
     {
@@ -1544,7 +1544,7 @@ public class Help
      * 重载 NVL 方法
      *
      * @param i_Value
-     * @return Double       
+     * @return Double
      */
     public final static Double NVL(Double i_Value)
     {
@@ -1561,7 +1561,7 @@ public class Help
      * 重载 NVL 方法
      *
      * @param i_Value
-     * @return Double       
+     * @return Double
      */
     public final static Long NVL(Long i_Value)
     {
@@ -1578,7 +1578,7 @@ public class Help
      * 重载 NVL 方法
      *
      * @param i_Value
-     * @return Float       
+     * @return Float
      */
     public final static Float NVL(Float i_Value)
     {
@@ -1595,7 +1595,7 @@ public class Help
      * 重载 NVL 方法
      *
      * @param i_Value
-     * @return Integer       
+     * @return Integer
      */
     public final static Integer NVL(Integer i_Value)
     {
@@ -1614,7 +1614,7 @@ public class Help
      * @param <T>
      *
      * @param i_List
-     * @return Object       
+     * @return Object
      */
     public final static <T> Collection<T> NVL(Collection<T> i_List)
     {
@@ -1633,7 +1633,7 @@ public class Help
      * @param <T>
      *
      * @param i_List
-     * @return Object       
+     * @return Object
      */
     public final static <T> List<T> NVL(List<T> i_List)
     {
@@ -1652,7 +1652,7 @@ public class Help
      * @param <T1>
      *
      * @param i_Map
-     * @return Object       
+     * @return Object
      */
     public final static <T1 ,T2> Map<T1 ,T2> NVL(Map<T1 ,T2> i_Map)
     {
@@ -1671,7 +1671,7 @@ public class Help
      * @param <T>
      *
      * @param i_Set
-     * @return Object       
+     * @return Object
      */
     public final static <T> Set<T> NVL(Set<T> i_Set)
     {
@@ -1715,7 +1715,7 @@ public class Help
      *
      * @param i_Value
      * @param i_ElseReturn
-     * @return Double       
+     * @return Double
      */
     public final static Double NVL(Double i_Value ,Double i_ElseReturn)
     {
@@ -1740,7 +1740,7 @@ public class Help
      *
      * @param i_Value
      * @param i_ElseReturn
-     * @return Double       
+     * @return Double
      */
     public final static Long NVL(Long i_Value ,Long i_ElseReturn)
     {
@@ -1765,7 +1765,7 @@ public class Help
      *
      * @param i_Value
      * @param i_ElseReturn
-     * @return Double       
+     * @return Double
      */
     public final static Float NVL(Float i_Value ,Float i_ElseReturn)
     {
@@ -1790,7 +1790,7 @@ public class Help
      *
      * @param i_Value
      * @param i_ElseReturn
-     * @return Integer       
+     * @return Integer
      */
     public final static Integer NVL(Integer i_Value ,Integer i_ElseReturn)
     {
@@ -1815,7 +1815,7 @@ public class Help
      *
      * @param i_Obj
      * @param i_ElseReturn
-     * @return Object       
+     * @return Object
      */
     public final static <O> O NVL(O i_Obj ,O i_ElseReturn)
     {
@@ -2823,7 +2823,7 @@ public class Help
         try
         {
             v_Ret = new ServerSocket();
-            v_Ret.setReuseAddress(i_IsReuse);                  // 端口重用。这个设置要放在绑定端口前 
+            v_Ret.setReuseAddress(i_IsReuse);                  // 端口重用。这个设置要放在绑定端口前
             v_Ret.bind(new InetSocketAddress(i_Port));
         }
         catch (Exception exce)
@@ -2891,7 +2891,7 @@ public class Help
      */
     public final static boolean isAllowConnect(String i_HostName ,int i_Port ,int i_Timeout)
     {
-        SocketAddress v_Endpoint = new InetSocketAddress(i_HostName ,i_Port); 
+        SocketAddress v_Endpoint = new InetSocketAddress(i_HostName ,i_Port);
         Socket        v_TestConn = new Socket();
         
         try
@@ -3134,7 +3134,7 @@ public class Help
         int                 v_Index    = 0;
         int                 v_MaxLen   = 0;
         int                 v_Len      = 0;
-        final int           v_SpaceLen = 3;  // Java类的名称与前面的间隔长度                 
+        final int           v_SpaceLen = 3;  // Java类的名称与前面的间隔长度
         
         if ( Help.isNull(v_Getters) )
         {
@@ -3323,7 +3323,7 @@ public class Help
             
             v_BufferInsert.append(v_Name).append(Help.getSysLineSeparator());
             
-            // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15 
+            // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15
             if (         String.class == v_Item.getValue().getReturnType()
               ||           Date.class == v_Item.getValue().getReturnType()
               || java.util.Date.class == v_Item.getValue().getReturnType()
@@ -3387,7 +3387,7 @@ public class Help
         int                 v_Index    = 0;
         int                 v_MaxLen   = 0;
         int                 v_Len      = 0;
-        final int           v_SpaceLen = 1;  // Java类的名称与前面的间隔长度  
+        final int           v_SpaceLen = 1;  // Java类的名称与前面的间隔长度
         
         if ( Help.isNull(v_Getters) )
         {
@@ -3419,7 +3419,7 @@ public class Help
             
             v_Buffer.append(StringHelp.rpad(v_Name ,v_MaxLen ," ")).append("= ");
             
-            // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15 
+            // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15
             if (         String.class == v_Item.getValue().getReturnType()
               ||           Date.class == v_Item.getValue().getReturnType()
               || java.util.Date.class == v_Item.getValue().getReturnType()
@@ -3494,7 +3494,7 @@ public class Help
      * @createDate  2018-08-16
      * @version     v1.0
      *
-     * @param io_Map 
+     * @param io_Map
      * @param i_OldKey  原Key值
      * @param i_NewKey  新Key值
      */
@@ -3691,7 +3691,7 @@ public class Help
      * @createDate  2017-05-12
      * @version     v1.0
      *
-     * @param i_Map              
+     * @param i_Map
      * @param i_PlaceholderBegin  占位符前缀
      * @param i_PlaceholderEnd    占位符后缀
      * @return
@@ -3710,7 +3710,7 @@ public class Help
      * @createDate  2017-05-12
      * @version     v1.0
      *
-     * @param i_Map              
+     * @param i_Map
      * @param i_PlaceholderBegin  占位符前缀
      * @param i_PlaceholderEnd    占位符后缀
      * @return
@@ -3721,7 +3721,7 @@ public class Help
         Map<String ,Object> v_Ret = null;
         try
         {
-            v_Ret = (Map<String ,Object>)i_Map.getClass().newInstance();
+            v_Ret = i_Map.getClass().newInstance();
             
             for (Map.Entry<String ,?> v_Item : i_Map.entrySet())
             {
@@ -3994,14 +3994,14 @@ public class Help
     
     /**
      *  纵向抽取集合元素中的某两二个属性值，形成新的Map集合
-     *  
+     * 
      *  可形成两种类型的Map集合
      *    1. Map.key   为 0..x 序列整数值
      *       Map.value 为 元素对象本身
-     *       
+     * 
      *    2. Map.key   为 元素对象中的某个属性的属性值
      *       Map.value 为 元素对象本身
-     *       
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2015-12-20
      * @version     v1.0
@@ -4019,14 +4019,14 @@ public class Help
     
     /**
      *  纵向抽取集合元素中的某两二个属性值，形成新的Map集合
-     *  
+     * 
      *  可形成两种类型的Map集合
      *    1. Map.key   为 0..x 序列整数值
      *       Map.value 为 元素对象本身
-     *       
+     * 
      *    2. Map.key   为 元素对象中的某个属性的属性值
      *       Map.value 为 元素对象本身
-     *       
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2015-12-20
      * @version     v1.0
@@ -4045,17 +4045,17 @@ public class Help
     
     /**
      *  纵向抽取集合元素中的某两二个属性值，形成新的Map集合
-     *  
+     * 
      *  可形成四种类型的Map集合
      *    1. Map.key   为 0..x 序列整数值
      *       Map.value 为 元素对象本身
-     *       
+     * 
      *    2. Map.key   为 0..x 序列整数值
      *       Map.value 为 元素对象中的某个属性的属性值
-     *       
+     * 
      *    3. Map.key   为 元素对象中的某个属性的属性值
      *       Map.value 为 元素对象本身
-     *       
+     * 
      *    4. Map.key   为 元素对象中的某个属性的属性值
      *       Map.value 为 元素对象中的某个属性的属性值
      * 
@@ -4077,20 +4077,20 @@ public class Help
     
     /**
      *  纵向抽取集合元素中的某两二个属性值，形成新的Map集合
-     *  
+     * 
      *  可形成四种类型的Map集合
      *    1. Map.key   为 0..x 序列整数值
      *       Map.value 为 元素对象本身
-     *       
+     * 
      *    2. Map.key   为 0..x 序列整数值
      *       Map.value 为 元素对象中的某个属性的属性值
-     *       
+     * 
      *    3. Map.key   为 元素对象中的某个属性的属性值
      *       Map.value 为 元素对象本身
-     *       
+     * 
      *    4. Map.key   为 元素对象中的某个属性的属性值
      *       Map.value 为 元素对象中的某个属性的属性值
-     *       
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2015-12-20
      * @version     v1.0
@@ -4300,7 +4300,7 @@ public class Help
         }
         
         V [] v_ArrData = (V [])(Array.newInstance(v_ItemClass ,0));
-        return i_List.toArray(v_ArrData); 
+        return i_List.toArray(v_ArrData);
     }
     
     
@@ -4346,7 +4346,7 @@ public class Help
         }
         
         V [] v_ArrData = (V [])(Array.newInstance(v_ItemClass ,0));
-        return i_Set.toArray(v_ArrData); 
+        return i_Set.toArray(v_ArrData);
     }
     
     
@@ -4543,7 +4543,7 @@ public class Help
         }
         else
         {
-            v_Ret = new ArrayList<T>(); 
+            v_Ret = new ArrayList<T>();
         }
         
         return v_Ret;
@@ -5013,7 +5013,7 @@ public class Help
             {
                 Object v_Value = v_MethodReflect.invokeForInstance(v_Item);
                 
-                if ( v_Value != null 
+                if ( v_Value != null
                   && StringHelp.isContains(v_Value.toString() ,i_IsAllContains ,i_FindKeys) )
                 {
                     v_Ret.add(v_Item);
@@ -5098,7 +5098,7 @@ public class Help
             {
                 Object v_Value = v_MethodReflect.invokeForInstance(v_Item);
                 
-                if ( v_Value != null 
+                if ( v_Value != null
                   && StringHelp.isContains(v_Value.toString() ,i_IsAllContains ,i_FindKeys) )
                 {
                     v_Ret.add(v_Item);
@@ -5187,7 +5187,7 @@ public class Help
                     {
                         Object v_Value = v_MethodReflect.invokeForInstance(v_Item);
                         
-                        if ( v_Value != null 
+                        if ( v_Value != null
                           && StringHelp.isContains(v_Value.toString() ,i_IsAllContains ,i_FindKeys) )
                         {
                             v_Ret.add(v_Item);
@@ -5274,7 +5274,7 @@ public class Help
             {
                 Object v_Value = v_MethodReflect.invokeForInstance(v_Item);
                 
-                if ( v_Value != null 
+                if ( v_Value != null
                   && StringHelp.isContains(v_Value.toString() ,i_IsAllContains ,i_FindKeys) )
                 {
                     v_Ret.add(v_Item);
@@ -5359,7 +5359,7 @@ public class Help
             {
                 Object v_Value = v_MethodReflect.invokeForInstance(v_Item);
                 
-                if ( v_Value != null 
+                if ( v_Value != null
                   && StringHelp.isContains(v_Value.toString() ,i_IsAllContains ,i_FindKeys) )
                 {
                     v_Ret.add(v_Item);
@@ -5434,7 +5434,7 @@ public class Help
         {
             for (T v_Item : i_Datas)
             {
-                if ( v_Item != null 
+                if ( v_Item != null
                   && StringHelp.isContains(v_Item.toString() ,i_IsAllContains ,i_FindKeys) )
                 {
                     v_Ret.add(v_Item);
@@ -5509,7 +5509,7 @@ public class Help
         {
             for (T v_Item : i_Datas.values())
             {
-                if ( v_Item != null 
+                if ( v_Item != null
                   && StringHelp.isContains(v_Item.toString() ,i_IsAllContains ,i_FindKeys) )
                 {
                     v_Ret.add(v_Item);
@@ -5588,7 +5588,7 @@ public class Help
                 {
                     for (T v_Item : v_ChildList)
                     {
-                        if ( v_Item != null 
+                        if ( v_Item != null
                           && StringHelp.isContains(v_Item.toString() ,i_IsAllContains ,i_FindKeys) )
                         {
                             v_Ret.add(v_Item);
@@ -5665,7 +5665,7 @@ public class Help
         {
             for (T v_Item : i_Datas)
             {
-                if ( v_Item != null 
+                if ( v_Item != null
                   && StringHelp.isContains(v_Item.toString() ,i_IsAllContains ,i_FindKeys) )
                 {
                     v_Ret.add(v_Item);
@@ -5740,7 +5740,7 @@ public class Help
         {
             for (T v_Item : i_Datas)
             {
-                if ( v_Item != null 
+                if ( v_Item != null
                   && StringHelp.isContains(v_Item.toString() ,i_IsAllContains ,i_FindKeys) )
                 {
                     v_Ret.add(v_Item);
@@ -6268,7 +6268,7 @@ public class Help
      *
      * @param io_Datas             集合数据
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
-     *                             没有排序标识的，默认按从小到大排序，即正序 
+     *                             没有排序标识的，默认按从小到大排序，即正序
      */
     @SuppressWarnings({"rawtypes" ,"unchecked"})
     public final static void toSort(Collection io_Datas ,String ... i_SortPropertyNames)
@@ -6302,7 +6302,7 @@ public class Help
      *
      * @param io_Datas             集合数据
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
-     *                             没有排序标识的，默认按从小到大排序，即正序 
+     *                             没有排序标识的，默认按从小到大排序，即正序
      */
     public final static void toSort(List<?> io_Datas ,String ... i_SortPropertyNames)
     {
@@ -6345,7 +6345,7 @@ public class Help
      *
      * @param io_Datas             集合数据
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
-     *                             没有排序标识的，默认按从小到大排序，即正序 
+     *                             没有排序标识的，默认按从小到大排序，即正序
      */
     private final static void toSortObject(List<?> io_Datas ,String ... i_SortPropertyNames)
     {
@@ -6368,8 +6368,8 @@ public class Help
      *
      * @param io_Datas             集合数据
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
-     *                             没有排序标识的，默认按从小到大排序，即正序 
-     *                             
+     *                             没有排序标识的，默认按从小到大排序，即正序
+     * 
      * 2017-06-15 被 toSortObject() 方法取替，暂时保存不删除此段代码
      */
     @SuppressWarnings("unused")
@@ -6395,10 +6395,11 @@ public class Help
      * @createDate  2017-06-14
      * @version     v1.0
      *              v2.0  2017-06-15  添加：支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
+     *              v3.0  2021-08-25  添加：对每个元素NULL的判定：建议人：王江帆
      *
      * @param io_Datas             集合数据。会改变集合元素排列的顺序
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
-     *                             没有排序标识的，默认按从小到大排序，即正序 
+     *                             没有排序标识的，默认按从小到大排序，即正序
      * @return                     返回值中的每个元素不重复
      */
     public final static <T> List<T> findSames(List<T> io_Datas ,String ... i_SortPropertyNames)
@@ -6449,16 +6450,23 @@ public class Help
         int v_SameIndex = -1; // 上次相同重复的索引下标
         for (int v_Index=1; v_Index<io_Datas.size(); v_Index++)
         {
-            int v_Ret = v_Comparator.compare(io_Datas.get(v_Index-1) ,io_Datas.get(v_Index));
-            
-            if ( v_Ret == 0 )
+            T v_Current = io_Datas.get(v_Index);
+            if ( v_Current != null )
             {
-                if ( v_Index - 1 > v_SameIndex )
+                T v_Next = io_Datas.get(v_Index-1);
+                if ( v_Next != null )
                 {
-                    v_Sames.add(io_Datas.get(v_Index-1));
+                    int v_Ret = v_Comparator.compare(v_Next ,v_Current);
+                    if ( v_Ret == 0 )
+                    {
+                        if ( v_Index - 1 > v_SameIndex )
+                        {
+                            v_Sames.add(io_Datas.get(v_Index-1));
+                        }
+                        
+                        v_SameIndex = v_Index;
+                    }
                 }
-                
-                v_SameIndex = v_Index;
             }
         }
         
@@ -6484,7 +6492,7 @@ public class Help
      *
      * @param io_Datas             集合数据。会改变集合元素排列的顺序
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
-     *                             没有排序标识的，默认按从小到大排序，即正序 
+     *                             没有排序标识的，默认按从小到大排序，即正序
      * @return                     返回值中的每个元素不重复
      */
     public final static <T> List<T> findSames(Set<T> io_Datas ,String ... i_SortPropertyNames)
@@ -6529,26 +6537,9 @@ public class Help
      */
     public final static <T extends Comparable<? super T>> List<T> findSames(List<T> io_Datas)
     {
-        List<T> v_Datas     = Help.toSort(io_Datas);
-        int     v_SameIndex = -1; // 上次相同重复的索引下标
-        List<T> v_Sames     = new ArrayList<T>();
+        List<T> v_Datas = Help.toSort(io_Datas);
         
-        for (int v_Index=1; v_Index<io_Datas.size(); v_Index++)
-        {
-            int v_Ret = v_Datas.get(v_Index-1).compareTo(v_Datas.get(v_Index));
-            
-            if ( v_Ret == 0 )
-            {
-                if ( v_Index - 1 > v_SameIndex )
-                {
-                    v_Sames.add(v_Datas.get(v_Index-1));
-                }
-                
-                v_SameIndex = v_Index;
-            }
-        }
-        
-        return v_Sames;
+        return findSamesAdd(v_Datas);
     }
     
     
@@ -6569,26 +6560,54 @@ public class Help
     @SafeVarargs
     public final static <T extends Comparable<? super T>> List<T> findSames(T ... i_Values)
     {
-        List<T> v_Datas     = Help.toSort(i_Values);
+        List<T> v_Datas = Help.toSort(i_Values);
+        
+        return findSamesAdd(v_Datas);
+    }
+    
+    
+    
+    /**
+     * 单的单维比较后，查找并过滤重复的元素（正序），只做添加操作
+     * 
+     * 注意：创建一个新的集合对象
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-08-25
+     * @version     v1.0  添加：对每个元素NULL的判定：建议人：王江帆
+     * 
+     * @param <T>
+     * @param io_Datas
+     * @return
+     */
+    private final static <T extends Comparable<? super T>> List<T> findSamesAdd(List<T> i_Datas)
+    {
         int     v_SameIndex = -1; // 上次相同重复的索引下标
         List<T> v_Sames     = new ArrayList<T>();
         
-        for (int v_Index=1; v_Index<v_Datas.size(); v_Index++)
+        for (int v_Index=1; v_Index<i_Datas.size(); v_Index++)
         {
-            int v_Ret = v_Datas.get(v_Index-1).compareTo(v_Datas.get(v_Index));
-            
-            if ( v_Ret == 0 )
+            T v_Current = i_Datas.get(v_Index);
+            if ( v_Current != null )
             {
-                if ( v_Index - 1 > v_SameIndex )
+                T v_Next = i_Datas.get(v_Index-1);
+                if ( v_Next != null )
                 {
-                    v_Sames.add(v_Datas.get(v_Index-1));
+                    int v_Ret = v_Next.compareTo(v_Current);
+                    if ( v_Ret == 0 )
+                    {
+                        if ( v_Index - 1 > v_SameIndex )
+                        {
+                            v_Sames.add(i_Datas.get(v_Index-1));
+                        }
+                        
+                        v_SameIndex = v_Index;
+                    }
                 }
-                
-                v_SameIndex = v_Index;
             }
         }
         
-        return v_Datas;
+        return v_Sames;
     }
     
     
@@ -6608,7 +6627,7 @@ public class Help
      *
      * @param io_Datas             集合数据
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
-     *                             没有排序标识的，默认按从小到大排序，即正序 
+     *                             没有排序标识的，默认按从小到大排序，即正序
      */
     public final static <T> void toDistinct(Set<T> io_Datas ,String ... i_SortPropertyNames)
     {
@@ -6633,10 +6652,11 @@ public class Help
      * @createDate  2015-12-17
      * @version     v1.0
      *              v2.0  2017-06-15  添加：支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
+     *              v3.0  2021-08-25  添加：对每个元素NULL的判定：建议人：王江帆
      *
      * @param io_Datas             集合数据
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
-     *                             没有排序标识的，默认按从小到大排序，即正序 
+     *                             没有排序标识的，默认按从小到大排序，即正序
      */
     public final static <T> void toDistinct(List<T> io_Datas ,String ... i_SortPropertyNames)
     {
@@ -6676,10 +6696,22 @@ public class Help
         
         for (int v_Index=io_Datas.size()-1; v_Index>=1; v_Index--)
         {
-            int v_Ret = v_Comparator.compare(io_Datas.get(v_Index-1) ,io_Datas.get(v_Index));
-            if ( v_Ret == 0 )
+            T v_Current = io_Datas.get(v_Index);
+            if ( v_Current == null )
             {
                 io_Datas.remove(v_Index);
+            }
+            else
+            {
+                T v_Next = io_Datas.get(v_Index-1);
+                if ( v_Next != null )
+                {
+                    int v_Ret = v_Comparator.compare(v_Next ,v_Current);
+                    if ( v_Ret == 0 )
+                    {
+                        io_Datas.remove(v_Index);
+                    }
+                }
             }
         }
     }
@@ -6724,16 +6756,7 @@ public class Help
     {
         List<T> v_Datas = Help.toSort(io_Values);
         
-        for (int v_Index=v_Datas.size()-1; v_Index>=1; v_Index--)
-        {
-            int v_Ret = v_Datas.get(v_Index-1).compareTo(v_Datas.get(v_Index));
-            if ( v_Ret == 0 )
-            {
-                v_Datas.remove(v_Index);
-            }
-        }
-        
-        return v_Datas;
+        return toDistinctRemove(v_Datas);
     }
     
     
@@ -6744,7 +6767,7 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2015-12-17
      * @version     v1.0
-     *
+     * 
      * @param i_Values
      * @return
      */
@@ -6753,16 +6776,48 @@ public class Help
     {
         List<T> v_Datas = Help.toSort(i_Values);
         
-        for (int v_Index=v_Datas.size()-1; v_Index>=1; v_Index--)
+        return toDistinctRemove(v_Datas);
+    }
+    
+    
+    
+    /**
+     * 简单的单维比较后，去除重复的元素（正序），只做删除操作
+     * 
+     * 注意：影响入参的变化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-08-25
+     * @version     v1.0  添加：对每个元素NULL的判定：建议人：王江帆
+     * 
+     * @param <T>
+     * @param io_Datas
+     * @return
+     */
+    private final static <T extends Comparable<? super T>> List<T> toDistinctRemove(List<T> io_Datas)
+    {
+        for (int v_Index=io_Datas.size()-1; v_Index>=1; v_Index--)
         {
-            int v_Ret = v_Datas.get(v_Index-1).compareTo(v_Datas.get(v_Index));
-            if ( v_Ret == 0 )
+            T v_Current = io_Datas.get(v_Index);
+            if ( v_Current == null )
             {
-                v_Datas.remove(v_Index);
+                io_Datas.remove(v_Index);
+            }
+            else
+            {
+                T v_Next = io_Datas.get(v_Index-1);
+                if ( v_Next != null )
+                {
+                    int v_Ret = v_Next.compareTo(v_Current);
+                    if ( v_Ret == 0 )
+                    {
+                        io_Datas.remove(v_Index);
+                    }
+                }
             }
         }
         
-        return v_Datas;
+        return io_Datas;
     }
     
     
@@ -7269,7 +7324,7 @@ public class Help
         {
             return new Date(i_Value.trim()).getDateObject();
         }
-        // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15 
+        // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15
         else if ( i_Class == Timestamp.class )
         {
             return new Date(i_Value.trim()).getSQLTimestamp();
@@ -7284,7 +7339,7 @@ public class Help
             Enum<?> [] v_EnumValues = StaticReflect.getEnums((Class<? extends Enum<?>>) i_Class);
             String     v_Value      = i_Value;
             
-            // ZhengWei(HY) Add 2018-05-08  支持枚举toString()的匹配 
+            // ZhengWei(HY) Add 2018-05-08  支持枚举toString()的匹配
             for (Enum<?> v_Enum : v_EnumValues)
             {
                 if ( v_Value.equalsIgnoreCase(v_Enum.toString()) )
@@ -7293,7 +7348,7 @@ public class Help
                 }
             }
             
-            // ZhengWei(HY) Add 2018-05-08  支持枚举名称的匹配 
+            // ZhengWei(HY) Add 2018-05-08  支持枚举名称的匹配
             for (Enum<?> v_Enum : v_EnumValues)
             {
                 if ( v_Value.equalsIgnoreCase(v_Enum.name()) )
@@ -7302,7 +7357,7 @@ public class Help
                 }
             }
             
-            // 尝试用枚举值匹配 
+            // 尝试用枚举值匹配
             if ( Help.isNumber(v_Value) )
             {
                 int v_IntValue = Integer.parseInt(v_Value.trim());
@@ -7360,7 +7415,7 @@ public class Help
     
     
     /**
-     * 将字符串转成对应的类型的默认值 
+     * 将字符串转成对应的类型的默认值
      * 
      * @author      ZhengWei(HY)
      * @version     v1.0
@@ -7428,7 +7483,7 @@ public class Help
         {
             return new Date().getDateObject();
         }
-        // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15 
+        // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15
         else if ( i_Class == Timestamp.class )
         {
             return new Date().getSQLTimestamp();
@@ -7526,7 +7581,7 @@ public class Help
     
     
     /**
-     * 从包package中获取所有的Class 
+     * 从包package中获取所有的Class
      * 
      * @param i_PackageName  包路径。如java.lang.ref
      * @return
@@ -7539,7 +7594,7 @@ public class Help
     
     
     /**
-     * 从包package中获取所有的Class 
+     * 从包package中获取所有的Class
      * 
      * @param i_PackageName  包路径。如java.lang.ref。同时，也可以是具体的Java类，如 java.lang.ref.Reference
      * @return
@@ -7551,15 +7606,15 @@ public class Help
     
     
     
-    /** 
-     * 从包package中获取所有的Class 
+    /**
+     * 从包package中获取所有的Class
      * 
      * @param i_PackageName  包路径。如java.lang.ref。同时，也可以是具体的Java类，如 java.lang.ref.Reference
-     * @param i_Recursive    是否循环迭代 
-     * @return 
+     * @param i_Recursive    是否循环迭代
+     * @return
      * 
      * 参考于：mailto:ohergal@gmail.com
-     */  
+     */
     public final static List<Class<?>> getClasses(String i_PackageName ,boolean i_Recursive)
     {
         List<Class<?>> v_Classes        = new ArrayList<Class<?>>();
@@ -7620,7 +7675,7 @@ public class Help
     
     
     /**
-     * 从Jar包中获取所有的Class 
+     * 从Jar包中获取所有的Class
      * 
      * @param i_JarFile       Jar文件
      * @return
@@ -7633,7 +7688,7 @@ public class Help
     
     
     /**
-     * 从Jar包中获取所有的Class 
+     * 从Jar包中获取所有的Class
      * 
      * @param i_PackageName   包路径。如java.lang.ref。同时，也可以是具体的Java类，如 java.lang.ref.Reference
      * @param i_JarFile       Jar文件
@@ -7647,7 +7702,7 @@ public class Help
     
     
     /**
-     * 从Jar包中获取所有的Class 
+     * 从Jar包中获取所有的Class
      * 
      * @param i_PackageName   包路径。如java.lang.ref。同时，也可以是具体的Java类，如 java.lang.ref.Reference
      * @param i_JarFile       Jar文件
@@ -7706,7 +7761,7 @@ public class Help
     
     
     /**
-     * 从指定文件目录中获取所有的Class 
+     * 从指定文件目录中获取所有的Class
      * 
      * @param i_PackagePath   指定的文件目录
      * @param i_Recursive     是否循环迭代
@@ -7724,7 +7779,7 @@ public class Help
     
     
     /**
-     * 从指定文件目录中获取所有的Class 
+     * 从指定文件目录中获取所有的Class
      * 
      * @param i_PackageName   包路径。如java.lang.ref
      * @param i_PackagePath   指定的文件目录
@@ -7742,17 +7797,17 @@ public class Help
     
     
     
-    /** 
-     * 从指定文件目录中获取所有的Class 
+    /**
+     * 从指定文件目录中获取所有的Class
      * 
      * 为了不在递归中反复创建 new ArrayList<Class<?>>(); 而存在此方法。
-     * 所以，本方法不对外公开 
+     * 所以，本方法不对外公开
      * 
      * @param i_PackageName  包路径。如java.lang.ref
      * @param i_PackagePath  包的物理路径
      * @param i_Recursive    是否循环迭代
-     * @param io_Classes 
-     */  
+     * @param io_Classes
+     */
     private static void getClasses(String i_PackageName ,File i_PackagePath ,final boolean i_Recursive ,List<Class<?>> io_Classes)
     {
         if ( !i_PackagePath.exists() || !i_PackagePath.isDirectory() )
@@ -7760,9 +7815,10 @@ public class Help
             return;
         }
         
-        File [] v_Files = i_PackagePath.listFiles(new FileFilter() 
+        File [] v_Files = i_PackagePath.listFiles(new FileFilter()
         {
-            //自定义过滤规则 如果可以循环(包含子目录) 或则是以.class结尾的文件(编译好的java类文件)  
+            //自定义过滤规则 如果可以循环(包含子目录) 或则是以.class结尾的文件(编译好的java类文件)
+            @Override
             public boolean accept(File i_File)
             {
                 return (i_Recursive && i_File.isDirectory()) || (i_File.getName().endsWith(".class"));
@@ -7782,14 +7838,14 @@ public class Help
             {
                 File v_File = v_Files[i];
                 
-                // 如果是目录 则继续扫描  
+                // 如果是目录 则继续扫描
                 if ( v_File.isDirectory() )
                 {
                     getClasses(v_File.getName() ,v_File ,i_Recursive ,io_Classes);
                 }
                 else
                 {
-                    // 如果是java类文件 去掉后面的.class 只留下类名  
+                    // 如果是java类文件 去掉后面的.class 只留下类名
                     String v_ClassName = v_File.getName().substring(0 ,v_File.getName().length() - 6);
                     try
                     {
@@ -7812,14 +7868,14 @@ public class Help
             {
                 File v_File = v_Files[i];
                 
-                // 如果是目录 则继续扫描  
+                // 如果是目录 则继续扫描
                 if ( v_File.isDirectory() )
                 {
                     getClasses(i_PackageName + "." + v_File.getName() ,v_File ,i_Recursive ,io_Classes);
                 }
                 else
                 {
-                    // 如果是java类文件 去掉后面的.class 只留下类名  
+                    // 如果是java类文件 去掉后面的.class 只留下类名
                     String v_ClassName = v_File.getName().substring(0 ,v_File.getName().length() - 6);
                     try
                     {
@@ -7914,7 +7970,7 @@ public class Help
      * 如MacOS系统上查看目录列表的命令："ls -aln /" 有下面两种写法
      *   1. Help.executeCommand("ls" ,"-aln" ,"/");
      *   2. Help.executeCommand("ls -aln /");
-     *   
+     * 
      * 如Windows系统上查看目录列表的命令："dir c:\\" 有下面两种写法
      *   1. Help.executeCommand("cmd.exe /c dir c:\\");
      *   2. Help.executeCommand("cmd.exe" ,"/c" ,"dir" ,"c:\\");
@@ -7939,7 +7995,7 @@ public class Help
      * 如MacOS系统上查看目录列表的命令："ls -aln /" 有下面两种写法
      *   1. Help.executeCommand("ls" ,"-aln" ,"/");
      *   2. Help.executeCommand("ls -aln /");
-     *   
+     * 
      * 如Windows系统上查看目录列表的命令："dir c:\\" 有下面两种写法
      *   1. Help.executeCommand("cmd.exe /c dir c:\\");
      *   2. Help.executeCommand("cmd.exe" ,"/c" ,"dir" ,"c:\\");
@@ -7965,7 +8021,7 @@ public class Help
      * 如MacOS系统上查看目录列表的命令："ls -aln /" 有下面两种写法
      *   1. Help.executeCommand("ls" ,"-aln" ,"/");
      *   2. Help.executeCommand("ls -aln /");
-     *   
+     * 
      * 如Windows系统上查看目录列表的命令："dir c:\\" 有下面两种写法
      *   1. Help.executeCommand("cmd.exe /c dir c:\\");
      *   2. Help.executeCommand("cmd.exe" ,"/c" ,"dir" ,"c:\\");
@@ -7992,7 +8048,7 @@ public class Help
      * 如MacOS系统上查看目录列表的命令："ls -aln /" 有下面两种写法
      *   1. Help.executeCommand("ls" ,"-aln" ,"/");
      *   2. Help.executeCommand("ls -aln /");
-     *   
+     * 
      * 如Windows系统上查看目录列表的命令："dir c:\\" 有下面两种写法
      *   1. Help.executeCommand("cmd.exe /c dir c:\\");
      *   2. Help.executeCommand("cmd.exe" ,"/c" ,"dir" ,"c:\\");
@@ -8020,7 +8076,7 @@ public class Help
      * 如MacOS系统上查看目录列表的命令："ls -aln /" 有下面两种写法
      *   1. Help.executeCommand("ls" ,"-aln" ,"/");
      *   2. Help.executeCommand("ls -aln /");
-     *   
+     * 
      * 如Windows系统上查看目录列表的命令："dir c:\\" 有下面两种写法
      *   1. Help.executeCommand("cmd.exe /c dir c:\\");
      *   2. Help.executeCommand("cmd.exe" ,"/c" ,"dir" ,"c:\\");
@@ -8033,7 +8089,7 @@ public class Help
      * @param i_IsWaitProcess  是否等待命令执行完成。当等待时调用线程将被阻塞
      * @param i_IsReturnInfo   是否返回执行结果
      * @param i_Timeout        超时时长。超时后执行将被结束。（单位：秒）
-     * @param i_Commands       执行命令 
+     * @param i_Commands       执行命令
      * @return
      */
     public final static List<String> executeCommand(String i_CharEncoding ,boolean i_IsWaitProcess ,boolean i_IsReturnInfo ,long i_Timeout ,String ... i_Commands)
@@ -8045,7 +8101,7 @@ public class Help
         InputStream    v_ErrInput  = null;
         List<String>   v_Ret       = new ArrayList<String>();
         
-        try 
+        try
         {
             if ( Help.isNull(i_Commands) )
             {
@@ -8066,11 +8122,12 @@ public class Help
                 final Process   v_FinalProcess = v_Process;
                 final long      v_Timeout      = i_Timeout;
                 final String [] v_Cmds         = i_Commands;
-                new Thread(new Runnable() 
+                new Thread(new Runnable()
                 {
-                    public void run() 
+                    @Override
+                    public void run()
                     {
-                        try 
+                        try
                         {
                             Thread.sleep(v_Timeout * 1000);
                             if ( v_FinalProcess != null )
@@ -8078,8 +8135,8 @@ public class Help
                                 System.err.println("Execute(" + StringHelp.toString(v_Cmds) +") is Timeout(" + v_Timeout + " sec) by destroy.");
                                 v_FinalProcess.destroy();  // destroyForcibly(); 1.7没有此强制方法
                             }
-                        } 
-                        catch (Exception e) 
+                        }
+                        catch (Exception e)
                         {
                             e.printStackTrace();
                         }
@@ -8093,18 +8150,19 @@ public class Help
                 final BufferedReader v_ErrReader = new BufferedReader(new InputStreamReader(v_ErrInput ,i_CharEncoding));
                 
                 // 标准输出流与错误输出流均要处理，这里通过异步处理错误输出流，保证输出缓冲区不会被堵住。Add 2018-12-22
-                new Thread(new Runnable() 
+                new Thread(new Runnable()
                 {
-                    public void run() 
+                    @Override
+                    public void run()
                     {
-                        try 
+                        try
                         {
                             while ( v_ErrReader.read() != -1 )
                             {
                                 // Nothing.
                             }
-                        } 
-                        catch (Exception e) 
+                        }
+                        catch (Exception e)
                         {
                             // Nothing.
                         }
@@ -8129,7 +8187,7 @@ public class Help
                 v_Reader = new BufferedReader(new InputStreamReader(v_Input ,i_CharEncoding));
                 
                 String v_RetLine = null;
-                while ((v_RetLine = v_Reader.readLine()) != null) 
+                while ((v_RetLine = v_Reader.readLine()) != null)
                 {
                     v_Ret.add(v_RetLine);
                 }
@@ -8139,8 +8197,8 @@ public class Help
             {
                 v_Process.waitFor();
             }
-        } 
-        catch (Exception exce) 
+        }
+        catch (Exception exce)
         {
             exce.printStackTrace();
         }
