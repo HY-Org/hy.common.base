@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -51,12 +52,13 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.13 2018-12-21   1.添加 trimToDistinct()去掉某些连续重复出现的字符。如“A...B..C”，去掉重复连续的.点，就变成：“A.B.C”
  *              v1.14 2018-12-27   1.添加 replaceLast(...) 系列方法
  *              v1.15 2019-03-13   1.添加 parsePlaceholdersSequence() 占位符命名是否要求严格的规则
- *              v1.16 2019-08-27   1.添加 扩展 getComputeUnit() 方法，带小数精度。 
+ *              v1.16 2019-08-27   1.添加 扩展 getComputeUnit() 方法，带小数精度。
  *              v1.17 2020-06-08   1.修改 解释占位符的系列方法parsePlaceholders()的返回结构改成PartitionMap
- *              
+ *              v1.18 2021-09-27   1.添加 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+ * 
  * @createDate  2009-08-21
  */
-public final class StringHelp 
+public final class StringHelp
 {
     /** MD5加密(V2版)的加密类型：全数字形式 */
     public  static final int       $MD5_Type_Num  = 1;
@@ -65,7 +67,7 @@ public final class StringHelp
     public  static final int       $MD5_Type_Hex  = 2;
     
     /** 字符集编码类型 */
-    public  static       String [] $CharEncodings = {"UTF-8" ,"ISO-8859-1" ,"ASCII" ,"UNICODE" ,"GBK" ,"GB2312" ,"GB18030"}; 
+    public  static       String [] $CharEncodings = {"UTF-8" ,"ISO-8859-1" ,"ASCII" ,"UNICODE" ,"GBK" ,"GB2312" ,"GB18030"};
     
     
     
@@ -120,7 +122,7 @@ public final class StringHelp
 	/**
 	 * 私有构造器
 	 */
-	private StringHelp() 
+	private StringHelp()
     {
     }
 	
@@ -215,13 +217,13 @@ public final class StringHelp
 	/**
 	 * 将字符串中的多个连续出现的空白字符删除，只保留一个。
 	 * 如 "a   b           c d" 会被处理为 "a b c d"
-	 *  
+	 * 
 	 * @param i_Str
 	 * @return
 	 */
-	public static String removeSpaces(String i_Str) 
+	public static String removeSpaces(String i_Str)
 	{
-        if ( Help.isNull(i_Str) ) 
+        if ( Help.isNull(i_Str) )
         {
             return i_Str;
         }
@@ -296,23 +298,23 @@ public final class StringHelp
     		return null;
     	}
     	
-    	try 
+    	try
     	{
-    		while (source.indexOf(split + split) > -1) 
-    		{ 
+    		while (source.indexOf(split + split) > -1)
+    		{
     			// 去掉连续的分隔符
-    			source = source.substring(0, source.indexOf(split + split)) 
+    			source = source.substring(0, source.indexOf(split + split))
     			       + source.substring(source.indexOf(split + split) + 1);
     		}
     		
-    		if ( source.substring(0, 1).equals(split) ) 
-    		{ 
+    		if ( source.substring(0, 1).equals(split) )
+    		{
     			// 去掉第一个分隔符
     			source = source.substring(1);
     		}
     		
-    		if ( source.substring(source.length() - 1).equals(split) ) 
-    		{ 
+    		if ( source.substring(source.length() - 1).equals(split) )
+    		{
     			//去掉最后一个分隔符
     			source = source.substring(0, source.length() - 1);
     		}
@@ -344,8 +346,8 @@ public final class StringHelp
     	
     	try
     	{
-    		while (source.indexOf(split + split) > -1) 
-    		{ 
+    		while (source.indexOf(split + split) > -1)
+    		{
     			// 去掉连续的分隔符
     			source = source.substring(0, source.indexOf(split + split)) +
     			source.substring(source.indexOf(split + split) + 1);
@@ -363,7 +365,7 @@ public final class StringHelp
     
     /**
      *  把以split分隔的字符串分组放入list中，source经过处理
-     *  
+     * 
      * @param source
      * @param split
      * @return
@@ -389,7 +391,7 @@ public final class StringHelp
     		int L1 = source.indexOf(split);
     		String s1 = source.substring(0,L1);
     		if(!"".equals(s1))
-    		{ 
+    		{
     			//字符不包括空格
     			list.add(s1);
     		}
@@ -432,7 +434,7 @@ public final class StringHelp
 		    int L1 = source.indexOf(split);
 		    String s1 = source.substring(0,L1);
 		    if(!"".equals(s1))
-		    { 
+		    {
 		    	//字符不包括空格
 		    	list.add(s1);
 		    }
@@ -444,12 +446,12 @@ public final class StringHelp
 		    source = source.substring(L1 + 1);
 		    if(source.indexOf(split) == -1)
 		    {
-		    	if (!"".equals(source.trim())) 
-		    	{ 
+		    	if (!"".equals(source.trim()))
+		    	{
 		    		//字符不包括空格
 		    		list.add(source.trim()); // 加入最后一个
-		    	} 
-		    	else 
+		    	}
+		    	else
 		    	{
 		    		list.add(" ");
 		    	}
@@ -560,7 +562,7 @@ public final class StringHelp
      * @createDate  2015-12-17
      * @version     v1.0
      *
-     * @param i_Info        
+     * @param i_Info
      * @param i_Replaces    有替换先后顺序的替换字符串
      * @param i_ReplaceBys  有替换先后顺序的被替换字符串
      *                      当i_ReplaceBys.length小于i_Replaces.length时，i_Replaces大于i_ReplaceBys的部分，
@@ -612,16 +614,16 @@ public final class StringHelp
 	 * @version     v1.0
 	 *              v2.0  修正：当 i_ReplaceBy = ""，并且在第0个位置只查找到一个要替换的东东时，会出现无法替换的问题。
 	 *
-	 * @param i_Info       
-	 * @param i_Replace    
-	 * @param i_ReplaceBy  
+	 * @param i_Info
+	 * @param i_Replace
+	 * @param i_ReplaceBy
 	 * @return
 	 */
 	public final static String replaceAll(final String i_Info ,final String i_Replace ,final String i_ReplaceBy)
 	{
-	    if ( null == i_Info 
-	      || null == i_Replace 
-	      || null == i_ReplaceBy 
+	    if ( null == i_Info
+	      || null == i_Replace
+	      || null == i_ReplaceBy
 	      || 0    >= i_Info.length()
 	      || 0    >= i_Replace.length() )
 	    {
@@ -754,7 +756,7 @@ public final class StringHelp
      * @createDate  2018-04-13
      * @version     v1.0
      *
-     * @param i_Info        
+     * @param i_Info
      * @param i_Replaces    有替换先后顺序的替换字符串
      * @param i_ReplaceBys  有替换先后顺序的被替换字符串
      *                      当i_ReplaceBys.length小于i_Replaces.length时，i_Replaces大于i_ReplaceBys的部分，
@@ -805,16 +807,16 @@ public final class StringHelp
      * @createDate  2018-04-13
      * @version     v1.0
      *
-     * @param i_Info       
-     * @param i_Replace    
-     * @param i_ReplaceBy  
+     * @param i_Info
+     * @param i_Replace
+     * @param i_ReplaceBy
      * @return
      */
     public final static String replaceFirst(final String i_Info ,final String i_Replace ,final String i_ReplaceBy)
     {
-        if ( null == i_Info 
-          || null == i_Replace 
-          || null == i_ReplaceBy 
+        if ( null == i_Info
+          || null == i_Replace
+          || null == i_ReplaceBy
           || 0    >= i_Info.length()
           || 0    >= i_Replace.length() )
         {
@@ -938,7 +940,7 @@ public final class StringHelp
      * @createDate  2018-12-27
      * @version     v1.0
      *
-     * @param i_Info        
+     * @param i_Info
      * @param i_Replaces    有替换先后顺序的替换字符串
      * @param i_ReplaceBys  有替换先后顺序的被替换字符串
      *                      当i_ReplaceBys.length小于i_Replaces.length时，i_Replaces大于i_ReplaceBys的部分，
@@ -989,16 +991,16 @@ public final class StringHelp
      * @createDate  2018-12-27
      * @version     v1.0
      *
-     * @param i_Info       
-     * @param i_Replace    
-     * @param i_ReplaceBy  
+     * @param i_Info
+     * @param i_Replace
+     * @param i_ReplaceBy
      * @return
      */
     public final static String replaceLast(final String i_Info ,final String i_Replace ,final String i_ReplaceBy)
     {
-        if ( null == i_Info 
-          || null == i_Replace 
-          || null == i_ReplaceBy 
+        if ( null == i_Info
+          || null == i_Replace
+          || null == i_ReplaceBy
           || 0    >= i_Info.length()
           || 0    >= i_Replace.length() )
         {
@@ -1041,7 +1043,7 @@ public final class StringHelp
 		try
 		{
 		    return new String(str.getBytes(),"GBK");
-		} 
+		}
 		catch(Exception ex)
 		{
 		    return str;
@@ -1161,7 +1163,7 @@ public final class StringHelp
             }
         }
         
-        return v_Buffer.toString();  
+        return v_Buffer.toString();
     }
     
     
@@ -1258,7 +1260,7 @@ public final class StringHelp
             }
         }
         
-        return v_Buffer.toString();  
+        return v_Buffer.toString();
     }
     
     
@@ -1286,8 +1288,8 @@ public final class StringHelp
      * @param i_String
      * @return
      */
-    public final static String escape(String i_String) 
-    {  
+    public final static String escape(String i_String)
+    {
         return escape(i_String ,"");
     }
     
@@ -1304,8 +1306,8 @@ public final class StringHelp
 	 * @param i_NotInStrings   排除这些字符不转义
      * @return
      */
-    public final static String escape(String i_String ,String i_NotInStrings) 
-    {  
+    public final static String escape(String i_String ,String i_NotInStrings)
+    {
         StringBuilder v_Buffer = new StringBuilder();
         v_Buffer.ensureCapacity(i_String.length() * 6);
         
@@ -1337,7 +1339,7 @@ public final class StringHelp
             }
         }
         
-        return v_Buffer.toString();  
+        return v_Buffer.toString();
     }
  
     
@@ -1350,8 +1352,8 @@ public final class StringHelp
      * @param i_String
      * @return
      */
-    public static String unescape(String i_String) 
-    {  
+    public static String unescape(String i_String)
+    {
         StringBuilder v_Buffer  = new StringBuilder();
         int           v_LastPos = 0;
         int           v_Pos     = 0;
@@ -1398,7 +1400,7 @@ public final class StringHelp
             }
         }
         
-        return v_Buffer.toString();  
+        return v_Buffer.toString();
     }
     
     
@@ -1426,7 +1428,7 @@ public final class StringHelp
         do
         {
             v_Ret = StringHelp.replaceAll(v_Ret ,v_DoubleInfo ,i_DoubleText);
-        } 
+        }
         while ( v_Ret.indexOf(v_DoubleInfo) >= 0 );
         
         return v_Ret;
@@ -1474,7 +1476,7 @@ public final class StringHelp
      */
     public static String trim(String i_Text ,String ... i_TrimKeys)
     {
-        String v_Ret = i_Text; 
+        String v_Ret = i_Text;
         
         for (String v_TrimKey : i_TrimKeys)
         {
@@ -1507,7 +1509,7 @@ public final class StringHelp
      * @param i_Text
      * @return
      */
-    public static String toNumberString(String i_Number) 
+    public static String toNumberString(String i_Number)
     {
         if ( Help.isNull(i_Number) )
         {
@@ -1541,7 +1543,7 @@ public final class StringHelp
      *   如允许长度为6时，1.2345678    将显示为 1.23457；
      *   如允许长度为6时，1234.5678    将显示为 1234.57；
      *   如允许长度为6时，0.000001     将显示为 1.000E-6；
-     *   
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2018-10-16
      * @version     v1.0
@@ -1564,7 +1566,7 @@ public final class StringHelp
      *   如允许长度为6时，1.2345678    将显示为 1.23457；
      *   如允许长度为6时，1234.5678    将显示为 1234.57；
      *   如允许长度为6时，0.000001     将显示为 1.000E-6；
-     *   
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2018-10-17
      * @version     v1.0
@@ -1642,7 +1644,7 @@ public final class StringHelp
     {
         if ( !Help.isNumber(i_Num) )
         {
-            return ""; 
+            return "";
         }
         
         BigDecimal v_Num = new BigDecimal(i_Num);
@@ -1799,7 +1801,7 @@ public final class StringHelp
      * 截取全路径中的文件名称
      * 
      * @param i_FileName   全路径 + 文件名称
-     * @return 
+     * @return
      */
     public final static String getFileName(String i_FileName)
     {
@@ -1823,7 +1825,7 @@ public final class StringHelp
      * 截取全路径中的文件短名称
      * 
      * @param i_FileName   全路径 + 文件名称
-     * @return 
+     * @return
      */
     public final static String getFileShortName(String i_FileName)
     {
@@ -2028,7 +2030,7 @@ public final class StringHelp
      * @return
      */
     public final static String pad(long i_Long ,int i_TotalLength ,String i_PadStr ,int i_Way)
-    {	 
+    {
     	return pad(String.valueOf(i_Long) ,i_TotalLength ,i_PadStr ,i_Way);
     }
     
@@ -2043,7 +2045,7 @@ public final class StringHelp
      * @return
      */
     public final static String pad(double i_Double ,int i_TotalLength ,String i_PadStr ,int i_Way)
-    {    
+    {
         return pad(String.valueOf(i_Double) ,i_TotalLength ,i_PadStr ,i_Way);
     }
     
@@ -2058,7 +2060,7 @@ public final class StringHelp
      * @return
      */
     public final static String pad(int i_Int ,int i_TotalLength ,String i_PadStr ,int i_Way)
-    {	 
+    {
     	return pad(String.valueOf(i_Int) ,i_TotalLength ,i_PadStr ,i_Way);
     }
     
@@ -2073,7 +2075,7 @@ public final class StringHelp
      * @return
      */
     public final static String pad(Object i_Obj ,int i_TotalLength ,String i_PadStr ,int i_Way)
-    {	 
+    {
     	return pad(i_Obj.toString() ,i_TotalLength ,i_PadStr ,i_Way);
     }
     
@@ -2345,18 +2347,18 @@ public final class StringHelp
      * @param from
      * @return
      */
-    public final static String BASE64Encoder(byte [] from) 
+    public final static String BASE64Encoder(byte [] from)
     {
         StringBuilder to = new StringBuilder((int) (from.length * 1.34) + 3);
         int num = 0;
         char currentByte = 0;
         
-        for (int i = 0; i < from.length; i++) 
+        for (int i = 0; i < from.length; i++)
         {
             num = num % 8;
-            while (num < 8) 
+            while (num < 8)
             {
-                switch (num) 
+                switch (num)
                 {
                     case 0:
                         currentByte = (char) (from[i] & lead6byte);
@@ -2368,7 +2370,7 @@ public final class StringHelp
                     case 4:
                         currentByte = (char) (from[i] & last4byte);
                         currentByte = (char) (currentByte << 2);
-                        if ((i + 1) < from.length) 
+                        if ((i + 1) < from.length)
                         {
                             currentByte |= (from[i + 1] & lead2byte) >>> 6;
                         }
@@ -2376,7 +2378,7 @@ public final class StringHelp
                     case 6:
                         currentByte = (char) (from[i] & last2byte);
                         currentByte = (char) (currentByte << 4);
-                        if ((i + 1) < from.length) 
+                        if ((i + 1) < from.length)
                         {
                             currentByte |= (from[i + 1] & lead4byte) >>> 4;
                         }
@@ -2388,9 +2390,9 @@ public final class StringHelp
             }
         }
         
-        if (to.length() % 4 != 0) 
+        if (to.length() % 4 != 0)
         {
-            for (int i = 4 - to.length() % 4; i > 0; i--) 
+            for (int i = 4 - to.length() % 4; i > 0; i--)
             {
                 to.append("_");
             }
@@ -2453,9 +2455,9 @@ public final class StringHelp
      * 主用于MD5加密(V2版)
      * 
      * @param i_Bytes
-     * @return 
+     * @return
      */
-    private final static String bytesToString(byte[] i_Bytes ,int i_Type) 
+    private final static String bytesToString(byte[] i_Bytes ,int i_Type)
     {
         StringBuilder v_Buffer = new StringBuilder();
         if ( i_Type == 1 )
@@ -2485,10 +2487,10 @@ public final class StringHelp
      * @param i_Byte
      * @return
      */
-    private static String byteToNum(byte i_Byte) 
+    private static String byteToNum(byte i_Byte)
     {
         int v_ByteInt = i_Byte;
-        if ( v_ByteInt < 0 ) 
+        if ( v_ByteInt < 0 )
         {
             v_ByteInt += 256;
         }
@@ -2506,10 +2508,10 @@ public final class StringHelp
      * @param i_Byte
      * @return
      */
-    private static String byteToHex(byte i_Byte) 
+    private static String byteToHex(byte i_Byte)
     {
         int v_ByteInt = i_Byte;
-        if ( v_ByteInt < 0 ) 
+        if ( v_ByteInt < 0 )
         {
             v_ByteInt += 256;
         }
@@ -2631,15 +2633,15 @@ public final class StringHelp
     	
     	
         // 使用Pattern建立匹配模式
-    	Pattern v_Pattern = Pattern.compile(i_FindStr);  
+    	Pattern v_Pattern = Pattern.compile(i_FindStr);
         // 使用Matcher进行各种查找替换操作
 		Matcher v_Matcher = v_Pattern.matcher(i_Text);
 		
-		int v_Count = 0;  
+		int v_Count = 0;
 		
 		while( v_Matcher.find() )
-		{  
-			v_Count++;  
+		{
+			v_Count++;
 		}
 		
 		return v_Count;
@@ -2687,16 +2689,16 @@ public final class StringHelp
     	}
     	
     	
-        // 使用Pattern建立匹配模式 
-    	Pattern v_Pattern = Pattern.compile(v_Buffer.toString());  
+        // 使用Pattern建立匹配模式
+    	Pattern v_Pattern = Pattern.compile(v_Buffer.toString());
         // 使用Matcher进行各种查找替换操作
 		Matcher v_Matcher = v_Pattern.matcher(i_Text);
 		
-		int v_Count = 0;  
+		int v_Count = 0;
 		
 		while( v_Matcher.find() )
-		{  
-			v_Count++;  
+		{
+			v_Count++;
 		}
 		
 		return v_Count;
@@ -2750,14 +2752,14 @@ public final class StringHelp
         }
         
         // 使用Pattern建立匹配模式
-        Pattern v_Pattern = Pattern.compile(i_FindStr);  
+        Pattern v_Pattern = Pattern.compile(i_FindStr);
         // 使用Matcher进行各种查找替换操作
         Matcher v_Matcher = v_Pattern.matcher(i_String);
         
         List<String> v_Ret = new ArrayList<String>();
         
         while( v_Matcher.find() )
-        {  
+        {
             v_Ret.add(i_String.substring(v_Matcher.start() ,v_Matcher.end()));
         }
         
@@ -2806,7 +2808,7 @@ public final class StringHelp
         
         
         while( v_Matcher.find() )
-        {  
+        {
             return i_String.substring(v_Matcher.start() + i_BeginStr.length() ,v_Matcher.end() - i_EndStr.length());
         }
         
@@ -2839,14 +2841,14 @@ public final class StringHelp
         }
         
         
-        // 使用Pattern建立匹配模式 
-        Pattern v_Pattern = Pattern.compile($XMLSign.replaceAll("XMLSignName" ,toPatternUL(i_XMLSignName))); 
+        // 使用Pattern建立匹配模式
+        Pattern v_Pattern = Pattern.compile($XMLSign.replaceAll("XMLSignName" ,toPatternUL(i_XMLSignName)));
         // 使用Matcher进行各种查找替换操作
         Matcher v_Matcher = v_Pattern.matcher(i_XML);
         
         
         while( v_Matcher.find() )
-        {  
+        {
             return i_XML.substring(v_Matcher.start() ,v_Matcher.end());
         }
         
@@ -2877,7 +2879,7 @@ public final class StringHelp
      * 判断是否只由英文、数字(0~9)和下划线组成
      * 
      * @param i_Str   为空时返回真
-     * @return      
+     * @return
      */
     public final static boolean isABC(String i_Str)
     {
@@ -2908,7 +2910,7 @@ public final class StringHelp
             
             Double.parseDouble(i_Str);
             return true;
-        } 
+        }
         catch(Exception e)
         {
             return false;
@@ -2921,7 +2923,7 @@ public final class StringHelp
      * 判断是否只由英文、数字(0~9)和下划线组成
      * 
      * @param i_Str   为空时返回真
-     * @return      
+     * @return
      */
     public final static boolean isABCNumber(String i_Str)
     {
@@ -2945,11 +2947,11 @@ public final class StringHelp
     {
         Character.UnicodeBlock v_UB = Character.UnicodeBlock.of(i_Char);
         
-        if ( v_UB == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS 
-          || v_UB == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS 
-          || v_UB == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A 
-          || v_UB == Character.UnicodeBlock.GENERAL_PUNCTUATION 
-          || v_UB == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION 
+        if ( v_UB == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+          || v_UB == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+          || v_UB == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+          || v_UB == Character.UnicodeBlock.GENERAL_PUNCTUATION
+          || v_UB == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
           || v_UB == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS )
         {
             return true;
@@ -3376,7 +3378,7 @@ public final class StringHelp
      * 
      * 数学 "异或" 算法为：同为0，异为1
      *    0⊕0=0，1⊕0=1，0⊕1=1，1⊕1=0
-     *    
+     * 
      * 两个字符间的 "异或" 算法为：
      *    相同字符⊕相同字符=字符，字符A⊕字符B=空格，字符⊕空格=字符，空格⊕字符=字符，空格⊕空格=空格
      * 
@@ -3387,7 +3389,7 @@ public final class StringHelp
     public final static String xor(final String i_TopString ,final String i_ButtomString)
     {
         StringBuilder v_Buffer = new StringBuilder();
-        int           v_Diff   = i_ButtomString.length() - i_TopString.length(); 
+        int           v_Diff   = i_ButtomString.length() - i_TopString.length();
         
         for (int i=0; i<i_TopString.length(); i++)
         {
@@ -3465,7 +3467,7 @@ public final class StringHelp
      * 
      * @author      ZhengWei(HY)
      * @createDate  2012-10-30
-     * @version     v1.0  
+     * @version     v1.0
      *              v2.0  2014-07-30
      *              v3.0  2015-12-10  支持 :A.B.C 的解释（对点.的解释）。
      *              v4.0  2018-05-16  添加：支持中文占位符
@@ -3492,7 +3494,7 @@ public final class StringHelp
      * 
      * @author      ZhengWei(HY)
      * @createDate  2012-10-30
-     * @version     v1.0  
+     * @version     v1.0
      *              v2.0  2014-07-30
      *              v3.0  2015-12-10  支持 :A.B.C 的解释（对点.的解释）。
      *              v4.0  2018-05-16  添加：支持中文占位符
@@ -3519,7 +3521,7 @@ public final class StringHelp
             if ( i_StrictRules )
             {
                 // 严格规则：占位符的命名，不能是小于等于2位的纯数字
-                //            防止将类似于时间格式 00:00:00 的字符解释为占位符 
+                //            防止将类似于时间格式 00:00:00 的字符解释为占位符
                 if ( v_PlaceHolder.length() <= 2 )
                 {
                     if ( Help.isNumber(v_PlaceHolder) )
@@ -3548,7 +3550,7 @@ public final class StringHelp
      * 
      * @author      ZhengWei(HY)
      * @createDate  2014-10-08
-     * @version     v1.0  
+     * @version     v1.0
      *
      * @param i_Placeholders
      * @return
@@ -3571,7 +3573,7 @@ public final class StringHelp
      * 
      * @author      ZhengWei(HY)
      * @createDate  2014-10-08
-     * @version     v1.0  
+     * @version     v1.0
      *              v2.0  2019-03-15  添加：占位符命名是否要求严格的规则
      *
      * @param i_Placeholders
@@ -4213,7 +4215,7 @@ public final class StringHelp
         /*
         for (SplitSegment v_SplitSegment : v_Ret)
         {
-            System.out.println(StringHelp.lpad(v_SplitSegment.getBeginIndex() ,3 ," ") + " - " 
+            System.out.println(StringHelp.lpad(v_SplitSegment.getBeginIndex() ,3 ," ") + " - "
                              + StringHelp.lpad(v_SplitSegment.getEndIndex()   ,3 ," ") + " "
                              + v_SplitSegment.getInfoType()
                              + "  Match  [" + v_SplitSegment.getInfo() + "]");
@@ -4226,9 +4228,400 @@ public final class StringHelp
     
     
     /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(String i_Data)
+    {
+        return i_Data;
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(Integer i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(int i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(Double i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(double i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(Float i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(float i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(Boolean i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(boolean i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(Long i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(long i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(Date i_Data)
+    {
+        return String.valueOf(i_Data.getTime());
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(java.util.Date i_Data)
+    {
+        return String.valueOf(i_Data.getTime());
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(Timestamp i_Data)
+    {
+        return String.valueOf(i_Data.getTime());
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(BigDecimal i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(Short i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(short i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(Byte i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(byte i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(Character i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(char i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(Class<?> i_Data)
+    {
+        return i_Data == null ? "" : i_Data.getName();
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
+    public final static String toString(Object i_Data)
+    {
+        return String.valueOf(i_Data);
+    }
+    
+    
+    
+    /**
      * 将集合转换为字符串。转换后的字符串有一种形式（自动判断形式）（按逗号分隔）
      *   形式2：1   ,2   ,3
-     *   
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2016-02-22
      * @version     v1.0
@@ -4246,7 +4639,7 @@ public final class StringHelp
     /**
      * 将集合转换为字符串。转换后的字符串有一种形式（自动判断形式）（按逗号分隔）
      *   形式2：1   ,2   ,3
-     *   
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2016-02-22
      * @version     v1.0
@@ -4264,7 +4657,7 @@ public final class StringHelp
     /**
      * 将集合转换为字符串。转换后的字符串有一种形式（自动判断形式）（按逗号分隔）
      *   形式2：1   ,2   ,3
-     *   
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2016-02-22
      * @version     v1.0
@@ -4282,7 +4675,7 @@ public final class StringHelp
     /**
      * 将集合转换为字符串。转换后的字符串有一种形式（自动判断形式）（按逗号分隔）
      *   形式2：1   ,2   ,3
-     *   
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2016-02-22
      * @version     v1.0
@@ -4300,7 +4693,7 @@ public final class StringHelp
     /**
      * 将集合转换为字符串。转换后的字符串有一种形式（自动判断形式）（按逗号分隔）
      *   形式2：1   ,2   ,3
-     *   
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2016-02-22
      * @version     v1.0
@@ -4318,7 +4711,7 @@ public final class StringHelp
     /**
      * 将集合转换为字符串。转换后的字符串有一种形式（自动判断形式）（按逗号分隔）
      *   形式2：1   ,2   ,3
-     *   
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2016-02-22
      * @version     v1.0
@@ -4336,7 +4729,7 @@ public final class StringHelp
     /**
      * 将集合转换为字符串。转换后的字符串有一种形式（自动判断形式）（按逗号分隔）
      *   形式2：1   ,2   ,3
-     *   
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2016-02-22
      * @version     v1.0
@@ -4495,7 +4888,7 @@ public final class StringHelp
      * 将集合转换为字符串。转换后的字符串有两种形式（自动判断形式）（按逗号分隔）
      *   形式1：'A' ,'B' ,'C'
      *   形式2：1   ,2   ,3
-     *   
+     * 
      * 自动判断形式
      *   1. 元素类型为字符串的，生成形式1，按单引号括起来
      *   2. 元素类型为数字类的，生成形式2
@@ -4601,7 +4994,7 @@ public final class StringHelp
      * 将集合转换为字符串。转换后的字符串有两种形式（自动判断形式）（按逗号分隔）
      *   形式1：'A' ,'B' ,'C'
      *   形式2：1   ,2   ,3
-     *   
+     * 
      * 自动判断形式
      *   1. 元素类型为字符串的，生成形式1，按单引号括起来
      *   2. 元素类型为数字类的，生成形式2
@@ -4707,7 +5100,7 @@ public final class StringHelp
      * 将集合转换为字符串。转换后的字符串有两种形式（自动判断形式）（按逗号分隔）
      *   形式1：'A' ,'B' ,'C'
      *   形式2：1   ,2   ,3
-     *   
+     * 
      * 自动判断形式
      *   1. 元素类型为字符串的，生成形式1，按单引号括起来
      *   2. 元素类型为数字类的，生成形式2
@@ -4815,7 +5208,7 @@ public final class StringHelp
      * 将集合转换为字符串。转换后的字符串有两种形式（自动判断形式）（按逗号分隔）
      *   形式1：'A' ,'B' ,'C'
      *   形式2：1   ,2   ,3
-     *   
+     * 
      * 自动判断形式
      *   1. 元素类型为字符串的，生成形式1，按单引号括起来
      *   2. 元素类型为数字类的，生成形式2
@@ -4923,7 +5316,7 @@ public final class StringHelp
      * 将Map.value集合转换为字符串。转换后的字符串有两种形式（自动判断形式）（按逗号分隔）
      *   形式1：'A' ,'B' ,'C'
      *   形式2：1   ,2   ,3
-     *   
+     * 
      * 自动判断形式
      *   1. 元素类型为字符串的，生成形式1，按单引号括起来
      *   2. 元素类型为数字类的，生成形式2
@@ -5031,7 +5424,7 @@ public final class StringHelp
      * 将Map.key集合转换为字符串。转换后的字符串有两种形式（自动判断形式）（按逗号分隔）
      *   形式1：'A' ,'B' ,'C'
      *   形式2：1   ,2   ,3
-     *   
+     * 
      * 自动判断形式
      *   1. 元素类型为字符串的，生成形式1，按单引号括起来
      *   2. 元素类型为数字类的，生成形式2

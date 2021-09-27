@@ -88,6 +88,7 @@ import org.hy.common.comparate.SerializableComparator;
  *                           2. 添加：支持 PartitionMap 结构的排序
  *               2020-06-10  1. 添加：数组填充方法 fillArray
  *               2020-07-21  1. 修复：数组填充方法Debug  发现人：马龙
+ *               2021-09-27  1. 添加：是否为编程语言的基本数据类型
  */
 public class Help
 {
@@ -7251,6 +7252,122 @@ public class Help
         v_SortDatas = null;
         
         return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 是否为编程语言的基本数据类型
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Class
+     * @return
+     */
+    public static boolean isBasicDataType(Class<?> i_Class)
+    {
+        if ( i_Class == null )
+        {
+            return false;
+        }
+        else if ( String.class == i_Class )
+        {
+            return true;
+        }
+        else if ( i_Class == Integer.class )
+        {
+            return true;
+        }
+        else if ( i_Class == int.class )
+        {
+            return true;
+        }
+        else if ( i_Class == Double.class )
+        {
+            return true;
+        }
+        else if ( i_Class == double.class )
+        {
+            return true;
+        }
+        else if ( i_Class == Float.class )
+        {
+            return true;
+        }
+        else if ( i_Class == float.class )
+        {
+            return true;
+        }
+        else if ( i_Class == Boolean.class )
+        {
+            return true;
+        }
+        else if ( i_Class == boolean.class )
+        {
+            return true;
+        }
+        else if ( i_Class == Long.class )
+        {
+            return true;
+        }
+        else if ( i_Class == long.class )
+        {
+            return true;
+        }
+        else if ( i_Class == Date.class )
+        {
+            return true;
+        }
+        else if ( i_Class == java.util.Date.class )
+        {
+            return true;
+        }
+        else if ( i_Class == Timestamp.class )
+        {
+            return true;
+        }
+        else if ( i_Class == BigDecimal.class )
+        {
+            return true;
+        }
+        else if ( MethodReflect.isExtendImplement(i_Class ,Enum.class) )
+        {
+            return true;
+        }
+        else if ( i_Class == Short.class )
+        {
+            return true;
+        }
+        else if ( i_Class == short.class )
+        {
+            return true;
+        }
+        else if ( i_Class == Byte.class )
+        {
+            return true;
+        }
+        else if ( i_Class == byte.class )
+        {
+            return true;
+        }
+        else if ( i_Class == Character.class )
+        {
+            return true;
+        }
+        else if ( i_Class == char.class )
+        {
+            return true;
+        }
+        else if ( i_Class == Class.class )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
     
