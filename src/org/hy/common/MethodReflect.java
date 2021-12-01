@@ -109,17 +109,17 @@ public class MethodReflect implements Serializable
     
     
     
-    /** 
+    /**
      * i_MethodURL整体是否为规范的setter或getter方法
      * 
-     * 即，当 isNorm = true  时，i_MethodURL = xxx.yyy.www 
+     * 即，当 isNorm = true  时，i_MethodURL = xxx.yyy.www
      * 相等于 isNorm = false 时，i_MethodURL = getXxx.getYyy.setWww
      **/
     private boolean                isNorm;
     
-    /** 
+    /**
      *  规范的类型
-     *  
+     * 
      *  1. normType =  1 为 setter 方法，如：getXxx.getYyy.setWww
      *  2. normType = -1 为 getter 方法，如：getXxx.getYyy.getWww
      **/
@@ -131,8 +131,8 @@ public class MethodReflect implements Serializable
     /** 方法全路径的Mehod返回对象实例的集合。第一元素为构造器的第一个参数值 */
     private List<Object>           instances;
     
-    /** 
-     * 方法全路径的Mehod的集合 
+    /**
+     * 方法全路径的Mehod的集合
      * 外层List对应：方法全路径上.第几层次上方法
      * 内层List对应：具体层次上的多个相同重载的方法
      */
@@ -298,9 +298,9 @@ public class MethodReflect implements Serializable
         {
             return false;
         }
-        // 判定Boolean.class == boolean.class  ZhengWei(HY) Add 2018-05-04 
+        // 判定Boolean.class == boolean.class  ZhengWei(HY) Add 2018-05-04
         // 对于Number类型，不处理
-        else if ( i_ObjectClass.getName().startsWith("java.lang") ) 
+        else if ( i_ObjectClass.getName().startsWith("java.lang") )
         {
             String v_LangName1 = i_ObjectClass   .getSimpleName().toLowerCase();
             String v_LangName2 = i_InterfaceClass.getSimpleName().toLowerCase();
@@ -316,7 +316,7 @@ public class MethodReflect implements Serializable
         }
         // 判定boolean.class == Boolean.class  ZhengWei(HY) Add 2018-05-04
         // 对于Number类型，不处理
-        else if ( i_InterfaceClass.getName().startsWith("java.lang") ) 
+        else if ( i_InterfaceClass.getName().startsWith("java.lang") )
         {
             String v_LangName1 = i_InterfaceClass.getSimpleName().toLowerCase();
             String v_LangName2 = i_ObjectClass   .getSimpleName().toLowerCase();
@@ -1159,7 +1159,7 @@ public class MethodReflect implements Serializable
      * 只获取"本类自己"的方法
      * 
      * @param i_Class
-     * @param i_MethodPrefixName  参数名称前缀 
+     * @param i_MethodPrefixName  参数名称前缀
      * @param i_ParamSize         参数个数
      * @return
      */
@@ -1195,7 +1195,7 @@ public class MethodReflect implements Serializable
      * 只获取"本类自己"的方法
      * 
      * @param i_Class
-     * @param i_MethodPrefixName  参数名称前缀 
+     * @param i_MethodPrefixName  参数名称前缀
      * @param i_ParamSize         参数个数
      * @return
      */
@@ -1300,7 +1300,7 @@ public class MethodReflect implements Serializable
             Method v_Method = v_Methods[i];
             
             if ( v_Method.getParameterTypes().length == i_ParamSize )
-            {   
+            {
                 if ( Modifier.isPublic(v_Method.getModifiers()) )
                 {
                     v_Ret.add(v_Methods[i]);
@@ -1470,7 +1470,7 @@ public class MethodReflect implements Serializable
                     Method v_Method = v_Methods[i];
                     
                     if ( v_Method.getParameterTypes().length == i_ParamSize )
-                    {   
+                    {
                         if ( Modifier.isPublic(v_Method.getModifiers()) )
                         {
                             if ( v_Method.isAnnotationPresent(i_AnnotationClass) )
@@ -1644,7 +1644,7 @@ public class MethodReflect implements Serializable
      * @createDate  2017-01-16
      * @version     v1.0
      *
-     * @param i_Instance      实例对象 
+     * @param i_Instance      实例对象
      * @param i_MethodName    方法名称（区分大小写）
      * @param i_MethodParams  方法的入参
      * @return
@@ -1668,7 +1668,7 @@ public class MethodReflect implements Serializable
      * @version     v1.0
      *              v2.0  2021-04-09  修正：防止i_MethodParams的某个元素为NULL的情况。
      *
-     * @param i_Class         对象类型 
+     * @param i_Class         对象类型
      * @param i_MethodName    方法名称（不区分大小写）
      * @param i_MethodParams  方法的入参
      * @return
@@ -1697,30 +1697,30 @@ public class MethodReflect implements Serializable
                         {
                             continue;
                         }
-                        if ( i_MethodParams[v_PIndex].getClass() != v_Method.getParameterTypes()[v_PIndex] 
+                        if ( i_MethodParams[v_PIndex].getClass() != v_Method.getParameterTypes()[v_PIndex]
                           && !MethodReflect.isExtendImplement(i_MethodParams[v_PIndex] ,v_Method.getParameterTypes()[v_PIndex]) )
                         {
-                            if ( int    .class == v_Method.getParameterTypes()[v_PIndex] 
+                            if ( int    .class == v_Method.getParameterTypes()[v_PIndex]
                               && Integer.class == i_MethodParams[v_PIndex].getClass() )
                             {
                                 // Nothing.
                             }
-                            else if ( double.class == v_Method.getParameterTypes()[v_PIndex] 
+                            else if ( double.class == v_Method.getParameterTypes()[v_PIndex]
                                    && Double.class == i_MethodParams[v_PIndex].getClass() )
                             {
                                 // Nothing.
                             }
-                            else if ( float.class == v_Method.getParameterTypes()[v_PIndex] 
+                            else if ( float.class == v_Method.getParameterTypes()[v_PIndex]
                                    && Float.class == i_MethodParams[v_PIndex].getClass() )
                             {
                                 // Nothing.
                             }
-                            else if ( long.class == v_Method.getParameterTypes()[v_PIndex] 
+                            else if ( long.class == v_Method.getParameterTypes()[v_PIndex]
                                    && Long.class == i_MethodParams[v_PIndex].getClass() )
                             {
                                 // Nothing.
                             }
-                            else if ( boolean.class == v_Method.getParameterTypes()[v_PIndex] 
+                            else if ( boolean.class == v_Method.getParameterTypes()[v_PIndex]
                                    && Boolean.class == i_MethodParams[v_PIndex].getClass() )
                             {
                                 // Nothing.
@@ -1729,17 +1729,17 @@ public class MethodReflect implements Serializable
                             {
                                 // Nothing.
                             }
-                            else if ( short.class == v_Method.getParameterTypes()[v_PIndex] 
+                            else if ( short.class == v_Method.getParameterTypes()[v_PIndex]
                                    && Short.class == i_MethodParams[v_PIndex].getClass() )
                             {
                                 // Nothing.
                             }
-                            else if ( byte.class == v_Method.getParameterTypes()[v_PIndex] 
+                            else if ( byte.class == v_Method.getParameterTypes()[v_PIndex]
                                    && Byte.class == i_MethodParams[v_PIndex].getClass() )
                             {
                                 // Nothing.
                             }
-                            else if ( char     .class == v_Method.getParameterTypes()[v_PIndex] 
+                            else if ( char     .class == v_Method.getParameterTypes()[v_PIndex]
                                    && Character.class == i_MethodParams[v_PIndex].getClass() )
                             {
                                 // Nothing.
@@ -1875,7 +1875,7 @@ public class MethodReflect implements Serializable
                 Enum<?> [] v_EnumValues = StaticReflect.getEnums((Class<? extends Enum<?>>) v_ParamType);
                 String     v_Value      = i_Value.toString();
                 
-                // ZhengWei(HY) Add 2018-05-08  支持枚举toString()的匹配 
+                // ZhengWei(HY) Add 2018-05-08  支持枚举toString()的匹配
                 for (Enum<?> v_Enum : v_EnumValues)
                 {
                     if ( v_Value.equalsIgnoreCase(v_Enum.toString()) )
@@ -1885,7 +1885,7 @@ public class MethodReflect implements Serializable
                     }
                 }
                 
-                // ZhengWei(HY) Add 2017-10-31  支持枚举名称的匹配 
+                // ZhengWei(HY) Add 2017-10-31  支持枚举名称的匹配
                 for (Enum<?> v_Enum : v_EnumValues)
                 {
                     if ( v_Value.equalsIgnoreCase(v_Enum.name()) )
@@ -1895,7 +1895,7 @@ public class MethodReflect implements Serializable
                     }
                 }
                 
-                // 尝试用枚举值匹配 
+                // 尝试用枚举值匹配
                 if ( Help.isNumber(v_Value) )
                 {
                     int v_IntValue = Integer.parseInt(v_Value.trim());
@@ -1929,7 +1929,7 @@ public class MethodReflect implements Serializable
                 i_SetMethod.invoke(i_Instance ,(java.util.Date)null);
             }
         }
-        // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15 
+        // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15
         else if ( Timestamp.class == v_ParamType )
         {
             if ( i_Value != null && !Help.isNull(i_Value.toString()) )
@@ -2392,7 +2392,7 @@ public class MethodReflect implements Serializable
                         {
                             this.methods.add(MethodInfo.toMethods(v_Methods));
                             this.classes.add(v_GenericsReturn.getGenericType());
-                        }     
+                        }
                     }
                 }
             }
@@ -2423,7 +2423,7 @@ public class MethodReflect implements Serializable
                 else
                 {
                     Object   [] v_ParamObjs  = new Object[this.methodsParams.get(v_Index).size()];
-                    Class<?> [] v_ParamClass = v_Methods.get(0).getParameterTypes(); 
+                    Class<?> [] v_ParamClass = v_Methods.get(0).getParameterTypes();
                     for (int x=0; x<v_ParamClass.length; x++)
                     {
                         v_ParamObjs[x] = Help.toObject(v_ParamClass[x] ,this.methodsParams.get(v_Index).get(x));
@@ -2572,7 +2572,7 @@ public class MethodReflect implements Serializable
      *
      * @return
      */
-    public Class<?> getReturnType() 
+    public Class<?> getReturnType()
     {
         if ( this.normType == $NormType_Setter )
         {
@@ -2607,7 +2607,7 @@ public class MethodReflect implements Serializable
      *
      * @return
      */
-    public Method getReturnMethod() 
+    public Method getReturnMethod()
     {
         if ( this.normType == $NormType_Setter )
         {
@@ -2663,7 +2663,7 @@ public class MethodReflect implements Serializable
             else
             {
                 Object   [] v_ParamObjs  = new Object[this.methodsParams.get(v_Index).size()];
-                Class<?> [] v_ParamClass = v_Method.getParameterTypes(); 
+                Class<?> [] v_ParamClass = v_Method.getParameterTypes();
                 for (int x=0; x<v_ParamClass.length; x++)
                 {
                     v_ParamObjs[x] = Help.toObject(v_ParamClass[x] ,this.methodsParams.get(v_Index).get(x));
@@ -2711,7 +2711,7 @@ public class MethodReflect implements Serializable
                 else
                 {
                     Object   [] v_ParamObjs  = new Object[this.methodsParams.get(v_Index).size()];
-                    Class<?> [] v_ParamClass = v_Method.getParameterTypes(); 
+                    Class<?> [] v_ParamClass = v_Method.getParameterTypes();
                     for (int x=0; x<v_ParamClass.length; x++)
                     {
                         v_ParamObjs[x] = Help.toObject(v_ParamClass[x] ,this.methodsParams.get(v_Index).get(x));
@@ -2793,7 +2793,7 @@ public class MethodReflect implements Serializable
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      * @throws InvocationTargetException
-     * @throws InstantiationException 
+     * @throws InstantiationException
      */
     public void invokeSetForInstance(Object i_Instance ,Object i_Value) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException
     {
@@ -2822,7 +2822,7 @@ public class MethodReflect implements Serializable
                 else
                 {
                     Object   [] v_ParamObjs  = new Object[this.methodsParams.get(v_Index).size()];
-                    Class<?> [] v_ParamClass = v_Method.getParameterTypes(); 
+                    Class<?> [] v_ParamClass = v_Method.getParameterTypes();
                     for (int x=0; x<v_ParamClass.length; x++)
                     {
                         v_ParamObjs[x] = Help.toObject(v_ParamClass[x] ,this.methodsParams.get(v_Index).get(x));
@@ -2888,7 +2888,7 @@ public class MethodReflect implements Serializable
     它会在元素还有用，但集合对象本身没有用时，释放元素对象
     
     一些与finalize相关的方法，由于一些致命的缺陷，已经被废弃了
-    protected void finalize() throws Throwable 
+    protected void finalize() throws Throwable
     {
         this.instances.clear();
         this.methods.clear();
