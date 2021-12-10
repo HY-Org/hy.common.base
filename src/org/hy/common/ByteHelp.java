@@ -13,13 +13,14 @@ import java.io.UnsupportedEncodingException;
  * 
  * @author      ZhengWei(HY)
  * @createDate  2012-07-27
- * @version     v1.0  
+ * @version     v1.0
  *              v2.0  2019-06-18  添加：输入流（文件流）转为二进制数据的方法toByte(...)
  *              v3.0  2020-06-16  添加：有符号的字节数组，转为无符号的整数数组。
  *                                添加：无符号的整数数组，转为有符号的字节数组。
- *              
+ *              v4.0  2021-12-10  添加：byte[] 转 Byte[]
+ *                                     Byte[] 转 byte[]
  */
-public final class ByteHelp 
+public final class ByteHelp
 {
     
     /**
@@ -73,8 +74,8 @@ public final class ByteHelp
      * @return
      */
     public static byte [] pad(byte [] i_Value ,int i_TotalLen ,byte [] i_PadByte ,int i_Way)
-    {   
-        if ( i_Value   == null || i_Value.length   == 0 
+    {
+        if ( i_Value   == null || i_Value.length   == 0
           || i_PadByte == null || i_PadByte.length == 0 )
         {
             return new byte[0];
@@ -154,7 +155,7 @@ public final class ByteHelp
         int  v_EndIndex   = v_BeginIndex + i_SubLen;
         int  v_NewArrLen  = v_EndIndex <= i_Value.length ? i_SubLen : i_Value.length - v_BeginIndex - 1;
              v_EndIndex   = v_BeginIndex + v_NewArrLen;
-        byte [] v_Ret     = new byte[v_NewArrLen];  
+        byte [] v_Ret     = new byte[v_NewArrLen];
         
         for (int v_Index=v_BeginIndex; v_Index<v_EndIndex; v_Index++)
         {
@@ -300,7 +301,7 @@ public final class ByteHelp
      * @param i_Value
      * @param i_CharsetName  java.nio.charset.Charset
      * @return
-     * @throws UnsupportedEncodingException 
+     * @throws UnsupportedEncodingException
      */
     public static String byteToString(byte [] i_Value ,String i_CharsetName) throws UnsupportedEncodingException
     {
@@ -314,7 +315,7 @@ public final class ByteHelp
      * 
      * @param i_Value
      * @return
-     * @throws UnsupportedEncodingException 
+     * @throws UnsupportedEncodingException
      */
     public static String byteToString(byte [] i_Value ,int i_Offset ,int i_Length ,String i_CharsetName) throws UnsupportedEncodingException
     {
@@ -358,6 +359,54 @@ public final class ByteHelp
     public static byte [] hexToBytes(String i_HexStr)
     {
         return StringHelp.hexToBytes(i_HexStr);
+    }
+    
+    
+    
+    /**
+     * byte [] 转 Byte []
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-12-10
+     * @version     v1.0
+     * 
+     * @param i_Bytes
+     * @return
+     */
+    public static Byte [] byteToByte(byte [] i_Bytes)
+    {
+        Byte [] v_Ret = new Byte[i_Bytes.length];
+        
+        for (int x=i_Bytes.length - 1; x>=0; x--)
+        {
+            v_Ret[x] = i_Bytes[x];
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * Byte [] 转 byte []
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-12-10
+     * @version     v1.0
+     * 
+     * @param i_Bytes
+     * @return
+     */
+    public static byte [] byteToByte(Byte [] i_Bytes)
+    {
+        byte [] v_Ret = new byte[i_Bytes.length];
+        
+        for (int x=i_Bytes.length - 1; x>=0; x--)
+        {
+            v_Ret[x] = i_Bytes[x];
+        }
+        
+        return v_Ret;
     }
     
     
@@ -500,7 +549,7 @@ public final class ByteHelp
     
     
     /**
-     * 将字节数组转为无符号的整数。如 -73(byte) 转换为 183(int) 
+     * 将字节数组转为无符号的整数。如 -73(byte) 转换为 183(int)
      * 
      * @author      ZhengWei(HY)
      * @createDate  2020-06-16
@@ -745,7 +794,7 @@ public final class ByteHelp
      * 
      * 返回结果会创建新的内存空间
      * 
-     * @param i_Value    
+     * @param i_Value
      * @param i_StartIndex  异或运算的开始下标位置
      * @param i_Len         异或运算的从开始下标算起运算多少个
      * @return
