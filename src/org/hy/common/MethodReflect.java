@@ -378,6 +378,41 @@ public class MethodReflect implements Serializable
     
     
     /**
+     * 获取方法首个入参参数上的数组元素Class原型（方法入参类型为数组）
+     * 
+     * @param i_Method
+     * @return
+     */
+    public static Class<?> getArrayElementType(Method i_Method)
+    {
+        return getArrayElementType(i_Method ,0);
+    }
+    
+    
+    
+    /**
+     * 获取方法某个入参参数上的数组元素Class原型（方法入参类型为数组）
+     * 
+     * @param i_Method
+     * @param i_ParamIndex      方法的入参参数位置
+     * @return
+     */
+    public static Class<?> getArrayElementType(Method i_Method ,int i_ParamIndex)
+    {
+        try
+        {
+            Class<?> v_ArrayClass = i_Method.getParameterTypes()[i_ParamIndex];
+            return v_ArrayClass.getComponentType();
+        }
+        catch (Exception exce)
+        {
+            return null;
+        }
+    }
+    
+    
+    
+    /**
      * 获取某个Java类的属性上首个位置的范型Class原型
      * 
      * @param i_Class

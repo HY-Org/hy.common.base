@@ -7389,143 +7389,16 @@ public class Help
         {
             return null;
         }
-        else if ( i_Class == String.class )
-        {
-            return i_Value.trim();
-        }
-        else if ( i_Class == Integer.class )
-        {
-            return Integer.valueOf(i_Value.trim());
-        }
-        else if ( i_Class == int.class )
-        {
-            return Integer.parseInt(i_Value.trim());
-        }
-        else if ( i_Class == Double.class )
-        {
-            return Double.valueOf(i_Value.trim());
-        }
-        else if ( i_Class == double.class )
-        {
-            return Double.parseDouble(i_Value.trim());
-        }
-        else if ( i_Class == Float.class )
-        {
-            return Float.valueOf(i_Value.trim());
-        }
-        else if ( i_Class == float.class )
-        {
-            return Float.parseFloat(i_Value.trim());
-        }
-        else if ( i_Class == Boolean.class )
-        {
-            return Boolean.valueOf(i_Value.trim());
-        }
-        else if ( i_Class == boolean.class )
-        {
-            return Boolean.parseBoolean(i_Value.trim());
-        }
-        else if ( i_Class == Long.class )
-        {
-            return Long.valueOf(i_Value.trim());
-        }
-        else if ( i_Class == long.class )
-        {
-            return Long.parseLong(i_Value.trim());
-        }
-        else if ( i_Class == Date.class )
-        {
-            return new Date(i_Value.trim());
-        }
-        else if ( i_Class == java.util.Date.class )
-        {
-            return new Date(i_Value.trim()).getDateObject();
-        }
-        // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15
-        else if ( i_Class == Timestamp.class )
-        {
-            return new Date(i_Value.trim()).getSQLTimestamp();
-        }
-        else if ( i_Class == BigDecimal.class )
-        {
-            return new BigDecimal(i_Value.trim());
-        }
-        else if ( MethodReflect.isExtendImplement(i_Class ,Enum.class) )
-        {
-            @SuppressWarnings("unchecked")
-            Enum<?> [] v_EnumValues = StaticReflect.getEnums((Class<? extends Enum<?>>) i_Class);
-            String     v_Value      = i_Value;
-            
-            // ZhengWei(HY) Add 2018-05-08  支持枚举toString()的匹配
-            for (Enum<?> v_Enum : v_EnumValues)
-            {
-                if ( v_Value.equalsIgnoreCase(v_Enum.toString()) )
-                {
-                    return v_Enum;
-                }
-            }
-            
-            // ZhengWei(HY) Add 2018-05-08  支持枚举名称的匹配
-            for (Enum<?> v_Enum : v_EnumValues)
-            {
-                if ( v_Value.equalsIgnoreCase(v_Enum.name()) )
-                {
-                    return v_Enum;
-                }
-            }
-            
-            // 尝试用枚举值匹配
-            if ( Help.isNumber(v_Value) )
-            {
-                int v_IntValue = Integer.parseInt(v_Value.trim());
-                if ( 0 <= v_IntValue && v_IntValue < v_EnumValues.length )
-                {
-                    return v_EnumValues[v_IntValue];
-                }
-            }
-            
-            throw new java.lang.IndexOutOfBoundsException("Enum [" + i_Class.getName() + "] is not find Value[" + i_Value + "].");
-        }
-        else if ( i_Class == Short.class )
-        {
-            return Short.valueOf(i_Value.trim());
-        }
-        else if ( i_Class == short.class )
-        {
-            return Short.parseShort(i_Value.trim());
-        }
-        else if ( i_Class == Byte.class )
-        {
-            return Byte.valueOf(i_Value.trim());
-        }
-        else if ( i_Class == byte.class )
-        {
-            return Byte.parseByte(i_Value.trim());
-        }
-        else if ( i_Class == Character.class )
-        {
-            return Character.valueOf(i_Value.trim().charAt(0));
-        }
-        else if ( i_Class == char.class )
-        {
-            return i_Value.trim().charAt(0);
-        }
-        else if ( i_Class == Class.class )
+        else
         {
             try
             {
-                return Help.forName(i_Value.trim());
+                return HelpToObject.executeToObject(i_Class ,i_Value);
             }
-            catch (Exception exce)
+            catch (Exception e)
             {
-                exce.printStackTrace();
+                return i_Value.trim();
             }
-            
-            return null;
-        }
-        else
-        {
-            return i_Value.trim();
         }
     }
     
@@ -7539,7 +7412,6 @@ public class Help
      *              v2.0  2020-01-21  添加：支持对 Class.class 类型的转换
      * 
      * @param i_Class
-     * @param i_Value
      * @return
      */
     public final static Object toObject(Class<?> i_Class)
@@ -7548,103 +7420,12 @@ public class Help
         {
             return null;
         }
-        else if ( i_Class == String.class )
+        
+        try
         {
-            return "";
+            return HelpNewInstance.executeNew(i_Class);
         }
-        else if ( i_Class == Integer.class )
-        {
-            return new Integer(0);
-        }
-        else if ( i_Class == int.class )
-        {
-            return new Integer(0);
-        }
-        else if ( i_Class == Double.class )
-        {
-            return new Double(0);
-        }
-        else if ( i_Class == double.class )
-        {
-            return new Double(0);
-        }
-        else if ( i_Class == Float.class )
-        {
-            return new Float(0);
-        }
-        else if ( i_Class == float.class )
-        {
-            return new Float(0);
-        }
-        else if ( i_Class == Boolean.class )
-        {
-            return Boolean.FALSE;
-        }
-        else if ( i_Class == boolean.class )
-        {
-            return Boolean.FALSE;
-        }
-        else if ( i_Class == Long.class )
-        {
-            return new Long(0);
-        }
-        else if ( i_Class == long.class )
-        {
-            return new Long(0);
-        }
-        else if ( i_Class == Date.class )
-        {
-            return new Date();
-        }
-        else if ( i_Class == java.util.Date.class )
-        {
-            return new Date().getDateObject();
-        }
-        // 添加对数据库时间的转换 Add ZhengWei(HY) 2018-05-15
-        else if ( i_Class == Timestamp.class )
-        {
-            return new Date().getSQLTimestamp();
-        }
-        else if ( i_Class == BigDecimal.class )
-        {
-            return new BigDecimal(0);
-        }
-        else if ( MethodReflect.isExtendImplement(i_Class ,Enum.class) )
-        {
-            @SuppressWarnings("unchecked")
-            Enum<?> [] v_EnumValues = StaticReflect.getEnums((Class<? extends Enum<?>>) i_Class);
-            
-            return v_EnumValues[0];
-        }
-        else if ( i_Class == Short.class )
-        {
-            return new Short((short)0);
-        }
-        else if ( i_Class == short.class )
-        {
-            return new Short((short)0);
-        }
-        else if ( i_Class == Byte.class )
-        {
-            return new Byte((byte)0);
-        }
-        else if ( i_Class == byte.class )
-        {
-            return new Byte((byte)0);
-        }
-        else if ( i_Class == Character.class )
-        {
-            return new Character(' ');
-        }
-        else if ( i_Class == char.class )
-        {
-            return new Character(' ');
-        }
-        else if ( i_Class == Class.class )
-        {
-            return null;
-        }
-        else
+        catch (Exception e)
         {
             return "";
         }
