@@ -1445,6 +1445,23 @@ public class Help
      * @param i_Obj
      * @return Object
      */
+    public final static Class<?> NVL(Class<?> i_Obj)
+    {
+        if ( i_Obj == null )
+        {
+            return Class.class;
+        }
+        
+        return i_Obj;
+    }
+    
+    
+    /**
+     * 重载 NVL 方法
+     *
+     * @param i_Obj
+     * @return Object
+     */
     public final static Boolean NVL(Boolean i_Value)
     {
         if ( i_Value == null )
@@ -1462,7 +1479,7 @@ public class Help
      * @param i_Value
      * @return Object
      */
-    public final static Object NVL(Short i_Value)
+    public final static Short NVL(Short i_Value)
     {
         if ( i_Value == null )
         {
@@ -1479,7 +1496,7 @@ public class Help
      * @param i_Value
      * @return Object
      */
-    public final static Object NVL(Byte i_Value)
+    public final static Byte NVL(Byte i_Value)
     {
         if ( i_Value == null )
         {
@@ -1496,7 +1513,7 @@ public class Help
      * @param i_Value
      * @return Object
      */
-    public final static Object NVL(Character i_Value)
+    public final static Character NVL(Character i_Value)
     {
         if ( i_Value == null )
         {
@@ -1513,11 +1530,11 @@ public class Help
      * @param i_Date
      * @return Object
      */
-    public final static Object NVL(java.util.Date i_Date)
+    public final static java.util.Date NVL(java.util.Date i_Date)
     {
         if ( i_Date == null )
         {
-            return "";
+            return new Date().getDateObject();
         }
         
         return i_Date;
@@ -1530,11 +1547,45 @@ public class Help
      * @param i_Date
      * @return Object
      */
-    public final static Object NVL(org.hy.common.Date i_Date)
+    public final static java.sql.Date NVL(java.sql.Date i_Date)
     {
         if ( i_Date == null )
         {
-            return "";
+            return new Date().getSQLDate();
+        }
+        
+        return i_Date;
+    }
+    
+    
+    /**
+     * 重载 NVL 方法
+     *
+     * @param i_Date
+     * @return Object
+     */
+    public final static java.sql.Timestamp NVL(java.sql.Timestamp i_Date)
+    {
+        if ( i_Date == null )
+        {
+            return new Date().getSQLTimestamp();
+        }
+        
+        return i_Date;
+    }
+    
+    
+    /**
+     * 重载 NVL 方法
+     *
+     * @param i_Date
+     * @return Object
+     */
+    public final static Date NVL(Date i_Date)
+    {
+        if ( i_Date == null )
+        {
+            return new Date();
         }
         
         return i_Date;
@@ -1586,6 +1637,23 @@ public class Help
         if ( i_Value == null )
         {
             return 0f;
+        }
+        
+        return i_Value;
+    }
+    
+    
+    /**
+     * 重载 NVL 方法
+     *
+     * @param i_Value
+     * @return Float
+     */
+    public final static BigDecimal NVL(BigDecimal i_Value)
+    {
+        if ( i_Value == null )
+        {
+            return new BigDecimal(0);
         }
         
         return i_Value;
@@ -1913,7 +1981,41 @@ public class Help
      * @param i_Date
      * @return boolean  为空返回 True，其它返回 False
      */
-    public final static boolean isNull(org.hy.common.Date i_Date)
+    public final static boolean isNull(java.sql.Date i_Date)
+    {
+        if ( i_Date == null )
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * 判断时间是否为空
+     *
+     * @param i_Date
+     * @return boolean  为空返回 True，其它返回 False
+     */
+    public final static boolean isNull(java.sql.Timestamp i_Date)
+    {
+        if ( i_Date == null )
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * 判断时间是否为空
+     *
+     * @param i_Date
+     * @return boolean  为空返回 True，其它返回 False
+     */
+    public final static boolean isNull(Date i_Date)
     {
         if ( i_Date == null )
         {
