@@ -4458,6 +4458,23 @@ public final class StringHelp
      * @param i_Data
      * @return
      */
+    public final static String toString(java.sql.Date i_Data)
+    {
+        return String.valueOf(i_Data.getTime());
+    }
+    
+    
+    
+    /**
+     * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-09-27
+     * @version     v1.0
+     * 
+     * @param i_Data
+     * @return
+     */
     public final static String toString(Timestamp i_Data)
     {
         return String.valueOf(i_Data.getTime());

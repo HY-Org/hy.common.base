@@ -37,7 +37,7 @@ public class HelpToObject
         
         for (Method v_Method : v_Methods)
         {
-            if ( v_Method.getName().startsWith("toObject") && v_Method.getParameterTypes().length == 2 && v_Method.getParameterTypes()[0] == Class.class )
+            if ( v_Method.getName().startsWith("new") && v_Method.getParameterTypes().length == 2 && v_Method.getParameterTypes()[0] == Class.class )
             {
                 $ClassToObject.put(v_Method.getReturnType() ,v_Method);
                 
@@ -280,7 +280,7 @@ public class HelpToObject
      * @param i_Value  待转换的字符串
      * @return
      */
-    public static char newCharacter(Class<?> i_Class ,String i_Value)
+    public static Character newCharacter(Class<?> i_Class ,String i_Value)
     {
         return Character.valueOf(i_Value.trim().charAt(0));
     }

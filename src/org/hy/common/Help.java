@@ -134,6 +134,7 @@ public class Help
      * @param i_ValueX
      * @return
      */
+    @SuppressWarnings("unchecked")
     private final static <N extends Number> String[] numbersToStrings(N ... i_ValueX)
     {
         String [] v_ValueX = new String[i_ValueX.length];
@@ -7374,101 +7375,9 @@ public class Help
         {
             return false;
         }
-        else if ( String.class == i_Class )
-        {
-            return true;
-        }
-        else if ( i_Class == Integer.class )
-        {
-            return true;
-        }
-        else if ( i_Class == int.class )
-        {
-            return true;
-        }
-        else if ( i_Class == Double.class )
-        {
-            return true;
-        }
-        else if ( i_Class == double.class )
-        {
-            return true;
-        }
-        else if ( i_Class == Float.class )
-        {
-            return true;
-        }
-        else if ( i_Class == float.class )
-        {
-            return true;
-        }
-        else if ( i_Class == Boolean.class )
-        {
-            return true;
-        }
-        else if ( i_Class == boolean.class )
-        {
-            return true;
-        }
-        else if ( i_Class == Long.class )
-        {
-            return true;
-        }
-        else if ( i_Class == long.class )
-        {
-            return true;
-        }
-        else if ( i_Class == Date.class )
-        {
-            return true;
-        }
-        else if ( i_Class == java.util.Date.class )
-        {
-            return true;
-        }
-        else if ( i_Class == Timestamp.class )
-        {
-            return true;
-        }
-        else if ( i_Class == BigDecimal.class )
-        {
-            return true;
-        }
-        else if ( MethodReflect.isExtendImplement(i_Class ,Enum.class) )
-        {
-            return true;
-        }
-        else if ( i_Class == Short.class )
-        {
-            return true;
-        }
-        else if ( i_Class == short.class )
-        {
-            return true;
-        }
-        else if ( i_Class == Byte.class )
-        {
-            return true;
-        }
-        else if ( i_Class == byte.class )
-        {
-            return true;
-        }
-        else if ( i_Class == Character.class )
-        {
-            return true;
-        }
-        else if ( i_Class == char.class )
-        {
-            return true;
-        }
-        else if ( i_Class == Class.class )
-        {
-            return true;
-        }
         else
         {
-            return false;
+            return HelpNewInstance.findNew(i_Class) != null;
         }
     }
     

@@ -242,7 +242,7 @@ public class HelpNewInstance
      * @param i_Class  将什么类型实例化
      * @return
      */
-    public static char newCharacter(Class<?> i_Class)
+    public static Character newCharacter(Class<?> i_Class)
     {
         return new Character(' ');
     }
