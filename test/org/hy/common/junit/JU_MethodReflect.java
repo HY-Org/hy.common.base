@@ -3,6 +3,8 @@ package org.hy.common.junit;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
+import org.hy.common.Date;
+import org.hy.common.Help;
 import org.hy.common.MethodReflect;
 import org.junit.Test;
 
@@ -30,6 +32,15 @@ public class JU_MethodReflect
         MethodReflect v_MethodRef = new MethodReflect(v_Data ,"map.$get(key1)" ,true ,MethodReflect.$NormType_Getter);
         
         System.out.println(v_MethodRef.invoke());
+    }
+    
+    
+    
+    @Test
+    public void test_AllowNew()
+    {
+        System.out.println(MethodReflect.allowNew(Help.class));
+        System.out.println(MethodReflect.allowNew(Date.class));
     }
     
 }

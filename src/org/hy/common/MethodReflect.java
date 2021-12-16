@@ -2,6 +2,7 @@ package org.hy.common;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -61,6 +62,7 @@ import org.hy.common.comparate.MethodFieldComparator;
  *              v12.6 2018-05-15  添加：数据库java.sql.Timestamp时间的转换
  *              v13.0 2020-01-14  添加：获取排除某些前缀的成员方法 getMethodsExcludeStart()
  *              v13.1 2021-02-01  修正：解释xx.yy.zz时，当yy为空指针时的解释异常
+ *              v14.0 2021-12-16  添加：判定类是否允许被实例化（默认无参构造器的实例化）allowNew()
  */
 public class MethodReflect implements Serializable
 {
@@ -373,6 +375,44 @@ public class MethodReflect implements Serializable
             // 递归判断某个类的父类是否继承了i_InterfaceClass类
             return isExtendImplement(i_ObjectClass.getSuperclass() ,i_InterfaceClass);
         }
+    }
+    
+    
+    
+    /**
+     * 判定类是否允许被实例化（默认无参构造器的实例化）
+     * 
+     * 即判定执行 i_ObjectClass.newInstance() 是否会报错
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2021-12-16
+     * @version     v1.0
+     * 
+     * @param i_ObjectClass
+     * @return
+     */
+    public static boolean allowNew(Class<?> i_ObjectClass)
+    {
+        if ( i_ObjectClass == null )
+        {
+            return false;
+        }
+        
+        Constructor<?>[] v_Constructors = i_ObjectClass.getConstructors();
+        if ( Help.isNull(v_Constructors) )
+        {
+            return false;
+        }
+            
+        for (Constructor<?> v_Item : v_Constructors)
+        {
+            if ( v_Item.getParameters().length == 0 )
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     

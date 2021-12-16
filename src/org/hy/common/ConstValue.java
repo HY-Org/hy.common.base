@@ -45,7 +45,7 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
     
     
     /** 常量类型 */
-    private ConstValue constType; 
+    private ConstValue constType;
     
     /** 值 */
     private int        id;
@@ -81,7 +81,6 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
             return null;
         }
         
-        
         Integer v_ID = Integer.valueOf(i_ID);
         
         if ( $AllConst.containsKey(i_ConstType) )
@@ -113,13 +112,13 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
     {
         if ( i_ConstType == null || $AllConst == null )
         {
-            return new Hashtable<Integer ,ConstValue>();
+            return null;
         }
         else
         {
             if ( !$AllConst.containsKey(i_ConstType) )
             {
-                return new Hashtable<Integer ,ConstValue>();
+                return null;
             }
             else
             {
@@ -309,7 +308,7 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
             v_SubConsts.put(Integer.valueOf(this.id), this);
             
             $AllConst.put(this.constType , v_SubConsts);
-        }   
+        }
     }
     
     
@@ -317,9 +316,9 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
      * 获取常量类型下的所有常量对象
      * 
      * @param i_ConstType  常量类型
-     * @return
+     * @return    返回值包括自己，再转Json时，会出现递归解析的问题，固改方法名称为gat
      */
-    public Map<Integer ,ConstValue> getConsts()
+    public Map<Integer ,ConstValue> gatConsts()
     {
         return getConsts(this.constType);
     }
@@ -330,9 +329,18 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
      * 
      * @return
      */
-    public int getSize()
+    public int size()
     {
-        return this.getConsts().size();
+        Map<Integer ,ConstValue> v_Datas = this.gatConsts();
+        
+        if ( Help.isNull(v_Datas) )
+        {
+            return 0;
+        }
+        else
+        {
+            return v_Datas.size();
+        }
     }
     
     
@@ -354,7 +362,14 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
      */
     public String getConstTypeName()
     {
-        return this.constType.getName();
+        if ( this.constType != null )
+        {
+            return this.constType.getName();
+        }
+        else
+        {
+            return null;
+        }
     }
     
     
@@ -363,7 +378,7 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
      * 
      * @return
      */
-    public int getId() 
+    public int getId()
     {
         return id;
     }
@@ -374,7 +389,7 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
      * 
      * @return
      */
-    public String getName() 
+    public String getName()
     {
         return name;
     }
@@ -395,7 +410,8 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
     /**
      * 比较规则：按常量id比较
      */
-    public int compareTo(ConstValue o) 
+    @Override
+    public int compareTo(ConstValue o)
     {
         if (o == null)
         {
@@ -407,9 +423,21 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
         }
         else if (o instanceof ConstValue)
         {
-            ConstValue v_Another = (ConstValue)o;
+            ConstValue v_Another = o;
             
-            if ( this.constType.getId() == v_Another.getConstType().getId() )
+            if ( v_Another.getConstType() == this.constType )
+            {
+                return 0;
+            }
+            else if ( v_Another.getConstType() == null )
+            {
+                return 1;
+            }
+            else if ( this.constType == null )
+            {
+                return -1;
+            }
+            else if ( this.constType.getId() == v_Another.getConstType().getId() )
             {
                 return this.id - v_Another.getId();
             }
@@ -442,7 +470,7 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
 
 
     @Override
-    public boolean equals(Object o) 
+    public boolean equals(Object o)
     {
         if (o == null)
         {
@@ -456,6 +484,18 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
         {
             ConstValue v_Another = (ConstValue)o;
             
+            if ( v_Another.getConstType() == this.constType )
+            {
+                return true;
+            }
+            else if ( v_Another.getConstType() == null )
+            {
+                return false;
+            }
+            else if ( this.constType == null )
+            {
+                return false;
+            }
             if ( this.constType.getId() == v_Another.getConstType().getId()  )
             {
                 return this.id == v_Another.getId();
@@ -476,7 +516,8 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
     /**
      * 克隆时，直接返回自己
      */
-    public Object clone() 
+    @Override
+    public Object clone()
     {
         return this;
     }
