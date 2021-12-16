@@ -35,6 +35,7 @@ import org.hy.common.xml.log.Logger;
  * @version v5.0  2017-01-19  1.添加：保存动作方法的执行结果。
  *                              添加：执行结果的事件监听功能。
  *          v5.1  2017-03-22  1.添加：getReturnAwait() 方法在启动线程后，一直等待执行方法的返回结果。
+ *          v6.0  2021-12-16  1.添加：支持永不超时，一直等待
  */
 public class Execute extends Thread
 {
@@ -64,7 +65,7 @@ public class Execute extends Thread
     /** 延后多长时间后再执行第三方(单位：毫秒)。默认为0，即立即执行 */
     private long               delayedTime;
     
-    /** 超时终止线程的时长(单位：毫秒) */
+    /** 超时终止线程的时长(单位：毫秒)。表示永不超时，一直等待 */
     private long               timeout;
     
     /** 监控、监视的间隔时长(单位：毫秒) */
@@ -240,7 +241,7 @@ public class Execute extends Thread
     /**
      * 启动线程，同时线程运行时间超时后，终止线程
      * 
-     * @param i_Timeout  超时终止线程的时长(单位：毫秒)
+     * @param i_Timeout  超时终止线程的时长(单位：毫秒)。0表示永不超时，一直等待
      */
     public synchronized void start(long i_Timeout)
     {
@@ -258,20 +259,23 @@ public class Execute extends Thread
      * @version     v1.0
      *
      * @param i_DelayedTime  延后时长(单位：毫秒)
-     * @param i_Timeout      超时终止线程的时长(单位：毫秒)
+     * @param i_Timeout      超时终止线程的时长(单位：毫秒)。0表示永不超时，一直等待
      */
     public synchronized void startDelayed(long i_DelayedTime ,long i_Timeout)
     {
-        if ( i_Timeout <= 1000 )
+        if ( i_Timeout != 0 && i_Timeout <= 1000 )
         {
             throw new RuntimeException("Timeout is not <= 1000 millisecond.");
         }
         
-        Execute v_Execute = new Execute(this ,"runIsTimeout");
-        
         this.delayedTime = i_DelayedTime;
         this.timeout     = i_Timeout;
-        v_Execute.start();
+        
+        if ( this.timeout != 0 )
+        {
+            Execute v_Execute = new Execute(this ,"runIsTimeout");
+            v_Execute.start();
+        }
         
         this.start();
     }
@@ -450,9 +454,14 @@ public class Execute extends Thread
     
     
     
+    /**
+     * 0表示永不超时，一直等待
+     * 
+     * @return
+     */
     public boolean isTimeout()
     {
-        return timeout <= 0 ? true : false;
+        return timeout < 0 ? true : false;
     }
     
     
