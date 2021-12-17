@@ -425,11 +425,7 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
         {
             ConstValue v_Another = o;
             
-            if ( v_Another.getConstType() == this.constType )
-            {
-                return 0;
-            }
-            else if ( v_Another.getConstType() == null )
+            if ( v_Another.getConstType() == null )
             {
                 return 1;
             }
@@ -484,11 +480,7 @@ public class ConstValue implements Comparable<ConstValue> ,Cloneable ,java.io.Se
         {
             ConstValue v_Another = (ConstValue)o;
             
-            if ( v_Another.getConstType() == this.constType )
-            {
-                return true;
-            }
-            else if ( v_Another.getConstType() == null )
+            if ( v_Another.getConstType() == null )
             {
                 return false;
             }
