@@ -11,6 +11,5 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
-	<classpathentry kind="lib" path="/hy.common.xjava/hy.common.xjava.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

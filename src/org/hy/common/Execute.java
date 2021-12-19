@@ -5,8 +5,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hy.common.xml.log.Logger;
-
 
 
 
@@ -39,7 +37,7 @@ import org.hy.common.xml.log.Logger;
  */
 public class Execute extends Thread
 {
-    private static final Logger $Logger = new Logger(Execute.class);
+    // private static final Logger $Logger = new Logger(Execute.class);
     
     /** 动作的实例 */
     private Object             instance;
@@ -185,7 +183,8 @@ public class Execute extends Thread
         }
         else
         {
-            $Logger.warn(this.instance.getClass().getName() + "的方法" + this.methodName  + "不存在或不可访问到");
+            System.out.println(this.instance.getClass().getName() + "的方法" + this.methodName  + "不存在或不可访问到");
+            // $Logger.warn(this.instance.getClass().getName() + "的方法" + this.methodName  + "不存在或不可访问到");
         }
         
         this.runEndTime  = new Date();

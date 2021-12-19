@@ -14,12 +14,11 @@ import org.hy.common.TriggerEvent;
 
 /**
  * 参数信息
- *
+ * 
  * @author   ZhengWei(HY)
  * @version  V1.0  2013-04-20
  *           v2.0  2015-11-02  添加：是否为只读状态，当为只读状态时，this.value只能被设置一次。默认为只读状态
  *                             添加：this.value 的数值改变事
- *           v3.0  2021-12-14  添加：Setter方法均返回对象自己
  */
 public class Param implements Serializable
 {
@@ -94,7 +93,7 @@ public class Param implements Serializable
      * 
      * @param value
      */
-    public Param setValue(String i_Value)
+    public void setValue(String i_Value)
     {
         if ( this.isOnlyRead && !Help.isNull(this.value) )
         {
@@ -123,8 +122,6 @@ public class Param implements Serializable
                 e.printStackTrace();
             }
         }
-        
-        return this;
     }
 
     
@@ -136,10 +133,9 @@ public class Param implements Serializable
 
     
     
-    public Param setComment(String comment)
+    public void setComment(String comment)
     {
         this.comment = comment;
-        return this;
     }
     
     
@@ -159,10 +155,9 @@ public class Param implements Serializable
      * 
      * @param isOnlyRead
      */
-    public Param setOnlyRead(boolean isOnlyRead)
+    public void setOnlyRead(boolean isOnlyRead)
     {
         this.isOnlyRead = isOnlyRead;
-        return this;
     }
     
     

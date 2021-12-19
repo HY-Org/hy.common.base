@@ -102,7 +102,7 @@ public class HelpToObject
         
         if ( v_NewMethod == null )
         {
-            return i_Class.newInstance();
+            return i_Value;
         }
         else
         {

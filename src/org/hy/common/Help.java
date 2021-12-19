@@ -7398,7 +7398,7 @@ public class Help
     {
         if ( i_Class == null || isNull(i_Value) )
         {
-            return null;
+            return i_Value;
         }
         else
         {
