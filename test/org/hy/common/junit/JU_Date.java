@@ -62,7 +62,7 @@ public class JU_Date
     public void test_Lunar()
     {
         System.out.println(new Lunar(new Date()));
-        System.out.println(SolarTerm.getSoralTerm(new Date("2019-06-22")));
+        System.out.println(SolarTerm.getSoralTerm(new Date("2021-12-21")));
     }
     
     
