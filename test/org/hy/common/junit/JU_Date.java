@@ -63,6 +63,7 @@ public class JU_Date
     {
         System.out.println(new Lunar(new Date()));
         System.out.println(SolarTerm.getSoralTerm(new Date("2021-12-21")));
+        System.out.println(SolarTerm.getSoralTerm(new Date("2022-01-05")));
     }
     
     

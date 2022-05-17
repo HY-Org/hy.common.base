@@ -63,6 +63,7 @@ import org.hy.common.comparate.MethodFieldComparator;
  *              v13.0 2020-01-14  添加：获取排除某些前缀的成员方法 getMethodsExcludeStart()
  *              v13.1 2021-02-01  修正：解释xx.yy.zz时，当yy为空指针时的解释异常
  *              v14.0 2021-12-16  添加：判定类是否允许被实例化（默认无参构造器的实例化）allowNew()
+ *              v14.0 2022-05-17  优化：isExtendImplement 方法的判定性能 10万次计算减少用时3秒
  */
 public class MethodReflect implements Serializable
 {
@@ -108,6 +109,9 @@ public class MethodReflect implements Serializable
     
     /** Getter规范的方法 */
     public final static int $NormType_Getter = -1;
+    
+    /** 继承及实现的判断的高速缓存 */
+    private final static TablePartitionRID<Class<?> ,Boolean> $IsExtendImplementCache = new TablePartitionRID<Class<?> ,Boolean>();
     
     
     
@@ -300,15 +304,24 @@ public class MethodReflect implements Serializable
         {
             return false;
         }
+        
+        String  v_InterfaceClassName = i_InterfaceClass.getName();
+        Boolean v_Ret                = $IsExtendImplementCache.getRow(i_ObjectClass ,v_InterfaceClassName);
+        if ( v_Ret != null )
+        {
+            return v_Ret;
+        }
+        
         // 判定Boolean.class == boolean.class  ZhengWei(HY) Add 2018-05-04
         // 对于Number类型，不处理
-        else if ( i_ObjectClass.getName().startsWith("java.lang") )
+        if ( i_ObjectClass.getName().startsWith("java.lang") )
         {
             String v_LangName1 = i_ObjectClass   .getSimpleName().toLowerCase();
             String v_LangName2 = i_InterfaceClass.getSimpleName().toLowerCase();
             
             if ( v_LangName1.startsWith(v_LangName2) )
             {
+                $IsExtendImplementCache.putRow(i_ObjectClass ,v_InterfaceClassName ,true);
                 return true;
             }
             else
@@ -318,13 +331,14 @@ public class MethodReflect implements Serializable
         }
         // 判定boolean.class == Boolean.class  ZhengWei(HY) Add 2018-05-04
         // 对于Number类型，不处理
-        else if ( i_InterfaceClass.getName().startsWith("java.lang") )
+        else if ( v_InterfaceClassName.startsWith("java.lang") )
         {
             String v_LangName1 = i_InterfaceClass.getSimpleName().toLowerCase();
             String v_LangName2 = i_ObjectClass   .getSimpleName().toLowerCase();
             
             if ( v_LangName1.startsWith(v_LangName2) )
             {
+                $IsExtendImplementCache.putRow(i_ObjectClass ,v_InterfaceClassName ,true);
                 return true;
             }
             else
@@ -340,12 +354,14 @@ public class MethodReflect implements Serializable
             // 判断某个类是否实现了i_InterfaceClass接口
             if ( v_Interfaces[i] == i_InterfaceClass )
             {
+                $IsExtendImplementCache.putRow(i_ObjectClass ,v_InterfaceClassName ,true);
                 return true;
             }
             
             // 递归判断某个类实现的接口中是否继承了i_InterfaceClass接口
             if ( isExtendImplement(v_Interfaces[i].getSuperclass() ,i_InterfaceClass) )
             {
+                $IsExtendImplementCache.putRow(i_ObjectClass ,v_InterfaceClassName ,true);
                 return true;
             }
             
@@ -355,6 +371,7 @@ public class MethodReflect implements Serializable
             {
                 if ( isExtendImplement(v_Interface_Interfaces[x] ,i_InterfaceClass) )
                 {
+                    $IsExtendImplementCache.putRow(i_ObjectClass ,v_InterfaceClassName ,true);
                     return true;
                 }
             }
@@ -363,17 +380,21 @@ public class MethodReflect implements Serializable
         // 判断某个类是否继承了i_InterfaceClass类
         if ( i_ObjectClass.getSuperclass() == i_InterfaceClass )
         {
+            $IsExtendImplementCache.putRow(i_ObjectClass ,v_InterfaceClassName ,true);
             return true;
         }
         else if ( i_ObjectClass.getSuperclass() == Object.class )
         {
+            $IsExtendImplementCache.putRow(i_ObjectClass ,v_InterfaceClassName ,false);
             return false;
         }
         else
         {
             // 递归判断某个类的父类是否实现了i_InterfaceClass接口
             // 递归判断某个类的父类是否继承了i_InterfaceClass类
-            return isExtendImplement(i_ObjectClass.getSuperclass() ,i_InterfaceClass);
+            v_Ret = isExtendImplement(i_ObjectClass.getSuperclass() ,i_InterfaceClass);
+            $IsExtendImplementCache.putRow(i_ObjectClass ,v_InterfaceClassName ,v_Ret);
+            return v_Ret;
         }
     }
     
