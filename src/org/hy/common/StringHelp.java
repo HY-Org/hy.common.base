@@ -55,6 +55,7 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.16 2019-08-27   1.添加 扩展 getComputeUnit() 方法，带小数精度。
  *              v1.17 2020-06-08   1.修改 解释占位符的系列方法parsePlaceholders()的返回结构改成PartitionMap
  *              v1.18 2021-09-27   1.添加 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
+ *              v1.19 2022-05-19   1.添加 货币转字符串转数字的方法 toNumber()
  * 
  * @createDate  2009-08-21
  */
@@ -71,11 +72,11 @@ public final class StringHelp
     
     
     
-	private static final String    $ABC           = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	
-	private static final String    $ABC36         = "0123456789" + $ABC;
-	
-	private static final char      last2byte      = (char) Integer.parseInt("00000011", 2);
+    private static final String    $ABC           = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    
+    private static final String    $ABC36         = "0123456789" + $ABC;
+    
+    private static final char      last2byte      = (char) Integer.parseInt("00000011", 2);
     private static final char      last4byte      = (char) Integer.parseInt("00001111", 2);
     private static final char      last6byte      = (char) Integer.parseInt("00111111", 2);
     private static final char      lead6byte      = (char) Integer.parseInt("11111100", 2);
@@ -98,8 +99,14 @@ public final class StringHelp
     
     /** 解释圆括号的正则表达式。分割(...) 的形式，但不含 ( 和 ) */
     private static final String    $Parentheses   = "\\([^(?!((\\()(\\))))]*\\)";
-	
-	
+    
+    /** 将字符串类型的数字类型。支持千分位、货币符号 */
+    private static final String [] $Currency      = new String[] {"," ,"，" ,"¥" ,"$" ,"€"};
+    
+    /** 常用的替换常量，如将关键字替换为空字符 */
+    public  static final String [] $ReplaceNil    = new String[] {""};
+    
+    
     
     /**
      * 懒加载方式，初始XML特殊符号转换信息
@@ -118,17 +125,17 @@ public final class StringHelp
     }
     
     
-	
-	/**
-	 * 私有构造器
-	 */
-	private StringHelp()
+    
+    /**
+     * 私有构造器
+     */
+    private StringHelp()
     {
     }
-	
-	
-	
-	/**
+    
+    
+    
+    /**
      * 随机生成指定长度的数字与字母混合的字符串
      * 
      * @author      ZhengWei(HY)
@@ -142,62 +149,62 @@ public final class StringHelp
     {
         return random(i_Length ,true);
     }
-	
-	
-	
-	/**
-	 * 随机生成指定长度的数字与字母混合的字符串
-	 * 
-	 * @author      ZhengWei(HY)
-	 * @createDate  2018-05-23
-	 * @version     v1.0
-	 *
-	 * @param i_Length      随机生成的字符串长度
-	 * @param i_HaveNumber  随机生成的字符串中是否内含数字
-	 * @return
-	 */
-	public final static String random(int i_Length ,boolean i_HaveNumber)
-	{
-	    StringBuilder v_Buffer = new StringBuilder();
-	    
-	    if ( i_HaveNumber )
-	    {
-    	    for (int i=1; i<=i_Length; i++)
-    	    {
-    	        v_Buffer.append($ABC36.charAt(Help.random(0 ,35)));
-    	    }
-	    }
-	    else
-	    {
-	        for (int i=1; i<=i_Length; i++)
+    
+    
+    
+    /**
+     * 随机生成指定长度的数字与字母混合的字符串
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-05-23
+     * @version     v1.0
+     *
+     * @param i_Length      随机生成的字符串长度
+     * @param i_HaveNumber  随机生成的字符串中是否内含数字
+     * @return
+     */
+    public final static String random(int i_Length ,boolean i_HaveNumber)
+    {
+        StringBuilder v_Buffer = new StringBuilder();
+        
+        if ( i_HaveNumber )
+        {
+            for (int i=1; i<=i_Length; i++)
+            {
+                v_Buffer.append($ABC36.charAt(Help.random(0 ,35)));
+            }
+        }
+        else
+        {
+            for (int i=1; i<=i_Length; i++)
             {
                 v_Buffer.append($ABC.charAt(Help.random(0 ,25)));
             }
-	    }
-	    
-	    return v_Buffer.toString();
-	}
-	
-	
-	
-	/**
-	 * 首字母大写
-	 * 
-	 * @author      ZhengWei(HY)
-	 * @createDate  2016-02-20
-	 * @version     v1.0
-	 *
-	 * @param i_Str
-	 * @return
-	 */
-	public static String toUpperCaseByFirst(String i_Str)
-	{
-	    return i_Str.substring(0 ,1).toUpperCase() + i_Str.substring(1);
-	}
-	
-	
-	
-	/**
+        }
+        
+        return v_Buffer.toString();
+    }
+    
+    
+    
+    /**
+     * 首字母大写
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2016-02-20
+     * @version     v1.0
+     *
+     * @param i_Str
+     * @return
+     */
+    public static String toUpperCaseByFirst(String i_Str)
+    {
+        return i_Str.substring(0 ,1).toUpperCase() + i_Str.substring(1);
+    }
+    
+    
+    
+    /**
      * 首字母小写
      * 
      * @author      ZhengWei(HY)
@@ -211,18 +218,18 @@ public final class StringHelp
     {
         return i_Str.substring(0 ,1).toLowerCase() + i_Str.substring(1);
     }
-	
-	
-	
-	/**
-	 * 将字符串中的多个连续出现的空白字符删除，只保留一个。
-	 * 如 "a   b           c d" 会被处理为 "a b c d"
-	 * 
-	 * @param i_Str
-	 * @return
-	 */
-	public static String removeSpaces(String i_Str)
-	{
+    
+    
+    
+    /**
+     * 将字符串中的多个连续出现的空白字符删除，只保留一个。
+     * 如 "a   b           c d" 会被处理为 "a b c d"
+     * 
+     * @param i_Str
+     * @return
+     */
+    public static String removeSpaces(String i_Str)
+    {
         if ( Help.isNull(i_Str) )
         {
             return i_Str;
@@ -230,58 +237,58 @@ public final class StringHelp
         
         return i_Str.replaceAll("\\s+", " ");
     }
-	
-	
-	
-	/**
-	 * 获取UUID。全部大写，并且去除"-"字符的东东
-	 * 
-	 * @return
-	 */
-	public final static String getUUID()
-	{
-	    return UUID.randomUUID().toString().replace("-" ,"").toUpperCase();
-	}
-	
-	
-	
-	public final static String getUUIDNum()
-	{
-	    String []     v_UUIDArr = UUID.randomUUID().toString().split("-");
-	    StringBuilder v_Buffer  = new StringBuilder();
-	    
-	    for (String v_UUID : v_UUIDArr)
-	    {
-	        long v_Value = Long.parseLong(v_UUID ,16);
-	        
-	        v_Buffer.append(v_Value);
-	    }
-	    
-	    return v_Buffer.toString();
-	}
-	
-	
-	
-	/**
-	 * 字符空，则取默认值
-	 * 
-	 * @param i_Str
-	 * @param i_DefaultValue
-	 * @return
-	 */
-	public final static String nvl(String i_Str ,String i_DefaultValue)
-	{
-		if ( i_Str == null || "".equals(i_Str.trim()) )
-		{
-			return i_DefaultValue;
-		}
-		else
-		{
-			return i_Str.trim();
-		}
-			
-	}
-	
+    
+    
+    
+    /**
+     * 获取UUID。全部大写，并且去除"-"字符的东东
+     * 
+     * @return
+     */
+    public final static String getUUID()
+    {
+        return UUID.randomUUID().toString().replace("-" ,"").toUpperCase();
+    }
+    
+    
+    
+    public final static String getUUIDNum()
+    {
+        String []     v_UUIDArr = UUID.randomUUID().toString().split("-");
+        StringBuilder v_Buffer  = new StringBuilder();
+        
+        for (String v_UUID : v_UUIDArr)
+        {
+            long v_Value = Long.parseLong(v_UUID ,16);
+            
+            v_Buffer.append(v_Value);
+        }
+        
+        return v_Buffer.toString();
+    }
+    
+    
+    
+    /**
+     * 字符空，则取默认值
+     * 
+     * @param i_Str
+     * @param i_DefaultValue
+     * @return
+     */
+    public final static String nvl(String i_Str ,String i_DefaultValue)
+    {
+        if ( i_Str == null || "".equals(i_Str.trim()) )
+        {
+            return i_DefaultValue;
+        }
+        else
+        {
+            return i_Str.trim();
+        }
+            
+    }
+    
 
     /**
      * 把多个连续的分隔符split分解成单个分隔符，并把前后的分隔符去掉
@@ -293,38 +300,38 @@ public final class StringHelp
      */
     public final static String strSplit(String source, String split)
     {
-    	if( source == null || split == null)
-    	{
-    		return null;
-    	}
-    	
-    	try
-    	{
-    		while (source.indexOf(split + split) > -1)
-    		{
-    			// 去掉连续的分隔符
-    			source = source.substring(0, source.indexOf(split + split))
-    			       + source.substring(source.indexOf(split + split) + 1);
-    		}
-    		
-    		if ( source.substring(0, 1).equals(split) )
-    		{
-    			// 去掉第一个分隔符
-    			source = source.substring(1);
-    		}
-    		
-    		if ( source.substring(source.length() - 1).equals(split) )
-    		{
-    			//去掉最后一个分隔符
-    			source = source.substring(0, source.length() - 1);
-    		}
-    	}
-    	catch(Exception e)
-    	{
-    		return "";
-    	}
-    	
-    	return source;
+        if( source == null || split == null)
+        {
+            return null;
+        }
+        
+        try
+        {
+            while (source.indexOf(split + split) > -1)
+            {
+                // 去掉连续的分隔符
+                source = source.substring(0, source.indexOf(split + split))
+                       + source.substring(source.indexOf(split + split) + 1);
+            }
+            
+            if ( source.substring(0, 1).equals(split) )
+            {
+                // 去掉第一个分隔符
+                source = source.substring(1);
+            }
+            
+            if ( source.substring(source.length() - 1).equals(split) )
+            {
+                //去掉最后一个分隔符
+                source = source.substring(0, source.length() - 1);
+            }
+        }
+        catch(Exception e)
+        {
+            return "";
+        }
+        
+        return source;
     }
 
     
@@ -339,26 +346,26 @@ public final class StringHelp
      */
     public final static String strSplit2(String source,String split)
     {
-    	if(source == null || split == null)
-    	{
-    		return null;
-    	}
-    	
-    	try
-    	{
-    		while (source.indexOf(split + split) > -1)
-    		{
-    			// 去掉连续的分隔符
-    			source = source.substring(0, source.indexOf(split + split)) +
-    			source.substring(source.indexOf(split + split) + 1);
-    		}
-    	}
-    	catch(Exception e)
-    	{
-    		return "";
-    	}
-    	
-    	return source;
+        if(source == null || split == null)
+        {
+            return null;
+        }
+        
+        try
+        {
+            while (source.indexOf(split + split) > -1)
+            {
+                // 去掉连续的分隔符
+                source = source.substring(0, source.indexOf(split + split)) +
+                source.substring(source.indexOf(split + split) + 1);
+            }
+        }
+        catch(Exception e)
+        {
+            return "";
+        }
+        
+        return source;
     }
     
     
@@ -370,40 +377,40 @@ public final class StringHelp
      * @param split
      * @return
      */
-	public final static List<String> strToList(String source,String split)
+    public final static List<String> strToList(String source,String split)
     {
-    	if(source == null || split == null)
-    	{
-    		return null;
-    	}
-    	
-    	List<String> list = new ArrayList<String>();
-    	source = strSplit(source,split);// 整理字符串
+        if(source == null || split == null)
+        {
+            return null;
+        }
+        
+        List<String> list = new ArrayList<String>();
+        source = strSplit(source,split);// 整理字符串
 
-    	if(source.indexOf(split) == -1)
-    	{
-    		list.add(source.trim()); // 单个
-    		return list;
-    	}
-    	
-    	while(source.indexOf(split) > -1)
-    	{
-    		int L1 = source.indexOf(split);
-    		String s1 = source.substring(0,L1);
-    		if(!"".equals(s1))
-    		{
-    			//字符不包括空格
-    			list.add(s1);
-    		}
-    		
-    		source = source.substring(L1 + 1);
-    		if(source.indexOf(split) == -1)
-    		{
-    			list.add(source); // 加入最后一个
-    		}
-    	}
-    	
-    	return list;
+        if(source.indexOf(split) == -1)
+        {
+            list.add(source.trim()); // 单个
+            return list;
+        }
+        
+        while(source.indexOf(split) > -1)
+        {
+            int L1 = source.indexOf(split);
+            String s1 = source.substring(0,L1);
+            if(!"".equals(s1))
+            {
+                //字符不包括空格
+                list.add(s1);
+            }
+            
+            source = source.substring(L1 + 1);
+            if(source.indexOf(split) == -1)
+            {
+                list.add(source); // 加入最后一个
+            }
+        }
+        
+        return list;
     }
     
     
@@ -415,56 +422,56 @@ public final class StringHelp
      * @param split
      * @return
      */
-	public final static List<String> strToList2(String source,String split)
+    public final static List<String> strToList2(String source,String split)
     {
-    	if(source == null || split == null)
-    	{
-    		return null;
-    	}
-    	
-		List<String> list = new ArrayList<String>();
-		if(source.indexOf(split) == -1)
-		{
-		    list.add(source.trim()); // 单个
-		    return list;
-		}
-		
-		while(source.indexOf(split) > -1)
-		{
-		    int L1 = source.indexOf(split);
-		    String s1 = source.substring(0,L1);
-		    if(!"".equals(s1))
-		    {
-		    	//字符不包括空格
-		    	list.add(s1);
-		    }
-		    else
-		    {
-		    	list.add(" ");
-		    }
-		    
-		    source = source.substring(L1 + 1);
-		    if(source.indexOf(split) == -1)
-		    {
-		    	if (!"".equals(source.trim()))
-		    	{
-		    		//字符不包括空格
-		    		list.add(source.trim()); // 加入最后一个
-		    	}
-		    	else
-		    	{
-		    		list.add(" ");
-		    	}
-	
-		    }
-		}
-		
-		return list;
+        if(source == null || split == null)
+        {
+            return null;
+        }
+        
+        List<String> list = new ArrayList<String>();
+        if(source.indexOf(split) == -1)
+        {
+            list.add(source.trim()); // 单个
+            return list;
+        }
+        
+        while(source.indexOf(split) > -1)
+        {
+            int L1 = source.indexOf(split);
+            String s1 = source.substring(0,L1);
+            if(!"".equals(s1))
+            {
+                //字符不包括空格
+                list.add(s1);
+            }
+            else
+            {
+                list.add(" ");
+            }
+            
+            source = source.substring(L1 + 1);
+            if(source.indexOf(split) == -1)
+            {
+                if (!"".equals(source.trim()))
+                {
+                    //字符不包括空格
+                    list.add(source.trim()); // 加入最后一个
+                }
+                else
+                {
+                    list.add(" ");
+                }
+    
+            }
+        }
+        
+        return list;
     }
-	
-	
-	
-	/**
+    
+    
+    
+    /**
      * 批量替换字符串
      * 
      * Java自带的String.replaceAll()方法，是通过正则表达式做的替换动作，
@@ -488,10 +495,10 @@ public final class StringHelp
     {
         return StringHelp.replaceAll(i_Info ,i_Replaces ,true);
     }
-	
-	
-	
-	/**
+    
+    
+    
+    /**
      * 批量替换字符串
      * 
      * Java自带的String.replaceAll()方法，是通过正则表达式做的替换动作，
@@ -500,20 +507,20 @@ public final class StringHelp
      * 比如说："Q美元Q".replaceAll("美元" ,"$"); 方法会出错。
      * 
      * 测试环境为：Mac:OSX EI Capitan , JDK:1.7.0_45-b18
-	 * 
-	 * @author      ZhengWei(HY)
-	 * @createDate  2016-02-20
-	 * @version     v1.0
-	 *              v2.0  2018-02-24  修复：当替换为一个空格" "时，因Help.NVL()的再次处理，为替换为空字符""了。
-	 *
-	 * @param i_Info
-	 * @param i_Replaces  Map.key 替换字符串。Map.value 被替换字符串。
-	 *                    当 Map.value 为 NULL 时，自动用空字符串""替换。这也是与replaceAll(String ,[] ,[])不同的地点之一。
-	 *                    内部对i_Replaces有降序排序顺序的动作，并形成有有顺序的LinkedMap。用于解决 :A、:AA 同时存在时的混乱
-	 * @param i_OrderBy   是否降序排序顺序
-	 * @return
-	 */
-	public final static String replaceAll(final String i_Info ,final Map<String ,?> i_Replaces ,boolean i_OrderBy)
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2016-02-20
+     * @version     v1.0
+     *              v2.0  2018-02-24  修复：当替换为一个空格" "时，因Help.NVL()的再次处理，为替换为空字符""了。
+     *
+     * @param i_Info
+     * @param i_Replaces  Map.key 替换字符串。Map.value 被替换字符串。
+     *                    当 Map.value 为 NULL 时，自动用空字符串""替换。这也是与replaceAll(String ,[] ,[])不同的地点之一。
+     *                    内部对i_Replaces有降序排序顺序的动作，并形成有有顺序的LinkedMap。用于解决 :A、:AA 同时存在时的混乱
+     * @param i_OrderBy   是否降序排序顺序
+     * @return
+     */
+    public final static String replaceAll(final String i_Info ,final Map<String ,?> i_Replaces ,boolean i_OrderBy)
     {
         if ( Help.isNull(i_Replaces) )
         {
@@ -596,70 +603,70 @@ public final class StringHelp
         
         return v_Ret;
     }
-	
-	
-	
-	/**
-	 * 替换字符串
-	 * 
-	 * Java自带的String.replaceAll()方法，是通过正则表达式做的替换动作，
-	 * 对于一些特殊字符，要做十分复杂的处理，并不好用。
-	 * 
-	 * 比如说："Q美元Q".replaceAll("美元" ,"$"); 方法会出错。
-	 * 
-	 * 测试环境为：Mac:OSX EI Capitan , JDK:1.7.0_45-b18
-	 * 
-	 * @author      ZhengWei(HY)
-	 * @createDate  2015-12-17
-	 * @version     v1.0
-	 *              v2.0  修正：当 i_ReplaceBy = ""，并且在第0个位置只查找到一个要替换的东东时，会出现无法替换的问题。
-	 *
-	 * @param i_Info
-	 * @param i_Replace
-	 * @param i_ReplaceBy
-	 * @return
-	 */
-	public final static String replaceAll(final String i_Info ,final String i_Replace ,final String i_ReplaceBy)
-	{
-	    if ( null == i_Info
-	      || null == i_Replace
-	      || null == i_ReplaceBy
-	      || 0    >= i_Info.length()
-	      || 0    >= i_Replace.length() )
-	    {
-	        return i_Info;
-	    }
-	    
-	    StringBuilder v_Buffer    = new StringBuilder();
-	    int           v_RLen      = i_Replace.length();
-	    int           v_FromIndex = i_Info.indexOf(i_Replace);
-	    int           v_LastIndex = 0 - v_RLen;
-	    boolean       v_IsReplace = false;
-	    
-	    while ( v_FromIndex >= 0 )
-	    {
-	        v_LastIndex += v_RLen;
-	        v_Buffer.append(i_Info.substring(v_LastIndex ,v_FromIndex)).append(i_ReplaceBy);
-	        v_LastIndex = v_FromIndex;
-	        v_FromIndex = i_Info.indexOf(i_Replace ,v_FromIndex + v_RLen);
-	        v_IsReplace = true;
-	    }
-	    
-	    if ( !v_IsReplace )
-	    {
-	        return i_Info;
-	    }
-	    else
-	    {
-	        v_Buffer.append(i_Info.substring(v_LastIndex + v_RLen));
-	    }
-	    
-	    return v_Buffer.toString();
-	}
-	
-	
-	
-	/**
+    
+    
+    
+    /**
+     * 替换字符串
+     * 
+     * Java自带的String.replaceAll()方法，是通过正则表达式做的替换动作，
+     * 对于一些特殊字符，要做十分复杂的处理，并不好用。
+     * 
+     * 比如说："Q美元Q".replaceAll("美元" ,"$"); 方法会出错。
+     * 
+     * 测试环境为：Mac:OSX EI Capitan , JDK:1.7.0_45-b18
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2015-12-17
+     * @version     v1.0
+     *              v2.0  修正：当 i_ReplaceBy = ""，并且在第0个位置只查找到一个要替换的东东时，会出现无法替换的问题。
+     *
+     * @param i_Info
+     * @param i_Replace
+     * @param i_ReplaceBy
+     * @return
+     */
+    public final static String replaceAll(final String i_Info ,final String i_Replace ,final String i_ReplaceBy)
+    {
+        if ( null == i_Info
+          || null == i_Replace
+          || null == i_ReplaceBy
+          || 0    >= i_Info.length()
+          || 0    >= i_Replace.length() )
+        {
+            return i_Info;
+        }
+        
+        StringBuilder v_Buffer    = new StringBuilder();
+        int           v_RLen      = i_Replace.length();
+        int           v_FromIndex = i_Info.indexOf(i_Replace);
+        int           v_LastIndex = 0 - v_RLen;
+        boolean       v_IsReplace = false;
+        
+        while ( v_FromIndex >= 0 )
+        {
+            v_LastIndex += v_RLen;
+            v_Buffer.append(i_Info.substring(v_LastIndex ,v_FromIndex)).append(i_ReplaceBy);
+            v_LastIndex = v_FromIndex;
+            v_FromIndex = i_Info.indexOf(i_Replace ,v_FromIndex + v_RLen);
+            v_IsReplace = true;
+        }
+        
+        if ( !v_IsReplace )
+        {
+            return i_Info;
+        }
+        else
+        {
+            v_Buffer.append(i_Info.substring(v_LastIndex + v_RLen));
+        }
+        
+        return v_Buffer.toString();
+    }
+    
+    
+    
+    /**
      * 批量替换字符串（每个关键字只替换一次）
      * 
      * Java自带的String.replace()方法，是通过正则表达式做的替换动作，
@@ -1498,6 +1505,26 @@ public final class StringHelp
     
     
     /**
+     * 将各种数字字符串，转数字类型
+     * 
+     * 内部不效验空指针
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2022-05-19
+     * @version     v1.0
+     *
+     * @param i_Number
+     * @return
+     */
+    public static BigDecimal toNumber(String i_Number)
+    {
+        String v_Number = StringHelp.replaceAll(i_Number ,$Currency ,$ReplaceNil);
+        return new BigDecimal(v_Number);
+    }
+    
+    
+    
+    /**
      * 将各种数字表达方式转为正规的数字表达方式。
      *   1. 将 "-.123" 转换成: "-0.123"
      *   2. 将科学计数法转为正规数字
@@ -1763,18 +1790,18 @@ public final class StringHelp
     public final static String doubleParse(double i_Num ,int i_Digit)
     {
         StringBuilder v_Buffer = new StringBuilder();
-    	
-    	v_Buffer.append("#.");
-    	
-    	for (int i=0; i<i_Digit; i++)
-    	{
-    		v_Buffer.append("#");
-    	}
-    	
-    	
-    	NumberFormat v_Format = new DecimalFormat(v_Buffer.toString());
-    	
-    	return v_Format.format(i_Num);
+        
+        v_Buffer.append("#.");
+        
+        for (int i=0; i<i_Digit; i++)
+        {
+            v_Buffer.append("#");
+        }
+        
+        
+        NumberFormat v_Format = new DecimalFormat(v_Buffer.toString());
+        
+        return v_Format.format(i_Num);
     }
     
  
@@ -1786,14 +1813,14 @@ public final class StringHelp
      */
     public final static String getFilePostfix(String i_FileName)
     {
-    	int    v_DotIndex = i_FileName.lastIndexOf(".");
-    	
-    	if ( v_DotIndex < 0 )
-    	{
-    		return null;
-    	}
-    	
-		return i_FileName.substring(v_DotIndex);
+        int    v_DotIndex = i_FileName.lastIndexOf(".");
+        
+        if ( v_DotIndex < 0 )
+        {
+            return null;
+        }
+        
+        return i_FileName.substring(v_DotIndex);
     }
     
     
@@ -1805,19 +1832,19 @@ public final class StringHelp
      */
     public final static String getFileName(String i_FileName)
     {
-    	int v_Index = i_FileName.lastIndexOf("\\");
-    	
-    	if ( v_Index < 0 )
-    	{
-    		v_Index = i_FileName.lastIndexOf("/");
-    		
-    		if ( v_Index < 0 )
-    		{
-    			return i_FileName;
-    		}
-    	}
-    	
-		return i_FileName.substring(v_Index + 1);
+        int v_Index = i_FileName.lastIndexOf("\\");
+        
+        if ( v_Index < 0 )
+        {
+            v_Index = i_FileName.lastIndexOf("/");
+            
+            if ( v_Index < 0 )
+            {
+                return i_FileName;
+            }
+        }
+        
+        return i_FileName.substring(v_Index + 1);
     }
     
     
@@ -1829,15 +1856,15 @@ public final class StringHelp
      */
     public final static String getFileShortName(String i_FileName)
     {
-    	String v_FileName = getFileName(i_FileName);
-    	int    v_DotIndex = v_FileName.lastIndexOf(".");
-    	
-    	if ( v_DotIndex < 0 )
-    	{
-    		return v_FileName;
-    	}
-    	
-		return v_FileName.substring(0 ,v_DotIndex);
+        String v_FileName = getFileName(i_FileName);
+        int    v_DotIndex = v_FileName.lastIndexOf(".");
+        
+        if ( v_DotIndex < 0 )
+        {
+            return v_FileName;
+        }
+        
+        return v_FileName.substring(0 ,v_DotIndex);
     }
     
     
@@ -1851,7 +1878,7 @@ public final class StringHelp
      */
     public final static String lpad(String i_Str ,int i_TotalLength ,String i_PadStr)
     {
-    	return pad(i_Str ,i_TotalLength ,i_PadStr ,-1);
+        return pad(i_Str ,i_TotalLength ,i_PadStr ,-1);
     }
     
     
@@ -1865,7 +1892,7 @@ public final class StringHelp
      */
     public final static String rpad(String i_Str ,int i_TotalLength ,String i_PadStr)
     {
-    	return pad(i_Str ,i_TotalLength ,i_PadStr ,1);
+        return pad(i_Str ,i_TotalLength ,i_PadStr ,1);
     }
     
     
@@ -1879,7 +1906,7 @@ public final class StringHelp
      */
     public final static String lpad(long i_Long ,int i_TotalLength ,String i_PadStr)
     {
-    	return pad(i_Long ,i_TotalLength ,i_PadStr ,-1);
+        return pad(i_Long ,i_TotalLength ,i_PadStr ,-1);
     }
     
     
@@ -1907,7 +1934,7 @@ public final class StringHelp
      */
     public final static String rpad(long i_Long ,int i_TotalLength ,String i_PadStr)
     {
-    	return pad(i_Long ,i_TotalLength ,i_PadStr ,1);
+        return pad(i_Long ,i_TotalLength ,i_PadStr ,1);
     }
     
     
@@ -1935,7 +1962,7 @@ public final class StringHelp
      */
     public final static String lpad(int i_Int ,int i_TotalLength ,String i_PadStr)
     {
-    	return pad(i_Int ,i_TotalLength ,i_PadStr ,-1);
+        return pad(i_Int ,i_TotalLength ,i_PadStr ,-1);
     }
     
     
@@ -1949,7 +1976,7 @@ public final class StringHelp
      */
     public final static String rpad(int i_Int ,int i_TotalLength ,String i_PadStr)
     {
-    	return pad(i_Int ,i_TotalLength ,i_PadStr ,1);
+        return pad(i_Int ,i_TotalLength ,i_PadStr ,1);
     }
     
     
@@ -1963,7 +1990,7 @@ public final class StringHelp
      */
     public final static String lpad(Object i_Obj ,int i_TotalLength ,String i_PadStr)
     {
-    	return pad(i_Obj ,i_TotalLength ,i_PadStr ,-1);
+        return pad(i_Obj ,i_TotalLength ,i_PadStr ,-1);
     }
     
     
@@ -1977,7 +2004,7 @@ public final class StringHelp
      */
     public final static String rpad(Object i_Obj ,int i_TotalLength ,String i_PadStr)
     {
-    	return pad(i_Obj ,i_TotalLength ,i_PadStr ,1);
+        return pad(i_Obj ,i_TotalLength ,i_PadStr ,1);
     }
     
     
@@ -1992,31 +2019,31 @@ public final class StringHelp
      */
     public final static String pad(String i_Str ,int i_TotalLength ,String i_PadStr ,int i_Way)
     {
-    	if ( i_Str == null )
-    	{
-    		return null;
-    	}
-    	
-    	
-    	int           v_Len    = i_Str.length();
-    	StringBuilder v_Buffer = new StringBuilder();
-    	
-    	if (i_Way >= 0)
-    	{
-    		v_Buffer.append(i_Str);
-    	}
-    	
-    	for (int i=0; i<i_TotalLength-v_Len; i++)
-    	{
-    		v_Buffer.append(i_PadStr);
-    	}
-    	
-    	if (i_Way < 0)
-    	{
-    		v_Buffer.append(i_Str);
-    	}
-    	
-    	return v_Buffer.toString();
+        if ( i_Str == null )
+        {
+            return null;
+        }
+        
+        
+        int           v_Len    = i_Str.length();
+        StringBuilder v_Buffer = new StringBuilder();
+        
+        if (i_Way >= 0)
+        {
+            v_Buffer.append(i_Str);
+        }
+        
+        for (int i=0; i<i_TotalLength-v_Len; i++)
+        {
+            v_Buffer.append(i_PadStr);
+        }
+        
+        if (i_Way < 0)
+        {
+            v_Buffer.append(i_Str);
+        }
+        
+        return v_Buffer.toString();
     }
     
     
@@ -2031,7 +2058,7 @@ public final class StringHelp
      */
     public final static String pad(long i_Long ,int i_TotalLength ,String i_PadStr ,int i_Way)
     {
-    	return pad(String.valueOf(i_Long) ,i_TotalLength ,i_PadStr ,i_Way);
+        return pad(String.valueOf(i_Long) ,i_TotalLength ,i_PadStr ,i_Way);
     }
     
     
@@ -2061,7 +2088,7 @@ public final class StringHelp
      */
     public final static String pad(int i_Int ,int i_TotalLength ,String i_PadStr ,int i_Way)
     {
-    	return pad(String.valueOf(i_Int) ,i_TotalLength ,i_PadStr ,i_Way);
+        return pad(String.valueOf(i_Int) ,i_TotalLength ,i_PadStr ,i_Way);
     }
     
     
@@ -2076,7 +2103,7 @@ public final class StringHelp
      */
     public final static String pad(Object i_Obj ,int i_TotalLength ,String i_PadStr ,int i_Way)
     {
-    	return pad(i_Obj.toString() ,i_TotalLength ,i_PadStr ,i_Way);
+        return pad(i_Obj.toString() ,i_TotalLength ,i_PadStr ,i_Way);
     }
     
     
@@ -2089,7 +2116,7 @@ public final class StringHelp
      */
     public final static String getComputeUnit(long i_ByteSize)
     {
-    	return getComputeUnit(i_ByteSize ,2);
+        return getComputeUnit(i_ByteSize ,2);
     }
     
     
@@ -2245,19 +2272,19 @@ public final class StringHelp
      */
     public final static String toABC26(int i_Value)
     {
-    	int    v_Value = Math.abs(i_Value);
-    	String v_Ret   = "";
-    	
-    	while ( v_Value >= 26 )
-    	{
-    		int v_Mod = v_Value % 26;
-    		
-    		v_Ret = $ABC.substring(v_Mod ,v_Mod + 1) + v_Ret;
-    		
-    		v_Value = v_Value / 26 - 1;
-    	}
-    	
-    	return $ABC.substring(v_Value ,v_Value + 1) + v_Ret;
+        int    v_Value = Math.abs(i_Value);
+        String v_Ret   = "";
+        
+        while ( v_Value >= 26 )
+        {
+            int v_Mod = v_Value % 26;
+            
+            v_Ret = $ABC.substring(v_Mod ,v_Mod + 1) + v_Ret;
+            
+            v_Value = v_Value / 26 - 1;
+        }
+        
+        return $ABC.substring(v_Value ,v_Value + 1) + v_Ret;
     }
     
     
@@ -2272,17 +2299,17 @@ public final class StringHelp
      */
     public final static int reABC26(String i_Value)
     {
-    	String v_Value = i_Value.trim().toUpperCase();
-    	int    v_Len   = v_Value.length();
-    	int    v_Index = 0;
-    	int    v_Ret   = 0;
-    	
-    	for ( ; v_Index<v_Len - 1; v_Index++)
-    	{
-    		v_Ret += (v_Value.charAt(v_Index) - 65 + 1) * Math.pow(26 ,v_Len - v_Index - 1);
-    	}
-    	
-    	return v_Ret + (v_Value.charAt(v_Index) - 65);
+        String v_Value = i_Value.trim().toUpperCase();
+        int    v_Len   = v_Value.length();
+        int    v_Index = 0;
+        int    v_Ret   = 0;
+        
+        for ( ; v_Index<v_Len - 1; v_Index++)
+        {
+            v_Ret += (v_Value.charAt(v_Index) - 65 + 1) * Math.pow(26 ,v_Len - v_Index - 1);
+        }
+        
+        return v_Ret + (v_Value.charAt(v_Index) - 65);
     }
     
     
@@ -2411,16 +2438,16 @@ public final class StringHelp
      */
     public final static String md5(String i_Data)
     {
-    	try
-    	{
-	    	MessageDigest v_MD5 = MessageDigest.getInstance("MD5");
-	    	
-	    	return BASE64Encoder(v_MD5.digest(i_Data.getBytes("utf-8")));
-    	}
-    	catch (Exception exce)
-    	{
-    		return null;
-    	}
+        try
+        {
+            MessageDigest v_MD5 = MessageDigest.getInstance("MD5");
+            
+            return BASE64Encoder(v_MD5.digest(i_Data.getBytes("utf-8")));
+        }
+        catch (Exception exce)
+        {
+            return null;
+        }
     }
     
     
@@ -2626,25 +2653,25 @@ public final class StringHelp
      */
     public final static int getCount(String i_Text ,String i_FindStr)
     {
-    	if ( Help.isNull(i_Text) || i_FindStr == null )
-    	{
-    		return 0;
-    	}
-    	
-    	
+        if ( Help.isNull(i_Text) || i_FindStr == null )
+        {
+            return 0;
+        }
+        
+        
         // 使用Pattern建立匹配模式
-    	Pattern v_Pattern = Pattern.compile(i_FindStr);
+        Pattern v_Pattern = Pattern.compile(i_FindStr);
         // 使用Matcher进行各种查找替换操作
-		Matcher v_Matcher = v_Pattern.matcher(i_Text);
-		
-		int v_Count = 0;
-		
-		while( v_Matcher.find() )
-		{
-			v_Count++;
-		}
-		
-		return v_Count;
+        Matcher v_Matcher = v_Pattern.matcher(i_Text);
+        
+        int v_Count = 0;
+        
+        while( v_Matcher.find() )
+        {
+            v_Count++;
+        }
+        
+        return v_Count;
     }
     
     
@@ -2660,48 +2687,48 @@ public final class StringHelp
      */
     public final static int getCount(String i_Text ,String [] i_FindStrArr)
     {
-    	if ( Help.isNull(i_Text) || Help.isNull(i_FindStrArr) )
-    	{
-    		return 0;
-    	}
-    	
-    	
-    	StringBuilder v_Buffer       = new StringBuilder();
-    	int           v_FindStrCount = 0;
-    	for (int v_Index=0; v_Index<i_FindStrArr.length; v_Index++ )
-    	{
-    		if ( i_FindStrArr[v_Index] != null )
-    		{
-    			if ( v_FindStrCount >= 1)
-    			{
-    				v_Buffer.append("|");
-    			}
-    			
-    			v_Buffer.append("(").append(i_FindStrArr[v_Index]).append(")");
-    			v_FindStrCount++;
-    		}
-    	}
-    	
-    	
-    	if ( v_FindStrCount <= 0 )
-    	{
-    		return 0;
-    	}
-    	
-    	
+        if ( Help.isNull(i_Text) || Help.isNull(i_FindStrArr) )
+        {
+            return 0;
+        }
+        
+        
+        StringBuilder v_Buffer       = new StringBuilder();
+        int           v_FindStrCount = 0;
+        for (int v_Index=0; v_Index<i_FindStrArr.length; v_Index++ )
+        {
+            if ( i_FindStrArr[v_Index] != null )
+            {
+                if ( v_FindStrCount >= 1)
+                {
+                    v_Buffer.append("|");
+                }
+                
+                v_Buffer.append("(").append(i_FindStrArr[v_Index]).append(")");
+                v_FindStrCount++;
+            }
+        }
+        
+        
+        if ( v_FindStrCount <= 0 )
+        {
+            return 0;
+        }
+        
+        
         // 使用Pattern建立匹配模式
-    	Pattern v_Pattern = Pattern.compile(v_Buffer.toString());
+        Pattern v_Pattern = Pattern.compile(v_Buffer.toString());
         // 使用Matcher进行各种查找替换操作
-		Matcher v_Matcher = v_Pattern.matcher(i_Text);
-		
-		int v_Count = 0;
-		
-		while( v_Matcher.find() )
-		{
-			v_Count++;
-		}
-		
-		return v_Count;
+        Matcher v_Matcher = v_Pattern.matcher(i_Text);
+        
+        int v_Count = 0;
+        
+        while( v_Matcher.find() )
+        {
+            v_Count++;
+        }
+        
+        return v_Count;
     }
     
     

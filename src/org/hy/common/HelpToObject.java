@@ -18,6 +18,7 @@ import java.util.Map;
  *
  * @author   ZhengWei(HY)
  * @version  V1.0  2021-12-11
+ *           V1.1  2022-05-19  字符串转数字时，支持货币字符、千分位
  */
 public class HelpToObject
 {
@@ -300,7 +301,18 @@ public class HelpToObject
      */
     public static short newshort(Class<?> i_Class ,String i_Value)
     {
-        return Short.parseShort(i_Value.trim());
+        String v_Value = i_Value.trim();
+        
+        try
+        {
+            return Short.parseShort(v_Value);
+        }
+        catch (Exception exce)
+        {
+            // Nothing.
+        }
+        
+        return StringHelp.toNumber(v_Value).shortValue();
     }
     
     
@@ -318,7 +330,18 @@ public class HelpToObject
      */
     public static Short newShort(Class<?> i_Class ,String i_Value)
     {
-        return Short.valueOf(i_Value.trim());
+        String v_Value = i_Value.trim();
+        
+        try
+        {
+            return Short.valueOf(v_Value);
+        }
+        catch (Exception exce)
+        {
+            // Nothing.
+        }
+        
+        return StringHelp.toNumber(v_Value).shortValue();
     }
     
     
@@ -336,7 +359,18 @@ public class HelpToObject
      */
     public static int newint(Class<?> i_Class ,String i_Value)
     {
-        return Integer.parseInt(i_Value.trim());
+        String v_Value = i_Value.trim();
+        
+        try
+        {
+            return Integer.parseInt(v_Value);
+        }
+        catch (Exception exce)
+        {
+            // Nothing.
+        }
+        
+        return StringHelp.toNumber(v_Value).intValue();
     }
     
     
@@ -354,7 +388,18 @@ public class HelpToObject
      */
     public static Integer newInteger(Class<?> i_Class ,String i_Value)
     {
-        return Integer.valueOf(i_Value.trim());
+        String v_Value = i_Value.trim();
+        
+        try
+        {
+            return Integer.valueOf(v_Value);
+        }
+        catch (Exception exce)
+        {
+            // Nothing.
+        }
+        
+        return StringHelp.toNumber(v_Value).intValue();
     }
     
     
@@ -372,7 +417,18 @@ public class HelpToObject
      */
     public static long newlong(Class<?> i_Class ,String i_Value)
     {
-        return Long.parseLong(i_Value.trim());
+        String v_Value = i_Value.trim();
+        
+        try
+        {
+            return Long.parseLong(v_Value);
+        }
+        catch (Exception exce)
+        {
+            // Nothing.
+        }
+        
+        return StringHelp.toNumber(v_Value).longValue();
     }
     
     
@@ -390,7 +446,18 @@ public class HelpToObject
      */
     public static Long newLong(Class<?> i_Class ,String i_Value)
     {
-        return Long.valueOf(i_Value.trim());
+        String v_Value = i_Value.trim();
+        
+        try
+        {
+            return Long.valueOf(v_Value);
+        }
+        catch (Exception exce)
+        {
+            // Nothing.
+        }
+        
+        return StringHelp.toNumber(v_Value).longValue();
     }
     
     
@@ -408,7 +475,18 @@ public class HelpToObject
      */
     public static double newdouble(Class<?> i_Class ,String i_Value)
     {
-        return Double.parseDouble(i_Value.trim());
+        String v_Value = i_Value.trim();
+        
+        try
+        {
+            return Double.parseDouble(v_Value);
+        }
+        catch (Exception exce)
+        {
+            // Nothing.
+        }
+        
+        return StringHelp.toNumber(v_Value).doubleValue();
     }
     
     
@@ -426,7 +504,18 @@ public class HelpToObject
      */
     public static Double newDouble(Class<?> i_Class ,String i_Value)
     {
-        return Double.valueOf(i_Value.trim());
+        String v_Value = i_Value.trim();
+        
+        try
+        {
+            return Double.valueOf(v_Value);
+        }
+        catch (Exception exce)
+        {
+            // Nothing.
+        }
+        
+        return StringHelp.toNumber(v_Value).doubleValue();
     }
     
     
@@ -444,7 +533,18 @@ public class HelpToObject
      */
     public static float newfloat(Class<?> i_Class ,String i_Value)
     {
-        return Float.parseFloat(i_Value.trim());
+        String v_Value = i_Value.trim();
+        
+        try
+        {
+            return Float.parseFloat(v_Value);
+        }
+        catch (Exception exce)
+        {
+            // Nothing.
+        }
+        
+        return StringHelp.toNumber(v_Value).floatValue();
     }
     
     
@@ -462,7 +562,18 @@ public class HelpToObject
      */
     public static Float newFloat(Class<?> i_Class ,String i_Value)
     {
-        return Float.valueOf(i_Value.trim());
+        String v_Value = i_Value.trim();
+        
+        try
+        {
+            return Float.valueOf(v_Value);
+        }
+        catch (Exception exce)
+        {
+            // Nothing.
+        }
+        
+        return StringHelp.toNumber(v_Value).floatValue();
     }
     
     
@@ -480,7 +591,8 @@ public class HelpToObject
      */
     public static BigDecimal newBigDecimal(Class<?> i_Class ,String i_Value)
     {
-        return new BigDecimal(i_Value.trim());
+        String v_Value = i_Value.trim();
+        return StringHelp.toNumber(v_Value);
     }
     
     
