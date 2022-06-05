@@ -14,7 +14,7 @@ import java.io.Serializable;
  * 创建对象的时机：
  *   1. 构造本类的实例时。可通过i_IsInitPool参数调用创建对象的方式（true:同步创建对象； false:异步创建对象）。
  *   2. 调用get()方法时。当队列缓存池中的元素小于poolMinSize阀值时，将自动的、异步的、多线程的创建对象。
- *   
+ * 
  * @author      ZhengWei(HY)
  * @createDate  2018-07-03
  * @version     v1.0
@@ -53,7 +53,7 @@ public class DualChannelPool<O> implements Serializable
      * @param i_PoolDataClass   队列缓存池中的元素类型
      * @param i_PoolSize        队列缓存池的大小
      * @param i_PoolMinSize     队列缓存池的最小大小，当小于此值时，将创建新的元素并添加到池中
-     * @throws InstantiationException 
+     * @throws InstantiationException
      */
     public DualChannelPool(Class<O> i_PoolDataClass ,int i_PoolSize ,int i_PoolMinSize)
     {
@@ -73,7 +73,7 @@ public class DualChannelPool<O> implements Serializable
      * @param i_PoolSize        队列缓存池的大小
      * @param i_PoolMinSize     队列缓存池的最小大小，当小于此值时，将创建新的元素并添加到池中
      * @param i_IsInitPool      构造器中是否已同步方式初始化完成队列缓存池
-     * @throws InstantiationException 
+     * @throws InstantiationException
      */
     public DualChannelPool(Class<O> i_PoolDataClass ,int i_PoolSize ,int i_PoolMinSize ,boolean i_IsInitPool)
     {
@@ -113,7 +113,7 @@ public class DualChannelPool<O> implements Serializable
      *
      * @return
      */
-    public O get() 
+    public O get()
     {
         O v_Ret = this.dualChannel.poll();
         
@@ -265,8 +265,8 @@ public class DualChannelPool<O> implements Serializable
     /**
      * 设置：队列缓存池的最小大小，当小于此值时，将创建新的元素并添加到池中
      * 
-     * @param i_PoolMinSize 
-     * @throws InstantiationException 
+     * @param i_PoolMinSize
+     * @throws InstantiationException
      */
     public void setPoolMinSize(int i_PoolMinSize)
     {
@@ -293,7 +293,7 @@ public class DualChannelPool<O> implements Serializable
     /**
      * 设置：创建队列缓存池中元素的最大线程数量（默认值：100）
      * 
-     * @param maxThreadCount 
+     * @param maxThreadCount
      */
     public void setAddingMaxThreadCount(int maxThreadCount)
     {
@@ -307,7 +307,7 @@ public class DualChannelPool<O> implements Serializable
      */
     public int getThreadCount()
     {
-        return maxThreadCount;
+        return threadCount;
     }
     
     

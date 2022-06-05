@@ -122,7 +122,7 @@ public class HelpNewInstance
      */
     public static String newString(Class<?> i_Class)
     {
-        return new String();
+        return "";
     }
     
     
@@ -210,7 +210,7 @@ public class HelpNewInstance
      */
     public static Byte newByte(Class<?> i_Class)
     {
-        return new Byte((byte)0);
+        return 0;
     }
     
     
@@ -244,7 +244,7 @@ public class HelpNewInstance
      */
     public static Character newCharacter(Class<?> i_Class)
     {
-        return new Character(' ');
+        return ' ';
     }
     
     
@@ -278,7 +278,7 @@ public class HelpNewInstance
      */
     public static Short newShort(Class<?> i_Class)
     {
-        return new Short((short)0);
+        return 0;
     }
     
     
@@ -312,7 +312,7 @@ public class HelpNewInstance
      */
     public static Integer newInteger(Class<?> i_Class)
     {
-        return new Integer(0);
+        return 0;
     }
     
     
@@ -346,7 +346,7 @@ public class HelpNewInstance
      */
     public static Long newLong(Class<?> i_Class)
     {
-        return new Long(0);
+        return 0L;
     }
     
     
@@ -380,7 +380,7 @@ public class HelpNewInstance
      */
     public static Double newDouble(Class<?> i_Class)
     {
-        return new Double(0);
+        return 0D;
     }
     
     
@@ -414,7 +414,7 @@ public class HelpNewInstance
      */
     public static Float newFloat(Class<?> i_Class)
     {
-        return new Float(0);
+        return 0F;
     }
     
     

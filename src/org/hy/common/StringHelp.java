@@ -1075,7 +1075,7 @@ public final class StringHelp
         }
         
         
-        String           v_Ret  = new String(i_Str);
+        String           v_Ret  = i_Str;
         Iterator<String> v_Iter = $XML_EnCodes.keySet().iterator();
         while ( v_Iter.hasNext() )
         {
@@ -1104,7 +1104,7 @@ public final class StringHelp
         }
         
         
-        String           v_Ret  = new String(i_Str);
+        String           v_Ret  = i_Str;
         Iterator<String> v_Iter = $XML_EnCodes.values().iterator();
         while ( v_Iter.hasNext() )
         {
@@ -1370,7 +1370,7 @@ public final class StringHelp
         
         while ( v_LastPos < i_String.length() )
         {
-            v_Pos = i_String.indexOf("%" ,v_LastPos);
+            v_Pos = i_String.indexOf('%' ,v_LastPos);
             
             if ( v_Pos == v_LastPos )
             {
@@ -1610,7 +1610,7 @@ public final class StringHelp
         }
         else if ( i_AllowLen > 0 )
         {
-            if ( i_Num.indexOf(".") >= 0 )
+            if ( i_Num.indexOf('.') >= 0 )
             {
                 String [] v_NumArr      = i_Num.split("\\.");
                 double    v_NumSimplify = Double.parseDouble(i_Num);
@@ -1813,7 +1813,7 @@ public final class StringHelp
      */
     public final static String getFilePostfix(String i_FileName)
     {
-        int    v_DotIndex = i_FileName.lastIndexOf(".");
+        int    v_DotIndex = i_FileName.lastIndexOf('.');
         
         if ( v_DotIndex < 0 )
         {
@@ -1832,11 +1832,11 @@ public final class StringHelp
      */
     public final static String getFileName(String i_FileName)
     {
-        int v_Index = i_FileName.lastIndexOf("\\");
+        int v_Index = i_FileName.lastIndexOf('\\');
         
         if ( v_Index < 0 )
         {
-            v_Index = i_FileName.lastIndexOf("/");
+            v_Index = i_FileName.lastIndexOf('/');
             
             if ( v_Index < 0 )
             {
@@ -1857,7 +1857,7 @@ public final class StringHelp
     public final static String getFileShortName(String i_FileName)
     {
         String v_FileName = getFileName(i_FileName);
-        int    v_DotIndex = v_FileName.lastIndexOf(".");
+        int    v_DotIndex = v_FileName.lastIndexOf('.');
         
         if ( v_DotIndex < 0 )
         {

@@ -1328,25 +1328,15 @@ public class MethodReflect implements Serializable
     /**
      * 获取某一方法名称的所有方法对象。包括重载的多个方法
      * 
+     * 不再区分大小写 2017-07-12
+     * 
      * @param i_Class
      * @param i_MethodName
      * @return
      */
     public static List<Method> getMethods(Class<?> i_Class ,String i_MethodName)
     {
-        List<Method> v_Ret     = new ArrayList<Method>();
-        Method []    v_Methods = i_Class.getMethods();
-        
-        for (int i=0; i<v_Methods.length; i++)
-        {
-            // 不再区分大小写 2017-07-12
-            if ( v_Methods[i].getName().equalsIgnoreCase(i_MethodName) )
-            {
-                v_Ret.add(v_Methods[i]);
-            }
-        }
-        
-        return v_Ret;
+        return getMethodsIgnoreCase(i_Class ,i_MethodName);
     }
     
     
@@ -1592,6 +1582,8 @@ public class MethodReflect implements Serializable
     /**
      * 获取某一方法名称的所有方法对象。包括重载的多个方法
      * 
+     * 不再区分大小写 2017-07-12
+     * 
      * @param i_Class
      * @param i_MethodName
      * @param i_ParamSize
@@ -1599,22 +1591,7 @@ public class MethodReflect implements Serializable
      */
     public static List<Method> getMethods(Class<?> i_Class ,String i_MethodName ,int i_ParamSize)
     {
-        List<Method> v_Ret     = new ArrayList<Method>();
-        Method []    v_Methods = i_Class.getMethods();
-        
-        for (int i=0; i<v_Methods.length; i++)
-        {
-            // 不再区分大小写 2017-07-12
-            if ( v_Methods[i].getName().equalsIgnoreCase(i_MethodName) )
-            {
-                if ( v_Methods[i].getParameterTypes().length == i_ParamSize )
-                {
-                    v_Ret.add(v_Methods[i]);
-                }
-            }
-        }
-        
-        return v_Ret;
+        return getMethodsIgnoreCase(i_Class ,i_MethodName ,i_ParamSize);
     }
     
     

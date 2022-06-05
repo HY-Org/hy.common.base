@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 
 
@@ -21,7 +22,7 @@ import java.util.Map;
  * 
  * @author      ZhengWei(HY)
  * @createDate  2013-06-17
- * @version     v1.0  
+ * @version     v1.0
  *              v2.0  2019-09-12  添加：允许建立空的分区。即Map.value.size() == 0
  */
 public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements PartitionMap<P ,R>
@@ -60,6 +61,7 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
      * 
      * 2019-09-12  添加：允许i_Row为NULL时建立空的分区。
      */
+    @Override
     public synchronized R putRow(P i_Partition ,R i_Row)
     {
         if ( i_Partition == null )
@@ -105,31 +107,14 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
      * @param i_RowList    一批记录数据
      * @return
      * 
-     * @see 建议使用 putRows(P ,List<R>) 方法。因为此方法在多数情况下是无法达到预想目的的。 
+     * @see 建议使用 putRows(P ,List<R>) 方法。因为此方法在多数情况下是无法达到预想目的的。
      * 
      * 2019-09-12  添加：允许i_RowList为NULL时建立空的分区。
      */
-    public synchronized List<R> put(P i_Partition ,List<R> i_RowList) 
+    @Override
+    public List<R> put(P i_Partition ,List<R> i_RowList)
     {
-        if ( i_Partition == null )
-        {
-            throw new java.lang.NullPointerException("Partition is null.");
-        }
-        
-        if ( Help.isNull(i_RowList) )
-        {
-            this.putRow(i_Partition ,(R)null);
-        }
-        else
-        {
-            Iterator <R> Iter = i_RowList.iterator();
-            while ( Iter.hasNext() )
-            {
-                this.putRow(i_Partition ,Iter.next());
-            }
-        }
-        
-        return this.get(i_Partition);
+        return putRows(i_Partition ,i_RowList);
     }
     
     
@@ -146,14 +131,14 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
      * 这里有点儿绕。请仔细想想。
      * 那对于 Map.put(K ,V) 方法来说，V是什么呢？V是本类 R 还是 List<R> 呢？
      * 答：应当是 R 了。
-     * 也就是说，我将Java编译器给绕晕了。它错误理解为 Map.put(K ,List<R>) ，而不是 Map.put(K ,R)。 
+     * 也就是说，我将Java编译器给绕晕了。它错误理解为 Map.put(K ,List<R>) ，而不是 Map.put(K ,R)。
      * 
      * 这样一来，对于外界使用来说，可能出现下面的问题
      *   TablePartition<XSQL ,?> v_XSQLs;
      *   List<?>                 v_Rows;
-     *   
+     * 
      *   v_XSQLs.put(new XSQL() ,v_Rows);   // 此处Java编译器报错，它认为范型不匹配
-     *   
+     * 
      * 也因为此，我写了本方法 2014-12-04
      * 
      * @param i_Partition
@@ -162,7 +147,8 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
      * 
      * 2019-09-12  添加：允许i_RowList为NULL时建立空的分区。
      */
-    public synchronized List<R> putRows(P i_Partition ,List<R> i_RowList) 
+    @Override
+    public synchronized List<R> putRows(P i_Partition ,List<R> i_RowList)
     {
         if ( i_Partition == null )
         {
@@ -196,7 +182,8 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
      * 
      * 2019-09-12  添加：允许i_Rows为NULL时建立空的分区。
      */
-    public synchronized List<R> putRows(P i_Partition ,R [] i_Rows) 
+    @Override
+    public synchronized List<R> putRows(P i_Partition ,R [] i_Rows)
     {
         if ( i_Partition == null )
         {
@@ -226,6 +213,7 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
      * @param i_PartitionRows  它的Key就是分区信息，它的Value就是一条分区记录
      * @return
      */
+    @Override
     public synchronized void putRows(Map<P ,R> i_PartitionRows)
     {
         if ( Help.isNull(i_PartitionRows))
@@ -252,7 +240,8 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
      * 
      * 2019-09-12  添加：允许i_Row为NULL时建立空的分区。
      */
-    public synchronized List<R> putRows(P i_Partition ,R i_Row) 
+    @Override
+    public synchronized List<R> putRows(P i_Partition ,R i_Row)
     {
         if ( i_Partition == null )
         {
@@ -274,6 +263,7 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
      * @param i_RowNo      行号。下标从 0 开始。
      * @return
      */
+    @Override
     public R getRow(P i_Partition ,int i_RowNo)
     {
         if ( i_Partition == null )
@@ -310,6 +300,7 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
      * @param i_Row        行级对象
      * @return
      */
+    @Override
     public R getRow(P i_Partition ,R i_Row)
     {
         if ( i_Partition == null )
@@ -351,6 +342,7 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
      * @param i_RowNo      行号。下标从 0 开始。
      * @return
      */
+    @Override
     public synchronized R removeRow(P i_Partition ,int i_RowNo)
     {
         if ( i_Partition == null )
@@ -390,6 +382,7 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
      * @param i_Row        行级对象
      * @return
      */
+    @Override
     public synchronized R removeRow(P i_Partition ,R i_Row)
     {
         if ( i_Partition == null )
@@ -421,7 +414,8 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
     /**
      * 清理给定分区中的所有数据
      */
-    public synchronized List<R> remove(Object i_Partition) 
+    @Override
+    public synchronized List<R> remove(Object i_Partition)
     {
         if ( i_Partition == null )
         {
@@ -450,6 +444,7 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
      * 
      * @return
      */
+    @Override
     public int rowCount()
     {
         return this.rowCount;
@@ -463,6 +458,7 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
      * @param i_Partition
      * @return
      */
+    @Override
     public int rowCount(P i_Partition)
     {
         if ( i_Partition == null )
@@ -487,7 +483,8 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
     /**
      * 清理所有分区中的所有数据
      */
-    public synchronized void clear() 
+    @Override
+    public synchronized void clear()
     {
         Iterator<List<R>> v_Iter = super.values().iterator();
         
@@ -508,6 +505,7 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
      * 
      * @param i_Partition
      */
+    @Override
     public synchronized void clear(P i_Partition)
     {
         if ( super.containsKey(i_Partition) )
@@ -524,7 +522,7 @@ public class TablePartition<P ,R> extends Hashtable<P ,List<R>> implements Parti
     它会在元素还有用，但集合对象本身没有用时，释放元素对象
     
     一些与finalize相关的方法，由于一些致命的缺陷，已经被废弃了
-    protected void finalize() throws Throwable 
+    protected void finalize() throws Throwable
     {
         this.clear();
         

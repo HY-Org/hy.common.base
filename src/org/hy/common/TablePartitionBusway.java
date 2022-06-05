@@ -109,26 +109,10 @@ public class TablePartitionBusway<P ,R> extends Hashtable<P ,Busway<R>> implemen
      * 
      * @see 建议使用 putRows(P ,Set<R>) 方法。因为此方法在多数情况下是无法达到预想目的的。
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public synchronized Busway<R> put(P i_Partition ,Busway<R> i_RowList)
+    public Busway<R> put(P i_Partition ,Busway<R> i_RowList)
     {
-        if ( i_Partition == null )
-        {
-            throw new java.lang.NullPointerException("Partition  is null.");
-        }
-        if ( Help.isNull(i_RowList) )
-        {
-            throw new java.lang.NullPointerException("RowList is null.");
-        }
-        
-        Object [] v_Datas = i_RowList.getArray();
-        for (Object v_Data : v_Datas)
-        {
-            this.putRow(i_Partition ,(R)v_Data);
-        }
-        
-        return this.get(i_Partition);
+        return this.putRows(i_Partition ,i_RowList);
     }
     
     

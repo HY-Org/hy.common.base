@@ -20,6 +20,7 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -1020,14 +1020,14 @@ public class Help
             return 0D;
         }
         
-        BigDecimal v_Pow      = new BigDecimal(Math.pow(10d ,i_Digit));
+        BigDecimal v_Pow      = BigDecimal.valueOf(Math.pow(10d ,i_Digit));
         BigDecimal v_Big      = v_Value.multiply(v_Pow);
-        BigDecimal v_Small    = new BigDecimal(Math.floor(v_Big.doubleValue()));
+        BigDecimal v_Small    = BigDecimal.valueOf(Math.floor(v_Big.doubleValue()));
         double     v_Subtract = v_Big.subtract(v_Small).doubleValue();
         
         if ( v_Subtract >= 0.5d )
         {
-            v_Small = v_Small.add(new BigDecimal(1d));
+            v_Small = v_Small.add(BigDecimal.valueOf(1d));
         }
         
         v_Small = v_Small.divide(v_Pow);
@@ -1090,26 +1090,33 @@ public class Help
      */
     public final static int random(int i_Min ,int i_Max)
     {
-        int    v_Min    = i_Min < 0 ? 0 : i_Min;
-        int    v_Max    = Math.abs(i_Max);
-        Random v_Random = new Random();
-        
-        if ( v_Max == 0 )
+        try
         {
-            v_Max = Integer.MAX_VALUE;
+            int          v_Min    = i_Min < 0 ? 0 : i_Min;
+            int          v_Max    = Math.abs(i_Max);
+            SecureRandom v_Random = SecureRandom.getInstanceStrong();
+            
+            if ( v_Max == 0 )
+            {
+                v_Max = Integer.MAX_VALUE;
+            }
+            
+            if ( v_Max <= v_Min )
+            {
+                return v_Random.nextInt(v_Max + 1);
+            }
+            else if ( v_Min == 0 )
+            {
+                return v_Random.nextInt(v_Max + 1);
+            }
+            else
+            {
+                return v_Random.nextInt(v_Max) % (v_Max - v_Min + 1) + v_Min;
+            }
         }
-        
-        if ( v_Max <= v_Min )
+        catch (Exception exce)
         {
-            return v_Random.nextInt(v_Max + 1);
-        }
-        else if ( v_Min == 0 )
-        {
-            return v_Random.nextInt(v_Max + 1);
-        }
-        else
-        {
-            return v_Random.nextInt(v_Max) % (v_Max - v_Min + 1) + v_Min;
+            return i_Min;
         }
     }
     
@@ -1484,7 +1491,7 @@ public class Help
     {
         if ( i_Value == null )
         {
-            return new Short((short) 0);
+            return 0;
         }
         
         return i_Value;
@@ -1501,7 +1508,7 @@ public class Help
     {
         if ( i_Value == null )
         {
-            return new Byte((byte)0);
+            return 0;
         }
         
         return i_Value;
@@ -1518,7 +1525,7 @@ public class Help
     {
         if ( i_Value == null )
         {
-            return new Character(' ');
+            return ' ';
         }
         
         return i_Value;
@@ -1654,7 +1661,7 @@ public class Help
     {
         if ( i_Value == null )
         {
-            return new BigDecimal(0);
+            return BigDecimal.valueOf(0);
         }
         
         return i_Value;
@@ -2432,7 +2439,7 @@ public class Help
             URI    v_URI  = null;
             String v_Head = "";
             
-            if ( v_Ret.indexOf(":") >= 0 )
+            if ( v_Ret.indexOf(':') >= 0 )
             {
                 v_Ret  = v_Ret.substring(1);
                 v_Head = v_Ret.split(":")[0];
@@ -2481,7 +2488,7 @@ public class Help
             URI    v_URI  = null;
             String v_Head = "";
             
-            if ( v_Ret.indexOf(":") >= 0 )
+            if ( v_Ret.indexOf(':') >= 0 )
             {
                 v_Ret  = v_Ret.substring(1);
                 v_Head = v_Ret.split(":")[0];
@@ -2525,44 +2532,7 @@ public class Help
      */
     public final static String getWebClassPath()
     {
-        // Thread.currentThread().getContextClassLoader().getResource("").getFile().toString()
-        // Help.class.getResource("/").getFile().toString();
-        try
-        {
-            String v_Ret  = Thread.currentThread().getContextClassLoader().getResource("").getFile().toString();
-            URI    v_URI  = null;
-            String v_Head = "";
-            
-            if ( v_Ret.indexOf(":") >= 0 )
-            {
-                v_Ret  = v_Ret.substring(1);
-                v_Head = v_Ret.split(":")[0];
-            }
-            
-            v_URI = new URI(v_Ret);
-            v_Ret = v_URI.getPath();
-            
-            // 2019-01-08 发现  v_URI.getPath("C:\xxx\yyy") 会返回 "\xxx\yyy"，丢失了 c:。
-            // 问题的原因不明，但均有一个共同点：只在IDEA (测试版本2018.1、OpenJDK 1.8.0_152)的开发工具上出现。
-            // 同样的电脑、同样的项目、同样的Java环境下的Eclipse是正常的。
-            // 因此通过下面的方面弥补一下。
-            if ( !Help.isNull(v_Head) )
-            {
-                if ( !v_Ret.startsWith(v_Head) )
-                {
-                    v_Ret = v_Head + ":" + v_Ret;
-                }
-            }
-            
-            return v_Ret;
-        }
-        catch (Exception exce)
-        {
-            // 在手机设备上必报错，在电脑上不报错，因此不再输出异常信息
-            // exce.printStackTrace();
-        }
-        
-        return "";
+        return getClassHomePath();
     }
     
     
@@ -2757,7 +2727,7 @@ public class Help
             while ( v_Addresses.hasMoreElements() )
             {
                 v_IP = (InetAddress) v_Addresses.nextElement();
-                if ( v_IP != null && v_IP instanceof Inet4Address )
+                if ( v_IP instanceof Inet4Address )
                 {
                     v_Ret.append(v_IP.getHostAddress());
                     v_Count++;
@@ -2811,7 +2781,7 @@ public class Help
                 InetAddress v_IP  = (InetAddress) v_Addresses.nextElement();;
                 byte []     v_Mac = null;
                 
-                if ( v_IP != null && v_IP instanceof Inet4Address )
+                if ( v_IP instanceof Inet4Address )
                 {
                     try
                     {
@@ -8077,16 +8047,13 @@ public class Help
                         }
                         finally
                         {
-                            if ( v_ErrReader != null )
+                            try
                             {
-                                try
-                                {
-                                    v_ErrReader.close();
-                                }
-                                catch (Exception exce)
-                                {
-                                    // Nothing.
-                                }
+                                v_ErrReader.close();
+                            }
+                            catch (Exception exce)
+                            {
+                                // Nothing.
                             }
                         }
                     }
