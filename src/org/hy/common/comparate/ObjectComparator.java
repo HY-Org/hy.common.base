@@ -19,7 +19,7 @@ import org.hy.common.MethodReflect;
  * 
  * @author      ZhengWei(HY)
  * @createDate  2015-12-10
- * @version     v1.0  
+ * @version     v1.0
  *              v2.0  2017-06-15  添加：支持面向对象：参与排序的属性名，可实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的比较
  */
 public class ObjectComparator implements Comparator<Object>
@@ -39,9 +39,9 @@ public class ObjectComparator implements Comparator<Object>
     
     
     /** 属性名称的集合 */
-    private String        [] propertyNames; 
+    private String        [] propertyNames;
     
-    /** 
+    /**
      * 每个属性的排序标记的集合。标记值含意如下：
      *   -1   倒序。
      *    1   正序。从小到大。
@@ -50,7 +50,7 @@ public class ObjectComparator implements Comparator<Object>
      */
     private int           [] propertyOrders;
     
-    /** 
+    /**
      * 属性名称对应出在对象中的属性Getter(is)方法的集合
      * 
      * 注意：propertyMethods的大小可能小于上面两个数组，因为它中只是保留正确匹配到属性方法
@@ -60,7 +60,7 @@ public class ObjectComparator implements Comparator<Object>
     
     
     /**
-     * 构造器 
+     * 构造器
      *
      * @author      ZhengWei(HY)
      * @createDate  2015-12-10
@@ -68,8 +68,8 @@ public class ObjectComparator implements Comparator<Object>
      *
      * @param i_MetadataObj        一个用于获取序列对象元数据的样例对象
      * @param i_SortPropertyNames  参与排序的属性名称及排序标识。样式如，["name desc" ,"age NumDesc" ,"sex asc"]。
-     *                             没有排序标识的，默认按从小到大排序，即正序 
-     * @throws InstantiationException 
+     *                             没有排序标识的，默认按从小到大排序，即正序
+     * @throws InstantiationException
      */
     public ObjectComparator(Object i_MetadataObj ,String ... i_SortPropertyNames)
     {
@@ -165,6 +165,7 @@ public class ObjectComparator implements Comparator<Object>
     
     
     
+    @Override
     @SuppressWarnings({"rawtypes" ,"unchecked"})
     public int compare(Object i_Obj01 ,Object i_Obj02)
     {
@@ -332,6 +333,54 @@ public class ObjectComparator implements Comparator<Object>
             }
             
             return 0;
+        }
+    }
+    
+    
+    
+    public void clear()
+    {
+        if ( !Help.isNull(this.propertyMethods) )
+        {
+            for (int x=0; x<this.propertyMethods.length; x++)
+            {
+                this.propertyMethods[x].clear();
+                this.propertyMethods[x] = null;
+            }
+        }
+        
+        if ( !Help.isNull(this.propertyNames) )
+        {
+            for (int x=0; x<this.propertyNames.length; x++)
+            {
+                this.propertyNames[x] = null;
+            }
+        }
+    }
+    
+    
+    
+    public void clearDestroy()
+    {
+        if ( !Help.isNull(this.propertyMethods) )
+        {
+            for (int x=0; x<this.propertyMethods.length; x++)
+            {
+                this.propertyMethods[x].clearDestroy();
+                this.propertyMethods[x] = null;
+            }
+            
+            this.propertyMethods = null;
+        }
+        
+        if ( !Help.isNull(this.propertyNames) )
+        {
+            for (int x=0; x<this.propertyNames.length; x++)
+            {
+                this.propertyNames[x] = null;
+            }
+            
+            this.propertyNames = null;
         }
     }
     

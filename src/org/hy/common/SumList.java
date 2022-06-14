@@ -36,8 +36,8 @@ public class SumList<V> extends ArrayList<V>
     /** 连接符、对象属性名称的分隔符。默认是逗号 */
     private String               split;
     
-    /** 
-     * 连接符。默认是空字符串。多个连接符间用this.split指定字符分隔 
+    /**
+     * 连接符。默认是空字符串。多个连接符间用this.split指定字符分隔
      * 
      * 当连接符数量少于对象属性名称数量时，多出的对象属性按最后一个连接符连接
      */
@@ -85,7 +85,7 @@ public class SumList<V> extends ArrayList<V>
         super();
         
         this.keyListIndex = new HashMap<Object ,Integer>();
-        this.isAllowSum   = false; 
+        this.isAllowSum   = false;
         this.setSplit($Default_Split);
         this.setConnectors(i_Connectors);
     }
@@ -154,7 +154,7 @@ public class SumList<V> extends ArrayList<V>
             }
         }
         
-        if ( this.keyMethodGetter != null 
+        if ( this.keyMethodGetter != null
           && !Help.isNull(this.methodGetters)
           && !Help.isNull(this.methodSetters) )
         {
@@ -178,6 +178,7 @@ public class SumList<V> extends ArrayList<V>
      *                     关键属性的数据不允许NULL，否则不添加到集合中。
      * @return
      */
+    @Override
     public synchronized V set(int i_Index ,V i_NewObject)
     {
         if ( i_NewObject == null )
@@ -249,6 +250,7 @@ public class SumList<V> extends ArrayList<V>
      *
      * @see java.util.ArrayList#add(java.lang.Object)
      */
+    @Override
     public synchronized boolean add(V i_NewObject)
     {
         if ( i_NewObject == null )
@@ -296,8 +298,8 @@ public class SumList<V> extends ArrayList<V>
                         String v_OldValue = (String)v_MGetter.invokeForInstance(v_OldObject);
                         if ( v_OldValue != null )
                         {
-                            v_NewValue = v_OldValue 
-                                       + this.connectors[Math.min(v_Index ,this.connectors.length - 1)] 
+                            v_NewValue = v_OldValue
+                                       + this.connectors[Math.min(v_Index ,this.connectors.length - 1)]
                                        + v_NewValue;
                         }
                         
@@ -320,7 +322,7 @@ public class SumList<V> extends ArrayList<V>
     
     
     /**
-     * 批量的对象属性的合并拼接字符串 
+     * 批量的对象属性的合并拼接字符串
      *
      * @author      ZhengWei(HY)
      * @createDate  2018-07-13
@@ -329,7 +331,7 @@ public class SumList<V> extends ArrayList<V>
      * @param i_AddValues
      */
     @Override
-    public synchronized boolean addAll(Collection<? extends V> i_AddValues) 
+    public synchronized boolean addAll(Collection<? extends V> i_AddValues)
     {
         if ( Help.isNull(i_AddValues) )
         {
@@ -437,7 +439,37 @@ public class SumList<V> extends ArrayList<V>
     @Override
     public void clear()
     {
-        this.keyListIndex.clear();
+        if ( !Help.isNull(this.methodSetters) )
+        {
+            for (MethodReflect v_Item : this.methodSetters)
+            {
+                v_Item.clear();
+            }
+            
+            this.methodSetters.clear();
+        }
+        
+        
+        if ( !Help.isNull(this.methodGetters) )
+        {
+            for (MethodReflect v_Item : this.methodGetters)
+            {
+                v_Item.clear();
+            }
+            
+            this.methodGetters.clear();
+        }
+        
+        if ( this.keyMethodGetter != null )
+        {
+            this.keyMethodGetter.clear();
+        }
+        
+        if ( this.keyListIndex != null )
+        {
+            this.keyListIndex.clear();
+        }
+        
         super.clear();
     }
 
@@ -482,7 +514,7 @@ public class SumList<V> extends ArrayList<V>
      * 
      *      多个连接符间用this.split指定字符分隔
      * 
-     * @param methodURL 
+     * @param methodURL
      */
     public void setMethodURLs(String methodURLs)
     {
@@ -507,7 +539,7 @@ public class SumList<V> extends ArrayList<V>
     /**
      * 设置：连接符、对象属性名称的分隔符。默认是逗号
      * 
-     * @param i_Split 
+     * @param i_Split
      */
     public void setSplit(String i_Split)
     {
@@ -529,7 +561,7 @@ public class SumList<V> extends ArrayList<V>
     /**
      * 设置：关键属性。按对象的哪个属性合并或拼接对象的其它属性的。支持面向对象，可实现xxx.yyy.www全路径的解释。（只能指定对象的一个属性）
      * 
-     * @param keyMethodURL 
+     * @param keyMethodURL
      */
     public void setKeyMethodURL(String keyMethodURL)
     {

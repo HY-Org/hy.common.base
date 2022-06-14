@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -1626,6 +1627,111 @@ public class MethodReflect implements Serializable
     
     
     /**
+     * 按方法入参类型配对最佳方法，最佳方法有多少个时，按从前到后优先级排序
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2022-06-13
+     * @version     v1.0
+     * 
+     * @param i_Class
+     * @param i_MethodName
+     * @param i_ParamValues  方法参数的值
+     * @return
+     */
+    public static List<Method> getMethodsBest(Class<?> i_Class ,String i_MethodName ,Object [] i_ParamValues)
+    {
+        if ( Help.isNull(i_ParamValues) )
+        {
+            return getMethodsBest(i_Class ,i_MethodName ,null);
+        }
+        else
+        {
+            Class<?> [] v_ParamClassTypes = new Class<?>[i_ParamValues.length];
+            
+            for (int x=0; x<i_ParamValues.length; x++)
+            {
+                v_ParamClassTypes[x] = i_ParamValues[x] == null ? Object.class : i_ParamValues[x].getClass();
+            }
+            
+            return getMethodsBest(i_Class ,i_MethodName ,v_ParamClassTypes);
+        }
+    }
+    
+    
+    
+    /**
+     * 按方法入参类型配对最佳方法，最佳方法有多少个时，按从前到后优先级排序
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2022-06-13
+     * @version     v1.0
+     * 
+     * @param i_Class
+     * @param i_MethodName
+     * @param i_ParamClassTypes  方法参数值的类型
+     * @return
+     */
+    public static List<Method> getMethodsBest(Class<?> i_Class ,String i_MethodName ,Class<?> [] i_ParamClassTypes)
+    {
+        List<Method> v_Methods = null;
+                
+        if ( Help.isNull(i_ParamClassTypes) )
+        {
+            v_Methods = MethodReflect.getMethodsIgnoreCase(i_Class ,i_MethodName ,0);
+        }
+        else
+        {
+            v_Methods = MethodReflect.getMethodsIgnoreCase(i_Class ,i_MethodName ,i_ParamClassTypes.length);
+        }
+        
+        if ( v_Methods.size() <= 1 )
+        {
+            return v_Methods;
+        }
+        
+        Map<Integer ,Method> v_Bests = new HashMap<Integer ,Method>();
+        for (Method v_Method : v_Methods)
+        {
+            int         v_BestValue    = 0;
+            Class<?> [] v_MPClassTypes = v_Method.getParameterTypes();
+            for (int y=i_ParamClassTypes.length - 1; y>=0; y--)
+            {
+                if ( i_ParamClassTypes[y] == v_MPClassTypes[y] )                                       // 3级：完全配对
+                {
+                    v_BestValue += Math.pow(1 ,i_ParamClassTypes.length - y) * 3;
+                }
+                else if ( v_MPClassTypes[y] == Object.class )                                          // 1级：模糊配对
+                {
+                    v_BestValue += Math.pow(1 ,i_ParamClassTypes.length - y);
+                }
+                else if ( MethodReflect.isExtendImplement(i_ParamClassTypes[y] ,v_MPClassTypes[y]) )   // 2级：继承配对 或 接口实现配对
+                {
+                    v_BestValue += Math.pow(1 ,i_ParamClassTypes.length - y) * 2;
+                }
+            }
+            
+            if ( v_BestValue > 0 )
+            {
+                v_Bests.put(v_BestValue ,v_Method);
+            }
+        }
+        
+        if ( !Help.isNull(v_Bests) )
+        {
+            v_Methods.clear();
+            v_Methods = Help.toList(Help.toReverse(v_Bests));
+            v_Bests.clear();
+            return v_Methods;
+        }
+        else
+        {
+            return new ArrayList<Method>();
+        }
+    }
+    
+    
+    
+    /**
      * 向数据库表插入数据时，通过Java生成主键的功能。与SQL占位符配合使用。
      * 
      * @author      ZhengWei(HY)
@@ -1693,7 +1799,12 @@ public class MethodReflect implements Serializable
             try
             {
                 v_MethodReflect = new MethodReflect(v_MapValue ,v_ChildMethodURL ,true ,MethodReflect.$NormType_Getter);
-                return v_MethodReflect.invoke();
+                Object v_Ret = v_MethodReflect.invoke();
+                
+                v_MethodReflect.clearDestroy();
+                v_MethodReflect = null;
+                
+                return v_Ret;
             }
             catch (Exception exce)
             {
@@ -1863,10 +1974,15 @@ public class MethodReflect implements Serializable
         
         if ( v_OKMethods.size() == 1 )
         {
-            return v_OKMethods.get(0);
+            v_Method = v_OKMethods.get(0);
+            v_OKMethods.clear();
+            v_OKMethods = null;
+            return v_Method;
         }
         else
         {
+            v_OKMethods.clear();
+            v_OKMethods = null;
             return null;
         }
     }
@@ -2190,6 +2306,112 @@ public class MethodReflect implements Serializable
     
     
     
+    public void clear()
+    {
+        if ( this.classes != null )
+        {
+            this.classes.clear();
+        }
+        
+        if ( this.instances != null )
+        {
+            this.instances.clear();
+        }
+        
+        if ( this.methodsParams != null )
+        {
+            for (List<String> v_Item : methodsParams)
+            {
+                if ( v_Item != null )
+                {
+                    v_Item.clear();
+                }
+            }
+            
+            this.methodsParams.clear();
+        }
+        
+        if ( this.methods != null )
+        {
+            for (List<MethodInfo> v_Item : this.methods)
+            {
+                if ( v_Item != null )
+                {
+                    v_Item.clear();
+                }
+            }
+            
+            this.methods.clear();
+        }
+        
+        if ( !Help.isNull(this.methodNames) )
+        {
+            for (int x=0; x<this.methodNames.length; x++)
+            {
+                this.methodNames[x] = null;
+            }
+        }
+    }
+    
+    
+    
+    public void clearDestroy()
+    {
+        if ( this.classes != null )
+        {
+            this.classes.clear();
+            this.classes = null;
+        }
+        
+        if ( this.instances != null )
+        {
+            this.instances.clear();
+            this.instances = null;
+        }
+        
+        if ( this.methodsParams != null )
+        {
+            for (List<String> v_Item : methodsParams)
+            {
+                if ( v_Item != null )
+                {
+                    v_Item.clear();
+                    v_Item = null;
+                }
+            }
+            
+            this.methodsParams.clear();
+            this.methodsParams = null;
+        }
+        
+        if ( this.methods != null )
+        {
+            for (List<MethodInfo> v_Item : this.methods)
+            {
+                if ( v_Item != null )
+                {
+                    v_Item.clear();
+                    v_Item = null;
+                }
+            }
+            
+            this.methods.clear();
+            this.methods = null;
+        }
+        
+        if ( Help.isNull(this.methodNames) )
+        {
+            for (int x=0; x<this.methodNames.length; x++)
+            {
+                this.methodNames[x] = null;
+            }
+            
+            this.methodNames = null;
+        }
+    }
+    
+    
+    
     /**
      * 方法的反射
      * 
@@ -2505,12 +2727,12 @@ public class MethodReflect implements Serializable
                     v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1) ,v_ParamObjs);
                 }
                 
+                this.methods.add(MethodInfo.toMethods(v_Methods));
                 if ( v_ChildInstance == null )
                 {
                     return;
                 }
                 
-                this.methods.add(MethodInfo.toMethods(v_Methods));
                 this.instances.add(v_ChildInstance);
                 this.classes  .add(v_ChildInstance.getClass());
             }

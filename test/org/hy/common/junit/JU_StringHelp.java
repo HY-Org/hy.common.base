@@ -266,4 +266,19 @@ public class JU_StringHelp
         System.out.println(StringHelp.parsePlaceholdersSequence("INSERT INTO AAA (':中文')"));
     }
     
+    
+    
+    @Test
+    public void test_UUID()
+    {
+        List<String> v_IDs = new ArrayList<String>();
+        for (int x=1; x<=10000; x++)
+        {
+            v_IDs.add(StringHelp.getUUID());
+        }
+        
+        v_IDs = Help.toDistinct(v_IDs);
+        System.out.println(v_IDs.size());
+    }
+    
 }

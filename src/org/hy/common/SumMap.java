@@ -32,8 +32,8 @@ public class SumMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
     /** 连接符、对象属性名称的分隔符。默认是逗号 */
     private String              split;
     
-    /** 
-     * 连接符。默认是空字符串。多个连接符间用this.split指定字符分隔 
+    /**
+     * 连接符。默认是空字符串。多个连接符间用this.split指定字符分隔
      * 
      * 当连接符数量少于对象属性名称数量时，多出的对象属性按最后一个连接符连接
      */
@@ -169,8 +169,8 @@ public class SumMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
                     String v_OldValue = (String)v_MGetter.invokeForInstance(v_Old);
                     if ( v_OldValue != null )
                     {
-                        v_NewValue = v_OldValue 
-                                   + this.connectors[Math.min(v_Index ,this.connectors.length - 1)] 
+                        v_NewValue = v_OldValue
+                                   + this.connectors[Math.min(v_Index ,this.connectors.length - 1)]
                                    + v_NewValue;
                     }
                     
@@ -190,7 +190,7 @@ public class SumMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
     
     
     /**
-     * 批量的对象属性的合并拼接字符串 
+     * 批量的对象属性的合并拼接字符串
      *
      * @author      ZhengWei(HY)
      * @createDate  2018-06-01
@@ -201,11 +201,11 @@ public class SumMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
      * @see java.util.Hashtable#putAll(java.util.Map)
      */
     @Override
-    public synchronized void putAll(Map<? extends K, ? extends V> i_AddValues) 
+    public synchronized void putAll(Map<? extends K, ? extends V> i_AddValues)
     {
         Iterator<? extends Map.Entry<? extends K, ? extends V>> i = i_AddValues.entrySet().iterator();
         
-        while (i.hasNext()) 
+        while (i.hasNext())
         {
             Map.Entry<? extends K, ? extends V> e = i.next();
             put(e.getKey(), e.getValue());
@@ -223,11 +223,11 @@ public class SumMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
      *
      * @param i_AddValues
      */
-    public synchronized void setAll(Map<? extends K, ? extends V> i_AddValues) 
+    public synchronized void setAll(Map<? extends K, ? extends V> i_AddValues)
     {
         Iterator<? extends Map.Entry<? extends K, ? extends V>> i = i_AddValues.entrySet().iterator();
         
-        while (i.hasNext()) 
+        while (i.hasNext())
         {
             Map.Entry<? extends K, ? extends V> e = i.next();
             set(e.getKey(), e.getValue());
@@ -275,7 +275,7 @@ public class SumMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
      * 
      *      多个连接符间用this.split指定字符分隔
      * 
-     * @param methodURL 
+     * @param methodURL
      */
     public void setMethodURLs(String methodURLs)
     {
@@ -299,11 +299,40 @@ public class SumMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
     /**
      * 设置：连接符、对象属性名称的分隔符。默认是逗号
      * 
-     * @param i_Split 
+     * @param i_Split
      */
     public void setSplit(String i_Split)
     {
         this.split = Help.NVL(i_Split ,SumList.$Default_Split);
+    }
+
+
+
+    @Override
+    public synchronized void clear()
+    {
+        if ( !Help.isNull(this.methodSetters) )
+        {
+            for (MethodReflect v_Item : this.methodSetters)
+            {
+                v_Item.clear();
+            }
+            
+            this.methodSetters.clear();
+        }
+        
+        
+        if ( !Help.isNull(this.methodGetters) )
+        {
+            for (MethodReflect v_Item : this.methodGetters)
+            {
+                v_Item.clear();
+            }
+            
+            this.methodGetters.clear();
+        }
+        
+        super.clear();
     }
     
 }

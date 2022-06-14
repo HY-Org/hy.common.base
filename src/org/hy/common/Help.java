@@ -3666,6 +3666,9 @@ public class Help
             {
                 v_MethodRef.invokeSetForInstance(v_Item ,i_Value);
             }
+            
+            v_MethodRef.clearDestroy();
+            v_MethodRef = null;
         }
         catch (Exception exce)
         {
@@ -3704,6 +3707,8 @@ public class Help
                 v_MethodReflect = new MethodReflect(i_Data.getClass() ,v_Item.getKey() ,true ,MethodReflect.$NormType_Setter);
                 
                 v_MethodReflect.invokeSetForInstance(i_Data ,v_Item.getValue());
+                v_MethodReflect.clearDestroy();
+                v_MethodReflect = null;
             }
             catch (Exception exce)
             {
@@ -3748,6 +3753,8 @@ public class Help
                 v_MethodReflect = new MethodReflect(i_Data.getClass() ,v_Item.getKey() ,true ,MethodReflect.$NormType_Setter);
                 
                 v_MethodReflect.invokeSetForInstance(i_Data ,v_Item.getValue());
+                v_MethodReflect.clearDestroy();
+                v_MethodReflect = null;
             }
             catch (Exception exce)
             {
@@ -5093,6 +5100,9 @@ public class Help
                     v_Ret.add(v_Item);
                 }
             }
+            
+            v_MethodReflect.clearDestroy();
+            v_MethodReflect = null;
         }
         catch (Exception exce)
         {
@@ -5178,6 +5188,9 @@ public class Help
                     v_Ret.add(v_Item);
                 }
             }
+            
+            v_MethodReflect.clearDestroy();
+            v_MethodReflect = null;
         }
         catch (Exception exce)
         {
@@ -5269,6 +5282,9 @@ public class Help
                     }
                 }
             }
+            
+            v_MethodReflect.clearDestroy();
+            v_MethodReflect = null;
         }
         catch (Exception exce)
         {
@@ -5354,6 +5370,9 @@ public class Help
                     v_Ret.add(v_Item);
                 }
             }
+            
+            v_MethodReflect.clearDestroy();
+            v_MethodReflect = null;
         }
         catch (Exception exce)
         {
@@ -5439,6 +5458,9 @@ public class Help
                     v_Ret.add(v_Item);
                 }
             }
+            
+            v_MethodReflect.clearDestroy();
+            v_MethodReflect = null;
         }
         catch (Exception exce)
         {
@@ -6425,6 +6447,8 @@ public class Help
     {
         ObjectComparator v_SComparator = new ObjectComparator(io_Datas.get(0) ,i_SortPropertyNames);
         Collections.sort(io_Datas ,v_SComparator);
+        v_SComparator.clearDestroy();
+        v_SComparator = null;
     }
     
     
@@ -6543,6 +6567,9 @@ public class Help
                 }
             }
         }
+        
+        v_Comparator.clearDestroy();
+        v_Comparator = null;
         
         return v_Sames;
     }
@@ -6788,6 +6815,9 @@ public class Help
                 }
             }
         }
+        
+        v_Comparator.clearDestroy();
+        v_Comparator = null;
     }
     
     
