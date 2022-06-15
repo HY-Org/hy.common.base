@@ -201,11 +201,11 @@ public class Sum<K> extends ListMap<K ,Double> implements Map<K ,Double>
     
     
     @Override
-    public synchronized void putAll(Map<? extends K, ? extends Double> i_AddValues) 
+    public synchronized void putAll(Map<? extends K, ? extends Double> i_AddValues)
     {
         Iterator<? extends Map.Entry<? extends K, ? extends Double>> i = i_AddValues.entrySet().iterator();
         
-        while (i.hasNext()) 
+        while (i.hasNext())
         {
             Map.Entry<? extends K, ? extends Double> e = i.next();
             put(e.getKey(), e.getValue());
@@ -214,11 +214,11 @@ public class Sum<K> extends ListMap<K ,Double> implements Map<K ,Double>
     
     
     
-    public synchronized void setAll(Map<? extends K, ? extends Double> i_AddValues) 
+    public synchronized void setAll(Map<? extends K, ? extends Double> i_AddValues)
     {
         Iterator<? extends Map.Entry<? extends K, ? extends Double>> i = i_AddValues.entrySet().iterator();
         
-        while (i.hasNext()) 
+        while (i.hasNext())
         {
             Map.Entry<? extends K, ? extends Double> e = i.next();
             set(e.getKey(), e.getValue());
@@ -241,7 +241,10 @@ public class Sum<K> extends ListMap<K ,Double> implements Map<K ,Double>
     public synchronized Double remove(Object i_Key)
     {
         Double v_RemoveValue = super.remove(i_Key);
-        this.sumValue -= v_RemoveValue;
+        if ( v_RemoveValue != null )
+        {
+            this.sumValue -= v_RemoveValue;
+        }
         return v_RemoveValue;
     }
 
@@ -270,7 +273,7 @@ public class Sum<K> extends ListMap<K ,Double> implements Map<K ,Double>
     
     public double getAvgValue()
     {
-        return Help.division(this.getSumValue() ,this.size()); 
+        return Help.division(this.getSumValue() ,this.size());
     }
     
     
@@ -288,7 +291,7 @@ public class Sum<K> extends ListMap<K ,Double> implements Map<K ,Double>
     /**
      * 设置：最大长度
      * 
-     * @param maxSize 
+     * @param maxSize
      */
     public void setMaxSize(int maxSize)
     {

@@ -171,11 +171,11 @@ public class Min<K> extends Hashtable<K ,Double>
     
     
     @Override
-    public synchronized void putAll(Map<? extends K, ? extends Double> i_Mins) 
+    public synchronized void putAll(Map<? extends K, ? extends Double> i_Mins)
     {
         Iterator<? extends Map.Entry<? extends K, ? extends Double>> i = i_Mins.entrySet().iterator();
         
-        while (i.hasNext()) 
+        while (i.hasNext())
         {
             Map.Entry<? extends K, ? extends Double> e = i.next();
             put(e.getKey(), e.getValue());
@@ -184,11 +184,11 @@ public class Min<K> extends Hashtable<K ,Double>
     
     
     
-    public synchronized void setAll(Map<? extends K, ? extends Double> i_Mins) 
+    public synchronized void setAll(Map<? extends K, ? extends Double> i_Mins)
     {
         Iterator<? extends Map.Entry<? extends K, ? extends Double>> i = i_Mins.entrySet().iterator();
         
-        while (i.hasNext()) 
+        while (i.hasNext())
         {
             Map.Entry<? extends K, ? extends Double> e = i.next();
             set(e.getKey(), e.getValue());
@@ -212,17 +212,20 @@ public class Min<K> extends Hashtable<K ,Double>
     {
         Double v_RemoveValue = super.remove(i_Key);
         
-        if ( this.minValue >= v_RemoveValue.doubleValue() )
+        if ( v_RemoveValue != null )
         {
-            double v_MinValue = 0;
-            for (Double v_Item : super.values())
+            if ( this.minValue >= v_RemoveValue.doubleValue() )
             {
-                if ( v_Item.doubleValue() < v_MinValue )
+                double v_MinValue = 0;
+                for (Double v_Item : super.values())
                 {
-                    v_MinValue = v_Item.doubleValue();
+                    if ( v_Item.doubleValue() < v_MinValue )
+                    {
+                        v_MinValue = v_Item.doubleValue();
+                    }
                 }
+                this.minValue = v_MinValue;
             }
-            this.minValue = v_MinValue;
         }
         
         return v_RemoveValue;

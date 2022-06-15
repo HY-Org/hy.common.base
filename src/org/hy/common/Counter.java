@@ -15,7 +15,7 @@ import java.util.Map;
  * @createDate  2014-12-15
  * @version     v1.0
  *              v2.0  2019-05-29  添加：remove() 方法。删除时，减合计值，同时重新计算最大值、最小值
- *              
+ * 
  */
 public class Counter<K> extends Hashtable<K ,Long>
 {
@@ -160,11 +160,11 @@ public class Counter<K> extends Hashtable<K ,Long>
     
     
     @Override
-    public synchronized void putAll(Map<? extends K, ? extends Long> i_Counters) 
+    public synchronized void putAll(Map<? extends K, ? extends Long> i_Counters)
     {
         Iterator<? extends Map.Entry<? extends K, ? extends Long>> i = i_Counters.entrySet().iterator();
         
-        while (i.hasNext()) 
+        while (i.hasNext())
         {
             Map.Entry<? extends K, ? extends Long> e = i.next();
             put(e.getKey(), e.getValue());
@@ -173,11 +173,11 @@ public class Counter<K> extends Hashtable<K ,Long>
     
     
     
-    public synchronized void setAll(Map<? extends K, ? extends Long> i_Counters) 
+    public synchronized void setAll(Map<? extends K, ? extends Long> i_Counters)
     {
         Iterator<? extends Map.Entry<? extends K, ? extends Long>> i = i_Counters.entrySet().iterator();
         
-        while (i.hasNext()) 
+        while (i.hasNext())
         {
             Map.Entry<? extends K, ? extends Long> e = i.next();
             set(e.getKey(), e.getValue());
@@ -204,32 +204,32 @@ public class Counter<K> extends Hashtable<K ,Long>
         if ( v_RemoveValue != null )
         {
             this.sumValue -= v_RemoveValue.longValue();
-        }
         
-        if ( this.maxValue <= v_RemoveValue.longValue() )
-        {
-            long v_MaxValue = 0;
-            for (Long v_Item : super.values())
+            if ( this.maxValue <= v_RemoveValue.longValue() )
             {
-                if ( v_Item.longValue() > v_MaxValue )
+                long v_MaxValue = 0;
+                for (Long v_Item : super.values())
                 {
-                    v_MaxValue = v_Item.longValue();
+                    if ( v_Item.longValue() > v_MaxValue )
+                    {
+                        v_MaxValue = v_Item.longValue();
+                    }
                 }
+                this.maxValue = v_MaxValue;
             }
-            this.maxValue = v_MaxValue;
-        }
-        
-        if ( this.minValue >= v_RemoveValue.longValue() )
-        {
-            long v_MinValue = 0;
-            for (Long v_Item : super.values())
+            
+            if ( this.minValue >= v_RemoveValue.longValue() )
             {
-                if ( v_Item.longValue() < v_MinValue )
+                long v_MinValue = 0;
+                for (Long v_Item : super.values())
                 {
-                    v_MinValue = v_Item.longValue();
+                    if ( v_Item.longValue() < v_MinValue )
+                    {
+                        v_MinValue = v_Item.longValue();
+                    }
                 }
+                this.minValue = v_MinValue;
             }
-            this.minValue = v_MinValue;
         }
         
         return v_RemoveValue;
