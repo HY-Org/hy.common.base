@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *              v3.0  2017-11-20  添加：getAndKeep()方法，可实现Session机制。
  *              v4.0  2022-06-22  添加：getExpire()方法，一个方法即可返回所有参数信息，使用它得到多组信息时，性能更高
  *                                添加：entrySetExpire()方法，为本类转Json 或通过Json序列化提供支持
+ *                                添加：putMilli(K,V,Date,Long) 添加元素，带有创建时间和过期的时间戳
  */
 public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneable
 {
@@ -226,7 +227,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
         }
         else
         {
-            v_NewData = new ExpireElement<K ,V>(i_Key ,i_Value);
+            v_NewData = new ExpireElement<K ,V>(i_Key ,i_Value ,i_Millisecond);
             this.datas.put(i_Key ,v_NewData);
         }
         
@@ -240,6 +241,46 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
             if ( this.minTime == 0L || v_Time < this.minTime )
             {
                 this.minTime = v_Time;
+            }
+        }
+        
+        return v_NewData;
+    }
+    
+    
+    
+    /**
+     * 添加元素，带有创建时间和过期的时间戳
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2022-06-22
+     * @version     v1.0
+     *
+     * @param i_Key
+     * @param i_Value
+     * @param i_CreateTime   创建时间
+     * @param i_ExpireTime   过期的时间戳，与 getExpireTimeLen() 方法返回值同义
+     * @return
+     */
+    public synchronized Expire<K ,V> putMilli(K i_Key ,V i_Value ,Date i_CreateTime ,long i_ExpireTime)
+    {
+        Expire<K ,V>        v_OldData = this.datas.get(i_Key);
+        ExpireElement<K ,V> v_NewData = null;
+        
+        if ( v_OldData != null )
+        {
+            this.datas.remove(i_Key);
+        }
+        
+        v_NewData = new ExpireElement<K ,V>(i_Key ,i_Value ,i_ExpireTime ,i_CreateTime);
+        this.datas.put(i_Key ,v_NewData);
+        this.datasSame.put(i_Key ,i_Value);
+        
+        if ( i_ExpireTime > 0L )
+        {
+            if ( this.minTime == 0L || i_ExpireTime < this.minTime )
+            {
+                this.minTime = i_ExpireTime;
             }
         }
         
