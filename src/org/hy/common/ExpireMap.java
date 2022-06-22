@@ -22,6 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version     v1.0
  *              v2.0  2017-02-28  添加：元素首次加入集合的创建时间
  *              v3.0  2017-11-20  添加：getAndKeep()方法，可实现Session机制。
+ *              v4.0  2022-06-22  添加：getExpire()方法，一个方法即可返回所有参数信息，使用它得到多组信息时，性能更高
+ *                                添加：entrySetExpire()方法，为本类转Json 或通过Json序列化提供支持
  */
 public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneable
 {
@@ -29,49 +31,49 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
     
     
     /** 真实的数据 */
-    private ConcurrentHashMap<K ,ExpireElement<K ,V>> datas;
+    private ConcurrentHashMap<K ,Expire<K ,V>> datas;
     
-    /** 
+    /**
      * 一样的数据，不同的结构。
      * 主要用于 ExpireMap.values() 和 ExpireMap.entrySet() 两个方法。
      * 注意：ExpireMap并没有直接继承 Hashtable<K ,V>，而是将 Hashtable<K ,V>作为内部属性。
      */
     private ConcurrentHashMap<K ,V>                   datasSame;
     
-    /** 
+    /**
      * 最小的过期时间戳。
      * 
      * 它的主要作用是优化检查过期失效的性能
      *   1. 0值 不计算在内。
      *   2. 但初始化值为 0值。
      */
-    private long                                      minTime; 
+    private long                                      minTime;
     
     
     
     public ExpireMap()
     {
-        this.datas     = new ConcurrentHashMap<K ,ExpireElement<K ,V>>();
-        this.datasSame = new ConcurrentHashMap<K ,V>(); 
-        this.minTime   = 0;
+        this.datas     = new ConcurrentHashMap<K ,Expire<K ,V>>();
+        this.datasSame = new ConcurrentHashMap<K ,V>();
+        this.minTime   = 0L;
     }
     
     
     
     public ExpireMap(int i_InitialCapacity)
     {
-        this.datas     = new ConcurrentHashMap<K ,ExpireElement<K ,V>>(i_InitialCapacity);
+        this.datas     = new ConcurrentHashMap<K ,Expire<K ,V>>(i_InitialCapacity);
         this.datasSame = new ConcurrentHashMap<K ,V>                  (i_InitialCapacity);
-        this.minTime   = 0;
+        this.minTime   = 0L;
     }
     
     
     
     public ExpireMap(int i_InitialCapacity, float i_LoadFactor)
     {
-        this.datas     = new ConcurrentHashMap<K ,ExpireElement<K ,V>>(i_InitialCapacity ,i_LoadFactor);
-        this.datasSame = new ConcurrentHashMap<K ,V>                  (i_InitialCapacity ,i_LoadFactor);
-        this.minTime   = 0;
+        this.datas     = new ConcurrentHashMap<K ,Expire<K ,V>>(i_InitialCapacity ,i_LoadFactor);
+        this.datasSame = new ConcurrentHashMap<K ,V>           (i_InitialCapacity ,i_LoadFactor);
+        this.minTime   = 0L;
     }
     
     
@@ -87,25 +89,25 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @version     v1.0
      *
      */
-    private synchronized Map<K ,ExpireElement<K ,V>> checkExpires()
+    private synchronized Map<K ,Expire<K ,V>> checkExpires()
     {
         if ( this.datas.isEmpty() )
         {
-            this.minTime = 0;
+            this.minTime = 0L;
         }
         else
         {
-            if ( 0 < this.minTime && this.minTime < Date.getNowTime().getTime() )
+            if ( 0L < this.minTime && this.minTime < Date.getNowTime().getTime() )
             {
-                long v_MinTime = 0;
+                long v_MinTime = 0L;
                 
-                for (ExpireElement<K ,V> v_Data : this.datas.values())
+                for (Expire<K ,V> v_Data : this.datas.values())
                 {
-                    if ( null != v_Data.checkExpire(false) )
+                    if ( null != ((ExpireElement<K ,V>)v_Data).checkExpire(false) )
                     {
-                        if ( v_MinTime == 0 || v_Data.time < v_MinTime )
+                        if ( v_MinTime == 0L || v_Data.getTime() < v_MinTime )
                         {
-                            v_MinTime = v_Data.time;
+                            v_MinTime = v_Data.getTime();
                         }
                     }
                 }
@@ -136,7 +138,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      */
     public V setExpireTime(K i_Key ,long i_Second)
     {
-        return this.setExpireTimeMilli(i_Key ,i_Second * 1000);
+        return this.setExpireTimeMilli(i_Key ,i_Second * 1000L);
     }
     
     
@@ -156,20 +158,20 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      */
     public synchronized V setExpireTimeMilli(K i_Key ,long i_Millisecond)
     {
-        ExpireElement<K ,V> v_Data = this.datas.get(i_Key);
+        Expire<K ,V> v_Data = this.datas.get(i_Key);
         
         if ( null == v_Data )
         {
             return null;
         }
-        else if ( v_Data.checkExpire() == null )
+        else if ( ((ExpireElement<K ,V>)v_Data).checkExpire() == null )
         {
             return null;
         }
         
         long v_Time = Date.getNowTime().getTime() + i_Millisecond;
-        v_Data.time = v_Time;
-        if ( this.minTime == 0 || v_Time < this.minTime )
+        ((ExpireElement<K ,V>)v_Data).time = v_Time;
+        if ( this.minTime == 0L || v_Time < this.minTime )
         {
             this.minTime = v_Time;
         }
@@ -194,7 +196,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      */
     public Expire<K ,V> put(K i_Key ,V i_Value ,long i_Second)
     {
-        return this.putMilli(i_Key ,i_Value ,i_Second * 1000);
+        return this.putMilli(i_Key ,i_Value ,i_Second * 1000L);
     }
     
     
@@ -214,7 +216,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      */
     public synchronized Expire<K ,V> putMilli(K i_Key ,V i_Value ,long i_Millisecond)
     {
-        ExpireElement<K ,V> v_OldData = this.datas.get(i_Key);
+        ExpireElement<K ,V> v_OldData = (ExpireElement<K ,V>)this.datas.get(i_Key);
         ExpireElement<K ,V> v_NewData = null;
         
         if ( v_OldData != null )
@@ -230,12 +232,12 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
         
         this.datasSame.put(i_Key ,i_Value);
         
-        if ( i_Millisecond > 0 )
+        if ( i_Millisecond > 0L )
         {
             long v_Time = Date.getNowTime().getTime() + i_Millisecond;
             v_NewData.time = v_Time;
             
-            if ( this.minTime == 0 || v_Time < this.minTime )
+            if ( this.minTime == 0L || v_Time < this.minTime )
             {
                 this.minTime = v_Time;
             }
@@ -265,11 +267,11 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
         this.datas    .putAll(i_Datas.datas);
         this.datasSame.putAll(i_Datas.datasSame);
         
-        if ( this.minTime == 0 )
+        if ( this.minTime == 0L )
         {
             this.minTime = i_Datas.minTime;
         }
-        else if ( i_Datas.minTime == 0 )
+        else if ( i_Datas.minTime == 0L )
         {
             // Nothing.
         }
@@ -292,9 +294,10 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @param i_Value
      * @return
      */
+    @Override
     public V put(K i_Key ,V i_Value)
     {
-        return this.putMilli(i_Key ,i_Value ,0).getValue();
+        return this.putMilli(i_Key ,i_Value ,0L).getValue();
     }
     
     
@@ -308,6 +311,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      *
      * @param i_Datas
      */
+    @Override
     public synchronized void putAll(Map<? extends K ,? extends V> i_Datas)
     {
         if ( Help.isNull(i_Datas) )
@@ -317,7 +321,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
         
         for (Map.Entry<? extends K ,? extends V> v_Data : i_Datas.entrySet())
         {
-            this.putMilli(v_Data.getKey() ,v_Data.getValue() ,0);
+            this.putMilli(v_Data.getKey() ,v_Data.getValue() ,0L);
         }
     }
     
@@ -336,7 +340,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      */
     public synchronized Long getExpireTime(K i_Key)
     {
-        ExpireElement<K ,V> v_Data = this.datas.get(i_Key);
+        ExpireElement<K ,V> v_Data = (ExpireElement<K ,V>)this.datas.get(i_Key);
         
         if ( null != v_Data )
         {
@@ -364,26 +368,26 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      */
     public synchronized long getExpireTimeLen(K i_Key)
     {
-        ExpireElement<K ,V> v_Data = this.datas.get(i_Key);
+        ExpireElement<K ,V> v_Data = (ExpireElement<K ,V>)this.datas.get(i_Key);
         
         if ( null != v_Data )
         {
             if ( null == v_Data.checkExpire() )
             {
-                return -1;
+                return -1L;
             }
-            else if ( v_Data.time == 0 )
+            else if ( v_Data.time == 0L )
             {
                 return Long.MAX_VALUE;
             }
             else
             {
-                return v_Data.time - Date.getNowTime().getTime(); 
+                return v_Data.time - Date.getNowTime().getTime();
             }
         }
         else
         {
-            return -1;
+            return -1L;
         }
     }
     
@@ -400,13 +404,41 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @param i_Key
      * @return
      */
+    @Override
     public synchronized V get(Object i_Key)
     {
-        ExpireElement<K ,V> v_Data = this.datas.get(i_Key);
+        ExpireElement<K ,V> v_Data = (ExpireElement<K ,V>)this.datas.get(i_Key);
         
         if ( null != v_Data )
         {
             return v_Data.checkExpire() == null ? null : v_Data.getValue();
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    
+    
+    /**
+     * 只返回 Map.key 在有效期内的 Map.value。
+     * 过期的 Map.key 返回 null
+     *
+     * @author      ZhengWei(HY)
+     * @createDate  2022-06-22
+     * @version     v1.0
+     *
+     * @param i_Key
+     * @return
+     */
+    public synchronized Expire<K ,V> getExpire(Object i_Key)
+    {
+        ExpireElement<K ,V> v_Data = (ExpireElement<K ,V>)this.datas.get(i_Key);
+        
+        if ( null != v_Data )
+        {
+            return v_Data.checkExpire() == null ? null : v_Data;
         }
         else
         {
@@ -436,7 +468,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      */
     public V getAndKeep(Object i_Key ,long i_Second)
     {
-        return this.getAndKeepMilli(i_Key ,i_Second * 1000);
+        return this.getAndKeepMilli(i_Key ,i_Second * 1000L);
     }
     
     
@@ -461,7 +493,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      */
     public synchronized V getAndKeepMilli(Object i_Key ,long i_Millisecond)
     {
-        ExpireElement<K ,V> v_Data = this.datas.get(i_Key);
+        ExpireElement<K ,V> v_Data = (ExpireElement<K ,V>)this.datas.get(i_Key);
         
         if ( null != v_Data )
         {
@@ -473,7 +505,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
             {
                 long v_Time = Date.getNowTime().getTime() + i_Millisecond;
                 v_Data.time = v_Time;
-                if ( this.minTime == 0 || v_Time < this.minTime )
+                if ( this.minTime == 0L || v_Time < this.minTime )
                 {
                     this.minTime = v_Time;
                 }
@@ -502,7 +534,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      */
     public synchronized Date getCreateTime(Object i_Key)
     {
-        ExpireElement<K ,V> v_Data = this.datas.get(i_Key);
+        ExpireElement<K ,V> v_Data = (ExpireElement<K ,V>)this.datas.get(i_Key);
         
         if ( null != v_Data )
         {
@@ -526,6 +558,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      *
      * @return
      */
+    @Override
     public synchronized int size()
     {
         return this.checkExpires().size();
@@ -543,6 +576,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      *
      * @return
      */
+    @Override
     public synchronized boolean isEmpty()
     {
         return this.checkExpires().isEmpty();
@@ -560,6 +594,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      *
      * @return
      */
+    @Override
     public synchronized Set<K> keySet()
     {
         return this.checkExpires().keySet();
@@ -577,6 +612,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      *
      * @return
      */
+    @Override
     public synchronized Collection<V> values()
     {
         this.checkExpires();
@@ -595,11 +631,29 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      *
      * @return
      */
+    @Override
     public synchronized Set<Map.Entry<K, V>> entrySet()
     {
         this.checkExpires();
-        
         return this.datasSame.entrySet();
+    }
+    
+    
+    
+    /**
+     * 只返回 Map.key 在有效期内的 Map.value。
+     * 过期的 Map.key 不在返回之内
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2022-06-22
+     * @version     v1.0
+     *
+     * @return
+     */
+    public synchronized Set<Entry<K ,Expire<K ,V>>> entrySetExpire()
+    {
+        this.checkExpires();
+        return this.datas.entrySet();
     }
     
     
@@ -615,9 +669,10 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @param i_Key
      * @return
      */
-    public synchronized boolean containsKey(Object i_Key) 
+    @Override
+    public synchronized boolean containsKey(Object i_Key)
     {
-        ExpireElement<K ,V> v_Data = this.datas.get(i_Key);
+        ExpireElement<K ,V> v_Data = (ExpireElement<K ,V>)this.datas.get(i_Key);
         
         if ( null != v_Data )
         {
@@ -642,9 +697,10 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @param i_Key
      * @return
      */
-    public synchronized boolean containsValue(Object i_Value) 
+    @Override
+    public synchronized boolean containsValue(Object i_Value)
     {
-        if ( null == i_Value ) 
+        if ( null == i_Value )
         {
             throw new NullPointerException();
         }
@@ -655,14 +711,15 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
     
     
     /**
-     * 删除元素 
+     * 删除元素
      *
      * @param i_Key
      * @return
      */
-    public synchronized V remove(Object i_Key) 
+    @Override
+    public synchronized V remove(Object i_Key)
     {
-        ExpireElement<K ,V> v_Data = this.datas.remove(i_Key);
+        ExpireElement<K ,V> v_Data = (ExpireElement<K ,V>)this.datas.remove(i_Key);
         this.datasSame.remove(i_Key);
         
         if ( null != v_Data )
@@ -688,6 +745,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
     /**
      * 清空集合
      */
+    @Override
     public synchronized void clear()
     {
         this.datas    .clear();
@@ -697,6 +755,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
     
     
     
+    @Override
     @SuppressWarnings("unchecked")
     public boolean equals(Object i_Other)
     {
@@ -722,6 +781,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
 
     
     
+    @Override
     public int hashCode()
     {
         return this.datas.hashCode();
@@ -734,9 +794,9 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
     {
         ExpireMap<K ,V> v_Clone = new ExpireMap<K ,V>(this.size());
         
-        for (ExpireElement<K ,V> v_Data : this.datas.values())
+        for (Expire<K ,V> v_Data : this.datas.values())
         {
-            v_Clone.put(v_Data.key ,v_Data.value ,v_Data.time);
+            v_Clone.put(v_Data.getKey() ,v_Data.getValue() ,v_Data.getTime());
         }
         
         return v_Clone;
@@ -764,7 +824,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
     
     
     /**
-     * 定义此接口后，外界才能有限制的访问。如访问 ExpireMap.put( , , ) 的返回值。 
+     * 定义此接口后，外界才能有限制的访问。如访问 ExpireMap.put( , , ) 的返回值。
      *
      * @author      ZhengWei(HY)
      * @createDate  2016-02-25
@@ -828,7 +888,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
         
         public ExpireElement(EK i_Key ,EV i_Value)
         {
-            this(i_Key ,i_Value ,0 ,new Date());
+            this(i_Key ,i_Value ,0L ,new Date());
         }
         
         
@@ -842,7 +902,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
         
         public ExpireElement(EK i_Key ,EV i_Value ,Date i_CreateTime)
         {
-            this(i_Key ,i_Value ,0 ,new Date());
+            this(i_Key ,i_Value ,0L ,new Date());
         }
         
         
@@ -889,7 +949,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
          */
         private ExpireElement<EK ,EV> checkExpire(boolean i_Recursive)
         {
-            if ( this.time > 0 )
+            if ( this.time > 0L )
             {
                 if ( Date.getNowTime().getTime() <= this.time )
                 {
@@ -918,6 +978,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
          *
          * @param i_Recursive  是否引发递归检查
          */
+        @SuppressWarnings("unlikely-arg-type")
         private void removeBySuper(boolean i_Recursive)
         {
             // 正常情况下不会出现为 null 的情况。
@@ -941,7 +1002,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
                 return "";
             }
             
-            if ( this.time > 0 )
+            if ( this.time > 0L )
             {
                 if ( Date.getNowTime().getTime() <= this.time )
                 {
@@ -969,7 +1030,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
                 return -1;
             }
             
-            if ( this.time > 0 )
+            if ( this.time > 0L )
             {
                 if ( Date.getNowTime().getTime() <= this.time )
                 {
@@ -997,7 +1058,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
                 return false;
             }
             
-            if ( this.time > 0 )
+            if ( this.time > 0L )
             {
                 if ( Date.getNowTime().getTime() <= this.time )
                 {
@@ -1040,6 +1101,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
 
 
 
+        @Override
         public EK getKey()
         {
             return key;
@@ -1047,6 +1109,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
 
 
         
+        @Override
         public synchronized EV getValue()
         {
             return value;
@@ -1054,7 +1117,8 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
         
         
         
-        @SuppressWarnings("unchecked")
+        @Override
+        @SuppressWarnings({"unchecked" ,"unlikely-arg-type"})
         public synchronized EV setValue(EV i_Value)
         {
             if ( this.checkExpire() != null )
@@ -1075,6 +1139,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
         /**
          * 获取：时间戳。保存期满时间。0表示永远有效
          */
+        @Override
         public long getTime()
         {
             return time;
@@ -1091,6 +1156,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
          *
          * @return
          */
+        @Override
         public Date getCreateTime()
         {
             return this.createTime;

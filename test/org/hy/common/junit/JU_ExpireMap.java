@@ -20,7 +20,7 @@ import org.junit.runners.MethodSorters;
  * @createDate  2016-02-25
  * @version     v1.0
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING) 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JU_ExpireMap
 {
     
@@ -29,12 +29,12 @@ public class JU_ExpireMap
     {
         ExpireMap<String ,Date> v_ExpireMap = new ExpireMap<String ,Date>();
         
-        long                 v_MilliSecond = 2;
-        Date                 v_Now         = new Date();
-        Date                 v_Time        = new Date(v_Now.getTime() + v_MilliSecond);
-        String               v_Key         = v_Time.getFullMilli();
-        Expire<String ,Date> v_Expire      = v_ExpireMap.put(v_Key ,v_Time ,v_MilliSecond);
-        String               v_ETS         = (new Date(v_Expire.getTime())).getFullMilli();
+        long                 v_Second = 2L;
+        Date                 v_Now    = new Date();
+        Date                 v_Time   = new Date(v_Now.getTime() + v_Second * 1000L);
+        String               v_Key    = v_Time.getFullMilli();
+        Expire<String ,Date> v_Expire = v_ExpireMap.put(v_Key ,v_Time ,v_Second);
+        String               v_ETS    = (new Date(v_Expire.getTime())).getFullMilli();
         
         
         System.out.println("-- 当前时间：" + v_Now.getFullMilli());
@@ -60,6 +60,32 @@ public class JU_ExpireMap
             
             System.out.println(v_ID);
         }
+    }
+    
+    
+    
+    @Test
+    public void test_002() throws InterruptedException
+    {
+        ExpireMap<String ,Date> v_ExpireMapOld = new ExpireMap<String ,Date>();
+        ExpireMap<String ,Date> v_ExpireMapNew = new ExpireMap<String ,Date>();
+        
+        long   v_Second = 2L;
+        Date   v_Now    = new Date();
+        Date   v_Time   = new Date(v_Now.getTime() + v_Second * 1000L);
+        String v_Key    = v_Time.getFullMilli();
+        
+        v_ExpireMapOld.put(v_Key ,v_Time ,v_Second);
+        System.out.println("-- 原集合能否得到值：" + v_ExpireMapOld.get(v_Key));
+        
+        // 等待过期
+        Thread.sleep((v_Second + 2) * 1000L);
+        
+        v_ExpireMapNew.putAll(v_ExpireMapOld);
+
+        System.out.println("-- 过期后，复制到新集合中");
+        System.out.println("-- 原集合能否得到值：" + v_ExpireMapOld.get(v_Key));
+        System.out.println("-- 新集合能否得到值：" + v_ExpireMapNew.get(v_Key));
     }
     
 }
