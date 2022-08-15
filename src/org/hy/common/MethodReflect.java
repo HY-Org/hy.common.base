@@ -1127,6 +1127,11 @@ public class MethodReflect implements Serializable
      */
     public static Method getGetMethod(Class<?> i_Class ,String i_GetMethodName ,boolean i_IsNorm)
     {
+        if ( i_GetMethodName == null )
+        {
+            return null;
+        }
+        
         String v_GetMethodName_Get       = i_GetMethodName.trim();
         String v_GetMethodName_Is        = i_GetMethodName.trim();
         String v_GetMethodName_Fixed_Get = null;
