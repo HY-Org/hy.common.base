@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
  *                                添加：无符号的整数数组，转为有符号的字节数组。
  *              v4.0  2021-12-10  添加：byte[] 转 Byte[]
  *                                     Byte[] 转 byte[]
+ *              v5.0  2022-08-26  修复：substr() 马龙：发现截取长度大于数据长度时，多减了一个1
  */
 public final class ByteHelp
 {
@@ -153,7 +154,7 @@ public final class ByteHelp
     {
         int  v_BeginIndex = i_BeginIndex % i_Value.length;
         int  v_EndIndex   = v_BeginIndex + i_SubLen;
-        int  v_NewArrLen  = v_EndIndex <= i_Value.length ? i_SubLen : i_Value.length - v_BeginIndex - 1;
+        int  v_NewArrLen  = v_EndIndex <= i_Value.length ? i_SubLen : i_Value.length - v_BeginIndex;
              v_EndIndex   = v_BeginIndex + v_NewArrLen;
         byte [] v_Ret     = new byte[v_NewArrLen];
         
