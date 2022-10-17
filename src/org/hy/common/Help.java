@@ -2427,6 +2427,7 @@ public class Help
      * @createDate  2017-05-10
      * @version     v1.0
      *              v2.0  2018-11-08  添加：防止路径中有中文或空格
+     *              v3.0  2022-10-10  修复：资源路径已file:开头时，截取字符异常的问题
      *
      * @param i_Obj
      * @return
@@ -2439,7 +2440,7 @@ public class Help
             URI    v_URI  = null;
             String v_Head = "";
             
-            if ( v_Ret.indexOf(':') >= 0 )
+            if ( v_Ret.indexOf(':') >= 0 && !v_Ret.startsWith("file:") )
             {
                 v_Ret  = v_Ret.substring(1);
                 v_Head = v_Ret.split(":")[0];
@@ -2477,6 +2478,7 @@ public class Help
      * 如 C:/xx/bin/
      * 
      * v2.0  2018-11-08  添加：防止路径中有中文或空格
+     * v3.0  2022-10-10  修复：资源路径已file:开头时，截取字符异常的问题
      * 
      * @return
      */
@@ -2488,7 +2490,7 @@ public class Help
             URI    v_URI  = null;
             String v_Head = "";
             
-            if ( v_Ret.indexOf(':') >= 0 )
+            if ( v_Ret.indexOf(':') >= 0 && !v_Ret.startsWith("file:") )
             {
                 v_Ret  = v_Ret.substring(1);
                 v_Head = v_Ret.split(":")[0];
