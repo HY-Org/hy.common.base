@@ -24,12 +24,12 @@
     <remote-repository>
       <option name="id" value="nexus-aliyun" />
       <option name="name" value="Nexus aliyun" />
-      <option name="url" value="http://maven.aliyun.com/nexus/content/groups/public" />
+      <option name="url" value="https://maven.aliyun.com/repository/public" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="nexus" />
       <option name="name" value="nexus" />
-      <option name="url" value="http://nexus" />
+      <option name="url" value="https://repo1.maven.org/maven2/" />
     </remote-repository>
   </component>
 </project>
