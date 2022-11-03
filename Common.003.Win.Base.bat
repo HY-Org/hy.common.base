@@ -1,5 +1,6 @@
 
 
+call mvn clean package
 cd .\target\classes
 
 
