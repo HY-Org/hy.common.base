@@ -68,12 +68,24 @@
 
     <scm>
         <tag>main</tag>
-        <url>git@github.com:HY-Org/hy.common.base.git</url>
-        <connection>git@github.com:HY-Org/hy.common.base.git</connection>
-        <developerConnection>git@github.com:HY-Org/hy.common.base.git</developerConnection>
+        <url>git@github.com:HY-ZhengWei/hy.common.base.git</url>
+        <connection>git@github.com:HY-ZhengWei/hy.common.base.git</connection>
+        <developerConnection>git@github.com:HY-ZhengWei/hy.common.base.git</developerConnection>
     </scm>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <filtering>false</filtering>
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+    
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
