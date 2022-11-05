@@ -1,5 +1,9 @@
 
 
+del /Q hy.common.base.jar
+del /Q hy.common.base-sources.jar
+
+
 call mvn clean package
 cd .\target\classes
 

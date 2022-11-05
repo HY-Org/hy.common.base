@@ -3,13 +3,10 @@ package org.hy.common;
 
 import java.security.Key;
 import java.security.SecureRandom;
- 
+import java.util.Base64;
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
- 
-
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 
 
@@ -22,7 +19,7 @@ import sun.misc.BASE64Encoder;
  * @createDate  2019-08-20
  * @version     v1.0
  */
-public class Des 
+public class Des
 {
     private Key key;
     private static String $CHARSETNAME = "UTF-8";
@@ -71,8 +68,8 @@ public class Des
     public String encrypt(String str)
     {
         //基于BASE64编码，接收byte[]并转换成String
-        BASE64Encoder base64Encoder=new BASE64Encoder();
-        try {
+        try
+        {
             // 按UTF8编码
             byte[] bytes = str.getBytes($CHARSETNAME);
             // 获取加密对象
@@ -82,8 +79,10 @@ public class Des
             // 加密
             byte[] doFinal = cipher.doFinal(bytes);
             // byte[]to encode好的String并返回
-            return base64Encoder.encode(doFinal);
-        } catch (Exception e) {
+            return new String(Base64.getEncoder().encode(doFinal) ,"UTF-8");
+        }
+        catch (Exception e)
+        {
             throw new RuntimeException(e);
         }
     }
@@ -96,13 +95,13 @@ public class Des
      * @param str
      * @return
      */
-    public String decrypt(String str) 
+    public String decrypt(String str)
     {
         // 基于BASE64编码，接收byte[]并转换成String
-        BASE64Decoder base64decoder = new BASE64Decoder();
-        try {
+        try
+        {
             // 将字符串decode成byte[]
-            byte[] bytes = base64decoder.decodeBuffer(str);
+            byte[] bytes = Base64.getDecoder().decode(str);
             // 获取解密对象
             Cipher cipher = Cipher.getInstance($ALGORITHM);
             // 初始化解密信息
@@ -111,7 +110,9 @@ public class Des
             byte[] doFinal = cipher.doFinal(bytes);
             // 返回解密之后的信息
             return new String(doFinal, $CHARSETNAME);
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             throw new RuntimeException(e);
         }
     }
