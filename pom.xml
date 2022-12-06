@@ -6,7 +6,7 @@
 
     <groupId>cn.openapis</groupId>
     <artifactId>hy.common.base</artifactId>
-    <version>1.0.162</version>
+    <version>1.0.163</version>
     <packaging>jar</packaging>
 
     <name>cn.openapis.hy.common.base</name>
@@ -67,7 +67,7 @@
     </dependencies>
 
     <scm>
-        <tag>main</tag>
+        <tag>master</tag>
         <url>git@github.com:HY-ZhengWei/hy.common.base.git</url>
         <connection>git@github.com:HY-ZhengWei/hy.common.base.git</connection>
         <developerConnection>git@github.com:HY-ZhengWei/hy.common.base.git</developerConnection>

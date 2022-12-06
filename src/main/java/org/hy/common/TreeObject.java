@@ -22,12 +22,13 @@ import java.util.Map;
  *      4. 不可递归：      不可在树结构中出现递归引用。相信大家能理解，不再赘述原因
  *      5. 重复覆盖：      重复节点ID在构建树时，相同节点ID将会覆盖，其子节点将被级联删除
  *      6. 节点顺序：      顶级根节点的顺序按 “先来后到” 排序。
- *                          子节点的顺序由最终用户决定。即实现接口 TreeObjectNode 方来维护。  
- *      7. 对数据零要求：  节点ID编码无要求、数据排序无要求(先入父后入子性能最高)、树结构层次无限制。  
+ *                          子节点的顺序由最终用户决定。即实现接口 TreeObjectNode 方来维护。
+ *      7. 对数据零要求：  节点ID编码无要求、数据排序无要求(先入父后入子性能最高)、树结构层次无限制。
  *
  * @author      ZhengWei(HY)
  * @createDate  2020-04-21
  * @version     v1.0
+ *              v2.0  2022-12-06  添加：获取父级对象 和 计算树结构层次
  * @param <V>
  */
 public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V>
@@ -35,9 +36,9 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
 
     private static final long serialVersionUID = 8613137547771634890L;
     
-    /** 
+    /**
      * 树的节点ID与父节点ID的对应关系
-     *  
+     * 
      * Map.key    为节点ID
      * Map.value  为父节点ID
      */
@@ -95,6 +96,49 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
         this.superNodeIDs = new HashMap       <String ,String>();
         this.childNodeIDs = new TablePartition<String ,String>();
         this.rootNodeIDs  = new LinkedHashMap <String ,String>();
+    }
+    
+    
+    
+    /**
+     * 获取父级对象节点编号
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2022-12-06
+     * @version     v1.0
+     *
+     * @param i_NodeID
+     * @return
+     */
+    public String getSuperNodeID(String i_NodeID)
+    {
+        return this.superNodeIDs.get(i_NodeID);
+    }
+    
+    
+    
+    /**
+     * 获取父级对象
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2022-12-06
+     * @version     v1.0
+     *
+     * @param i_NodeID
+     * @return
+     */
+    public V getSuper(String i_NodeID)
+    {
+        String v_SuperNodeID = this.getSuperNodeID(i_NodeID);
+        
+        if ( Help.isNull(v_SuperNodeID) )
+        {
+            return null;
+        }
+        else
+        {
+            return this.get(v_SuperNodeID);
+        }
     }
     
     
@@ -221,7 +265,7 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
      * @see java.util.Hashtable#get(java.lang.Object)
      */
     @Override
-    public V get(Object i_NodeID) 
+    public V get(Object i_NodeID)
     {
         return super.get(i_NodeID);
     }
@@ -362,7 +406,7 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
      * @return
      */
     @Override
-    public synchronized V remove(Object i_NodeID) 
+    public synchronized V remove(Object i_NodeID)
     {
         V v_Remove = null;
         
@@ -432,6 +476,78 @@ public class TreeObject<V extends TreeObjectNode<V>> extends Hashtable<String ,V
         else
         {
             this.rootNodeIDs.remove(i_NodeID);
+        }
+    }
+    
+    
+    
+    /**
+     * 计算树中所有节点的树结构层次。
+     * 
+     * 可以整个树的数据都灌入本类完成后，再执行本方法计算结构层次
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2022-12-06
+     * @version     v1.0
+     */
+    public boolean calcLevels()
+    {
+        return this.calcLevels(1);
+    }
+    
+    
+    
+    /**
+     * 计算树中所有节点的树结构层次。
+     * 
+     * 可以整个树的数据都灌入本类完成后，再执行本方法计算结构层次
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2022-12-06
+     * @version     v1.0
+     *
+     * @param i_RootLevel  设定顶级节点的层次数值
+     */
+    public boolean calcLevels(int i_RootLevel)
+    {
+        try
+        {
+            if ( !Help.isNull(this.rootNodeIDs) )
+            {
+                for (String v_RootNodeID : this.rootNodeIDs.keySet())
+                {
+                    this.calcLevels(this.get(v_RootNodeID) ,i_RootLevel);
+                }
+            }
+            
+            return true;
+        }
+        catch (Exception exce)
+        {
+            exce.printStackTrace();
+        }
+        
+        return false;
+    }
+    
+    
+    
+    private void calcLevels(final V i_Node ,final int i_NodeLevel)
+    {
+        if ( i_Node == null )
+        {
+            return;
+        }
+        
+        i_Node.satLevel(i_NodeLevel);
+        
+        List<String> v_ChildNodeIDs = this.childNodeIDs.get(i_Node.gatTreeObjectNodeID());
+        if ( !Help.isNull(v_ChildNodeIDs) )
+        {
+            for (String v_ChildNodeID : v_ChildNodeIDs)
+            {
+                this.calcLevels(this.get(v_ChildNodeID) ,i_NodeLevel + 1);
+            }
         }
     }
     
