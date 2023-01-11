@@ -6,7 +6,7 @@
 
     <groupId>org</groupId>
     <artifactId>hy.common.base</artifactId>
-    <version>1.0.163</version>
+    <version>1.0.164</version>
     <packaging>jar</packaging>
 
     <name>org.hy.common.base</name>
@@ -78,6 +78,12 @@
             <resource>
                 <directory>src/main/java</directory>
                 <filtering>false</filtering>
+                
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.html</include>
+                    <include>**/*.txt</include>
+                </includes>
             </resource>
 
             <resource>

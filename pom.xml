@@ -6,7 +6,7 @@
 
     <groupId>cn.openapis</groupId>
     <artifactId>hy.common.base</artifactId>
-    <version>1.0.163</version>
+    <version>1.0.164</version>
     <packaging>jar</packaging>
 
     <name>cn.openapis.hy.common.base</name>
@@ -77,7 +77,13 @@
         <resources>
             <resource>
                 <directory>src/main/java</directory>
-                <filtering>false</filtering>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.xml</include>
+                    <include>**/*.html</include>
+                    <include>**/*.txt</include>
+                    <include>**/*.ini</include>
+                </includes>
             </resource>
 
             <resource>
