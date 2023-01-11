@@ -77,12 +77,12 @@
         <resources>
             <resource>
                 <directory>src/main/java</directory>
-                <filtering>false</filtering>
-                
+                <filtering>true</filtering>
                 <includes>
                     <include>**/*.xml</include>
                     <include>**/*.html</include>
                     <include>**/*.txt</include>
+                    <include>**/*.ini</include>
                 </includes>
             </resource>
 
