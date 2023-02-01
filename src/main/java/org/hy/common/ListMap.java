@@ -20,6 +20,7 @@ import java.util.Map;
  *              v2.0  2014-10-17  添加isSafe属性
  *                                添加getKeys()方法
  *                                添加getKey(...)方法
+ *              v3.0  2023-02-01  添加getValues()方法（有顺序的）
  * @createDate  2012-07-25
  */
 public class ListMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
@@ -211,10 +212,15 @@ public class ListMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
      * 
      * @return
      */
-    public List<K> getKeys()
+    public synchronized List<K> getKeys()
     {
         if ( this.isSafe )
         {
+            if ( Help.isNull(this.keyList) )
+            {
+                return null;
+            }
+            
             List<K> v_Ret = new ArrayList<K>(this.keyList.size());
             
             v_Ret.addAll(this.keyList);
@@ -225,6 +231,34 @@ public class ListMap<K ,V> extends Hashtable<K ,V> implements Map<K ,V>
         {
             return this.keyList;
         }
+    }
+    
+    
+    
+    /**
+     * 按排序获取所有Value值
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2023-02-01
+     * @version     v1.0
+     *
+     * @return
+     */
+    public synchronized List<V> getValues()
+    {
+        if ( Help.isNull(this.keyList) )
+        {
+            return null;
+        }
+        
+        List<V> v_Ret = new ArrayList<V>(this.keyList.size());
+        
+        for (K v_Key : this.keyList)
+        {
+            v_Ret.add(this.get(v_Key));
+        }
+        
+        return v_Ret;
     }
     
     
