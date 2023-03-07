@@ -28,33 +28,36 @@ import java.util.Map;
  *              v1.7  2019-03-02  添加：getNextYear()、getPreviousYear()、getNextMinutes()、getPreviousMinutes()四个方法。
  *              v2.0  2021-03-01  添加：将原先 setDate(...) 的方法重写，其它方法均改为toDate(...)方法。
  *                                      只保留这一个setDate(String)方法。为了方便SpringBoot中的FashJson类的序列化对象
+ *              v2.1  2023-03-07  添加：$FORMAT_Milli3 的格式，用于SQLServer中DateTime2在RS.getObject()方法下的使用
  */
 public final class Date extends java.util.Date
 {
     
     private static final long serialVersionUID = 8529353384393262590L;
     
-    public  static final String               $FORMAT_Milli       = "yyyy-MM-dd HH:mm:ss.SSS"; // length=23  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+    public  static final String               $FORMAT_Milli3      = "yyyy-MM-dd HH:mm:ss.SSSSSSS"; // length=27  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
-    public  static final String               $FORMAT_Milli2      = "yyyy-MM-dd HH:mm:ss.S";   // length=21  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+    public  static final String               $FORMAT_Milli       = "yyyy-MM-dd HH:mm:ss.SSS";     // length=23  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
-    public  static final String               $FORMAT_MilliID     = "yyyyMMddHHmmssSSS";       // length=17
+    public  static final String               $FORMAT_Milli2      = "yyyy-MM-dd HH:mm:ss.S";       // length=21  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
-    public  static final String               $FORMAT_Normal      = "yyyy-MM-dd HH:mm:ss";     // length=19  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+    public  static final String               $FORMAT_MilliID     = "yyyyMMddHHmmssSSS";           // length=17
     
-    public  static final String               $FORMAT_UTC_ID      = "yyyyMMddHHmmssZ";         // length=15
+    public  static final String               $FORMAT_Normal      = "yyyy-MM-dd HH:mm:ss";         // length=19  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
-    public  static final String               $FROMAT_ID          = "yyyyMMddHHmmss";          // length=14
+    public  static final String               $FORMAT_UTC_ID      = "yyyyMMddHHmmssZ";             // length=15
     
-    public  static final String               $FORMAT_YMD         = "yyyy-MM-dd";              // length=10  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+    public  static final String               $FROMAT_ID          = "yyyyMMddHHmmss";              // length=14
     
-    public  static final String               $FORMAT_YMD_ID      = "yyyyMMdd";                // length=8   需特殊处理
+    public  static final String               $FORMAT_YMD         = "yyyy-MM-dd";                  // length=10  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
-    public  static final String               $FORMAT_HMS         = "HH:mm:ss";                // length=8   需特殊处理
+    public  static final String               $FORMAT_YMD_ID      = "yyyyMMdd";                    // length=8   需特殊处理
     
-    public  static final String               $FORMAT_YM          = "yyyy-MM";                 // length=7   需特殊处理   同时支持 yyyy/MM 、yyyy年MM月 的格式
+    public  static final String               $FORMAT_HMS         = "HH:mm:ss";                    // length=8   需特殊处理
     
-    public  static final String               $FORMAT_YM_ID       = "yyyyMM";                  // length=6   需特殊处理   同时支持 yyyy/MM 、yyyy年MM月 的格式
+    public  static final String               $FORMAT_YM          = "yyyy-MM";                     // length=7   需特殊处理   同时支持 yyyy/MM 、yyyy年MM月 的格式
+    
+    public  static final String               $FORMAT_YM_ID       = "yyyyMM";                      // length=6   需特殊处理   同时支持 yyyy/MM 、yyyy年MM月 的格式
     
     /** 实现上面7 + 3 + 3 + 1种时间格式的快速检索 */
     private static final Map<Integer ,String> $FORMATS;
@@ -77,6 +80,7 @@ public final class Date extends java.util.Date
     {
         // 只为少一点IF判断，多一点速度提升
         $FORMATS = new Hashtable<Integer ,String>();
+        $FORMATS.put($FORMAT_Milli3 .length()     ,$FORMAT_Milli3);
         $FORMATS.put($FORMAT_Milli  .length()     ,$FORMAT_Milli);
         $FORMATS.put($FORMAT_Milli  .length() + 1 ,$FORMAT_Milli);    // yyyy年MM月dd日多了一个 "日"
         $FORMATS.put($FORMAT_Milli2 .length()     ,$FORMAT_Milli2);
