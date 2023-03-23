@@ -88,7 +88,17 @@ public class MethodReflect implements Serializable
      * 
      * 只对 isNorm = true 有效
      */
-    public final static String $FixedMethodName = "$";
+    public final static String $FixedMethodName       = "$";
+    
+    /**
+     * 占位符的标示符
+     */
+    public final static String $Placeholder           = ":";
+    
+    /**
+     * 占位符+变量名称的正式表达式片段
+     */
+    private final static String $PV                   = "[\\" + $Placeholder + "\\w]";
     
     /**
      * 正则表达式对：方法名称的识别
@@ -101,7 +111,7 @@ public class MethodReflect implements Serializable
      * 如：xxx(p1 ,p2 ,... pn)
      * 如：xxx(o1.p1 ,o2.p1 ,... on.pn)
      */
-    private final static String $REGEX_METHOD_VERIFY  = "^[\\" + $FixedMethodName + "\\w]+\\( *((\\w+\\.\\w+ *, *)|(\\w+ *, *))*((\\w+\\.\\w+)|(\\w+)) *\\)$";
+    private final static String $REGEX_METHOD_VERIFY  = "^[\\" + $FixedMethodName + "\\w]+\\( *((" + $PV + "+\\." + $PV + "+ *, *)|(" + $PV + "+ *, *))*((" + $PV + "+\\." + $PV + "+)|(" + $PV + "+)) *\\)$";
     
     
     
