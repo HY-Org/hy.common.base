@@ -143,7 +143,6 @@ public class TablePartitionBusway<P ,R> extends Hashtable<P ,Busway<R>> implemen
      * @param i_RowList
      * @return
      */
-    @SuppressWarnings("unchecked")
     public synchronized Busway<R> putRows(P i_Partition ,Busway<R> i_RowList)
     {
         if ( i_Partition == null )
@@ -155,10 +154,10 @@ public class TablePartitionBusway<P ,R> extends Hashtable<P ,Busway<R>> implemen
             throw new java.lang.NullPointerException("RowList is null.");
         }
         
-        Object [] v_Datas = i_RowList.getArray();
-        for (Object v_Data : v_Datas)
+        Iterator<R> v_Datas = i_RowList.iterator();
+        while (v_Datas.hasNext())
         {
-            this.putRow(i_Partition ,(R)v_Data);
+            this.putRow(i_Partition ,v_Datas.next());
         }
         
         return this.get(i_Partition);

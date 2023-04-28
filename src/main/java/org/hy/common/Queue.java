@@ -1,5 +1,6 @@
 package org.hy.common;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 
@@ -21,6 +22,7 @@ import java.util.LinkedList;
  *                             3.添加：队列类型初始化不能修改，防止异常
  *           v1.2  2014-12-07  1.添加：查看队列中的数据，并不影响队列，类似于只读模式。
  *           v1.3  2018-08-24  1.添加：remove()方法添加返回值，表示是否删除成功。
+ *           v1.4  2023-04-28  1.添加：iterator()获取迭代器，大数量频繁操作时，比 toArray 安全
  */
 public class Queue<O> implements java.io.Serializable
 {
@@ -161,6 +163,22 @@ public class Queue<O> implements java.io.Serializable
     public <T> T [] toArray(T [] i_Arr)
     {
         return this.linkedList.toArray(i_Arr);
+    }
+    
+    
+    
+    /**
+     * 获取迭代器，大数量频繁操作时，比 toArray 安全
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2023-04-28
+     * @version     v1.0
+     *
+     * @return
+     */
+    public Iterator<O> iterator()
+    {
+        return this.linkedList.iterator();
     }
     
     
