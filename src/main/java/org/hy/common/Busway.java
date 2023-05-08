@@ -1,11 +1,13 @@
 package org.hy.common;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 
 
 
 
 /**
- * 公交车专用通道。
+ * 公交车专用通道（有界队列）。
  * 
  * 它有什么特点呢？
  *   其一：它只有一条道路；
@@ -20,8 +22,9 @@ package org.hy.common;
  *
  * @author   ZhengWei(HY)
  * @version  v1.0  2014-12-06
+ *           v2.0  2023-05-08  修改：将父类由 Queue类改为 ConcurrentLinkedQueue
  */
-public class Busway<O> extends Queue<O>
+public class Busway<O> extends ConcurrentLinkedQueue<O>
 {
     
     private static final long serialVersionUID = -303438880266412812L;
@@ -35,26 +38,21 @@ public class Busway<O> extends Queue<O>
     
     public Busway(int i_WayLength)
     {
-        super(Queue.QueueType.$First_IN_First_OUT);
-        
         this.setWayLength(i_WayLength);
     }
     
     
     
-    public synchronized void put(O i_Object) 
+    public synchronized void put(O i_Object)
     {
         long v_Size = super.size();
         
-        if ( v_Size < this.wayLength )
+        if ( v_Size >= this.wayLength )
         {
-            super.put(i_Object);
+            super.remove();
         }
-        else
-        {
-            super.get();
-            super.put(i_Object);
-        }
+        
+        super.add(i_Object);
     }
 
 
@@ -82,7 +80,7 @@ public class Busway<O> extends Queue<O>
             for (int i=1; i<=v_OutCount; i++)
             {
                 // 抛弃多余的，最先(最老)的数据
-                super.get();
+                super.remove();
             }
         }
     }
