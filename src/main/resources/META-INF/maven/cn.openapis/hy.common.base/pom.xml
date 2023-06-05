@@ -6,7 +6,7 @@
 
     <groupId>org</groupId>
     <artifactId>hy.common.base</artifactId>
-    <version>1.0.169</version>
+    <version>1.0.170</version>
     <packaging>jar</packaging>
 
     <name>org.hy.common.base</name>
@@ -15,8 +15,8 @@
     <description>org.hy.common.base</description>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -79,10 +79,25 @@
                 <directory>src/main/java</directory>
                 <filtering>true</filtering>
                 <includes>
+                    <include>**/LICENSE</include>
                     <include>**/*.xml</include>
                     <include>**/*.html</include>
                     <include>**/*.txt</include>
                     <include>**/*.ini</include>
+                    <include>**/*.json</include>
+                    <include>**/*.properties</include>
+                    <include>**/*.md</include>
+                    <include>**/*.MF</include>
+                    <include>**/*.js</include>
+                    <include>**/*.css</include>
+                    <include>**/*.map</include>
+                    <include>**/*.png</include>
+                    <include>**/*.gif</include>
+                    <include>**/*.eot</include>
+                    <include>**/*.svg</include>
+                    <include>**/*.ttf</include>
+                    <include>**/*.woff</include>
+                    <include>**/*.woff2</include>
                 </includes>
             </resource>
 

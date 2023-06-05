@@ -106,6 +106,9 @@ public final class StringHelp
     /** 常用的替换常量，如将关键字替换为空字符 */
     public  static final String [] $ReplaceNil    = new String[] {""};
     
+    /** 常用的替换常量，如将关键字替换为空格 */
+    public  static final String [] $ReplaceSpace  = new String[] {" "};
+    
     
     
     /**
@@ -1380,7 +1383,8 @@ public final class StringHelp
                     v_Buffer.append(v_OneChar);
                     v_LastPos = v_Pos + 6;
                     
-                    if ( i_String.substring(v_LastPos).startsWith(";") )
+                    String v_LastStr = i_String.substring(v_LastPos);
+                    if ( v_LastStr != null && v_LastStr.startsWith(";") )
                     {
                         v_LastPos++;
                     }
@@ -3502,13 +3506,12 @@ public final class StringHelp
      *              v6.0  2020-06-08  修改：Map.value 修改为顺序。
      *                                修改：将返回结果的Map结构，改为 TablePartitionLink 结构。
      *
-     * @param i_Placeholders
-     * @param i_StrictRules   占位符命名是否要求严格的规则。
+     * @param i_Text
      * @return
      */
-    public final static PartitionMap<String ,Integer> parsePlaceholdersSequence(String i_Placeholders)
+    public final static PartitionMap<String ,Integer> parsePlaceholdersSequence(String i_Text)
     {
-        return parsePlaceholdersSequence(i_Placeholders ,false);
+        return parsePlaceholdersSequence(":" ,i_Text ,false);
     }
     
     
@@ -3529,20 +3532,49 @@ public final class StringHelp
      *              v6.0  2020-06-08  修改：Map.value 修改为顺序。
      *                                修改：将返回结果的Map结构，改为 TablePartitionLink 结构。
      *
-     * @param i_Placeholders
+     * @param i_Text          要解释的字符串
      * @param i_StrictRules   占位符命名是否要求严格的规则。
      * @return
      */
-    public final static PartitionMap<String ,Integer> parsePlaceholdersSequence(String i_Placeholders ,boolean i_StrictRules)
+    public final static PartitionMap<String ,Integer> parsePlaceholdersSequence(String i_Text ,boolean i_StrictRules)
+    {
+        return parsePlaceholdersSequence(":" ,i_Text ,i_StrictRules);
+    }
+    
+    
+    
+    /**
+     * 解释占位符。:xx （保持占位符原顺序不变）
+     * 
+     * Map.key    为占位符。前缀为:符号。不包含:符号，同时也是分区字段
+     * Map.Value  为占位符在原文本信息的顺序的集合（下标从0开始）
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2012-10-30
+     * @version     v1.0
+     *              v2.0  2014-07-30
+     *              v3.0  2015-12-10  支持 :A.B.C 的解释（对点.的解释）。
+     *              v4.0  2018-05-16  添加：支持中文占位符
+     *              v5.0  2019-03-13  添加：占位符命名是否要求严格的规则
+     *              v6.0  2020-06-08  修改：Map.value 修改为顺序。
+     *                                修改：将返回结果的Map结构，改为 TablePartitionLink 结构。
+     *              v7.0  2023-05-25  添加：支持外界定义占位符是什么
+     *
+     * @param i_Placeholder   占位符是什么。如冒号:、井号#等
+     * @param i_Text          要解释的字符串
+     * @param i_StrictRules   占位符命名是否要求严格的规则。
+     * @return
+     */
+    public final static PartitionMap<String ,Integer> parsePlaceholdersSequence(String i_Placeholder ,String i_Text ,boolean i_StrictRules)
     {
         // 匹配占位符
-        List<SplitSegment>                  v_Segments = StringHelp.SplitOnlyFind("[ (,='%_\\s]?:[\\w\\.\\u4e00-\\u9fa5]+[ ),='%_\\s]?" ,i_Placeholders);
+        List<SplitSegment>                  v_Segments = StringHelp.SplitOnlyFind("[ (,='%_\\s]?" + i_Placeholder + "[\\w\\.\\u4e00-\\u9fa5]+[ ),='%_\\s]?" ,i_Text);
         TablePartitionLink<String ,Integer> v_Ret      = new TablePartitionLink<String ,Integer>();
         int                                 v_Index    = 0;
         
         for (SplitSegment v_Segment : v_Segments)
         {
-            String v_PlaceHolder = StringHelp.SplitOnlyFind(":[\\w\\.\\u4e00-\\u9fa5]+" ,v_Segment.getInfo().trim()).get(0).getInfo();
+            String v_PlaceHolder = StringHelp.SplitOnlyFind(i_Placeholder + "[\\w\\.\\u4e00-\\u9fa5]+" ,v_Segment.getInfo().trim()).get(0).getInfo();
             v_PlaceHolder = v_PlaceHolder.substring(1);
             
             if ( i_StrictRules )
@@ -3589,6 +3621,7 @@ public final class StringHelp
     
     
     
+    
     /**
      * 解释占位符。:xx
      * 
@@ -3603,13 +3636,39 @@ public final class StringHelp
      * @version     v1.0
      *              v2.0  2019-03-15  添加：占位符命名是否要求严格的规则
      *
-     * @param i_Placeholders
-     * @param i_StrictRules
+     * @param i_Text          要解释的字符串
+     * @param i_StrictRules   占位符命名是否要求严格的规则。
      * @return
      */
-    public final static PartitionMap<String ,Integer> parsePlaceholders(String i_Placeholders ,boolean i_StrictRules)
+    public final static PartitionMap<String ,Integer> parsePlaceholders(String i_Text ,boolean i_StrictRules)
     {
-        return Help.toReverse(parsePlaceholdersSequence(i_Placeholders ,i_StrictRules));
+        return Help.toReverse(parsePlaceholdersSequence(":" ,i_Text ,i_StrictRules));
+    }
+    
+    
+    
+    /**
+     * 解释占位符。:xx
+     * 
+     *   placeholders属性为有降序排序顺序的LinkedMap。
+     *   用于解决 :A、:AA 同时存在时的混乱。
+     * 
+     * Map.key    为占位符。前缀为:符号
+     * Map.Value  为占位符原文本信息
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2014-10-08
+     * @version     v1.0
+     *              v2.0  2019-03-15  添加：占位符命名是否要求严格的规则
+     *
+     * @param i_Placeholder   占位符是什么。如冒号:、井号#等
+     * @param i_Text          要解释的字符串
+     * @param i_StrictRules   占位符命名是否要求严格的规则。
+     * @return
+     */
+    public final static PartitionMap<String ,Integer> parsePlaceholders(String i_Placeholder ,String i_Text ,boolean i_StrictRules)
+    {
+        return Help.toReverse(parsePlaceholdersSequence(i_Placeholder ,i_Text ,i_StrictRules));
     }
     
     

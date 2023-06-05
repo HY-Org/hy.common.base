@@ -2906,6 +2906,10 @@ public class Help
         {
             v_Ret = null;
         }
+        finally
+        {
+            // 此处不关闭 ServerSocket ,而是由外界关闭
+        }
         
         return v_Ret;
     }
