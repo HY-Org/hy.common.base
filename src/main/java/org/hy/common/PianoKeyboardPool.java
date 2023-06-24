@@ -14,7 +14,7 @@ import java.io.Serializable;
  * 创建对象的时机：
  *   1. 构造本类的实例时。可通过i_IsInitPool参数调用创建对象的方式（true:同步创建对象； false:异步创建对象）。
  *   2. 调用get()方法时。当队列缓存池中的元素小于poolMinSize阀值时，将自动的、异步的、多线程的创建对象。
- *   
+ * 
  * @author      ZhengWei(HY)
  * @createDate  2018-07-04
  * @version     v1.0
@@ -80,7 +80,7 @@ public class PianoKeyboardPool<O> implements Serializable
      * @param i_PoolSize        队列缓存池的大小
      * @param i_PoolMinSize     队列缓存池的最小大小，当小于此值时，将创建新的元素并添加到池中
      * @param i_IsInitPool      构造器中是否已同步方式初始化完成队列缓存池
-     * @throws InstantiationException 
+     * @throws InstantiationException
      */
     @SuppressWarnings("unchecked")
     public PianoKeyboardPool(Class<O> i_PoolDataClass ,int i_PoolSize ,boolean i_IsInitPool)
@@ -161,7 +161,7 @@ public class PianoKeyboardPool<O> implements Serializable
     {
         try
         {
-            return this.poolDataClass.newInstance();
+            return this.poolDataClass.getDeclaredConstructor().newInstance();
         }
         catch (Exception exce)
         {

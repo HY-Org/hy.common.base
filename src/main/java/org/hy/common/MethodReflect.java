@@ -3104,8 +3104,10 @@ public class MethodReflect implements Serializable
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      * @throws InstantiationException
+     * @throws SecurityException
+     * @throws NoSuchMethodException
      */
-    public void invokeSetForInstance(Object i_Instance ,Object i_Value) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException
+    public void invokeSetForInstance(Object i_Instance ,Object i_Value) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException
     {
         if ( this.normType == $NormType_Getter )
         {
@@ -3158,7 +3160,7 @@ public class MethodReflect implements Serializable
                     
                     if ( null != v_SetMethod )
                     {
-                        v_Instance = v_Method.getReturnType().newInstance();
+                        v_Instance = v_Method.getReturnType().getDeclaredConstructor().newInstance();
                         v_SetMethod.invoke(v_InstanceOld ,v_Instance);
                     }
                     else

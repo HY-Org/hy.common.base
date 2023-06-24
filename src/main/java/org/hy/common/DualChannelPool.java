@@ -220,7 +220,7 @@ public class DualChannelPool<O> implements Serializable
     {
         try
         {
-            return this.poolDataClass.newInstance();
+            return this.poolDataClass.getDeclaredConstructor().newInstance();
         }
         catch (Exception exce)
         {

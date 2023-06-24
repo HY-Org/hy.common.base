@@ -407,7 +407,7 @@ public class SerializableClass implements Serializable
                 {
                     try
                     {
-                        Object               v_SerObj = v_Method.getReturnType().newInstance();
+                        Object               v_SerObj = v_Method.getReturnType().getDeclaredConstructor().newInstance();
                         Map<String ,DocInfo> v_Childs = ((SerializableClass)v_SerObj).gatDocs();
                         
                         if ( !Help.isNull(v_Childs) )
@@ -470,7 +470,7 @@ public class SerializableClass implements Serializable
                                 v_DocInfo.getSuperDocInfo().setChildsType(EChildsType.$List);
                             }
                             
-                            Object               v_SerObj  = v_GR.getGenericType().newInstance();
+                            Object               v_SerObj  = v_GR.getGenericType().getDeclaredConstructor().newInstance();
                             Map<String ,DocInfo> v_Childs  = ((SerializableClass)v_SerObj).gatDocsForever();  // 调用递归。获取List元素范型类的父类的属性
                             
                             v_DocInfo.setChilds(v_Childs);
@@ -575,7 +575,7 @@ public class SerializableClass implements Serializable
         {
             try
             {
-                v_Ret = ((SerializableClass)v_Super.getSuperclass().newInstance()).gatDocsForever();
+                v_Ret = ((SerializableClass)v_Super.getSuperclass().getDeclaredConstructor().newInstance()).gatDocsForever();
                 
                 if ( v_Ret != null )
                 {
@@ -626,7 +626,7 @@ public class SerializableClass implements Serializable
         {
             try
             {
-                v_Ret = ((SerializableClass)v_Super.getSuperclass().newInstance()).gatDocsInfoForever();
+                v_Ret = ((SerializableClass)v_Super.getSuperclass().getDeclaredConstructor().newInstance()).gatDocsInfoForever();
                 
                 if ( v_Ret != null )
                 {
@@ -682,7 +682,7 @@ public class SerializableClass implements Serializable
         {
             try
             {
-                v_Ret = ((SerializableClass)v_Super.getSuperclass().newInstance()).gatDocsInfoForever(i_CompValue);
+                v_Ret = ((SerializableClass)v_Super.getSuperclass().getDeclaredConstructor().newInstance()).gatDocsInfoForever(i_CompValue);
                 
                 if ( v_Ret != null )
                 {
@@ -738,7 +738,7 @@ public class SerializableClass implements Serializable
         {
             try
             {
-                v_Ret = ((SerializableClass)v_Super.getSuperclass().newInstance()).gatDocsForever(i_Index);
+                v_Ret = ((SerializableClass)v_Super.getSuperclass().getDeclaredConstructor().newInstance()).gatDocsForever(i_Index);
                 
                 if ( v_Ret != null )
                 {

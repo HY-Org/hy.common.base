@@ -220,7 +220,7 @@ public class QueuePool<O> extends ConcurrentLinkedQueue<O>
     {
         try
         {
-            return this.poolDataClass.newInstance();
+            return this.poolDataClass.getDeclaredConstructor().newInstance();
         }
         catch (Exception exce)
         {

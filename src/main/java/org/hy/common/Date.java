@@ -1656,7 +1656,7 @@ public final class Date extends java.util.Date
     
     
     /**
-     * 时间分组。
+     * 时间分组（精确到分）。
      * 
      * 如 2013-07-07 12:25:00 按 30 分钟分组，则返回 2013-07-07 12:00:00 ；
      * 如 2013-07-07 12:55:00 按 30 分钟分组，则返回 2013-07-07 12:30:00 ；
@@ -1664,6 +1664,9 @@ public final class Date extends java.util.Date
      * 会返回一个新的实例。
      * 
      * @param i_SplitMinuteSize  分钟分组大小
+     *                           小于等于0时，按1分组
+     *                           有效取值范围在：1~59
+     *                           建议取值范围在：1~30
      * @return
      */
     public Date getTimeGroup(int i_SplitMinuteSize)
@@ -1672,9 +1675,112 @@ public final class Date extends java.util.Date
         int  v_Minute          = this.getMinutes();
         Date v_NewDate         = this.getFirstTimeOfHour();
         
-        v_Minute  = (int)Math.floor(v_Minute / v_SplitMinuteSize) * v_SplitMinuteSize;
+        if ( v_SplitMinuteSize <= 0 )
+        {
+            v_SplitMinuteSize = 1;
+        }
         
+        v_Minute = (int)Math.floor(v_Minute / v_SplitMinuteSize) * v_SplitMinuteSize;
         v_NewDate.setMinutes(v_Minute);
+        
+        return v_NewDate;
+    }
+    
+    
+    
+    /**
+     * 时间分组（精确到秒）。
+     * 
+     * 如 2023-07-07 12:10:25 按 30 秒钟分组，则返回 2023-07-07 12:10:00 ；
+     * 如 2023-07-07 12:10:55 按 30 秒钟分组，则返回 2023-07-07 12:10:30 ；
+     * 
+     * 会返回一个新的实例。
+     * 
+     * @param i_SplitSecondSize  秒钟分组大小
+     *                           小于等于0时，按1分组
+     *                           有效取值范围在：1~59
+     *                           建议取值范围在：1~30
+     * @return
+     */
+    public Date getTimeGroupSecond(int i_SplitSecondSize)
+    {
+        int  v_SplitSecondSize = i_SplitSecondSize % 60;
+        int  v_Second          = this.getSeconds();
+        Date v_NewDate         = this.getFirstTimeOfMinute();
+        
+        if ( v_SplitSecondSize <= 0 )
+        {
+            v_SplitSecondSize = 1;
+        }
+        
+        v_Second = (int)Math.floor(v_Second / v_SplitSecondSize) * v_SplitSecondSize;
+        v_NewDate.setSeconds(v_Second);
+        
+        return v_NewDate;
+    }
+    
+    
+    
+    /**
+     * 时间分组（精确到小时）。
+     * 
+     * 如 2023-07-07 12:00:00 按 1  小时分组，则返回 2023-07-07 12:00:00 ；
+     * 如 2023-07-07 13:00:00 按 12 小时分组，则返回 2023-07-07 12:00:00 ；
+     * 
+     * 会返回一个新的实例。
+     * 
+     * @param i_SplitHourSize  小时分组大小
+     *                         小于等于0时，按1分组
+     *                         有效取值范围在：1~23
+     *                         建议取值范围在：1~12
+     * @return
+     */
+    public Date getTimeGroupHour(int i_SplitHourSize)
+    {
+        int  v_SplitHourSize = i_SplitHourSize % 24;
+        int  v_Hour          = this.getHours();
+        Date v_NewDate       = this.getFirstTimeOfDay();
+        
+        if ( v_SplitHourSize <= 0 )
+        {
+            v_SplitHourSize = 1;
+        }
+        
+        v_Hour = (int)Math.floor(v_Hour / v_SplitHourSize) * v_SplitHourSize;
+        v_NewDate.setHours(v_Hour);
+        
+        return v_NewDate;
+    }
+    
+    
+    
+    /**
+     * 时间分组（精确到天）。
+     * 
+     * 如 2023-07-07 00:00:00 按 1 天分组，则返回 2023-07-07 00:00:00 ；
+     * 如 2023-07-07 00:00:00 按 2 天分组，则返回 2023-07-06 00:00:00 ；
+     * 
+     * 会返回一个新的实例。
+     * 
+     * @param i_SplitDaySize  天分组大小
+     *                        小于等于0时，按1分组
+     *                        有效取值范围在：1~31
+     *                        建议取值范围在：1~15
+     * @return
+     */
+    public Date getTimeGroupDay(int i_SplitDaySize)
+    {
+        int  v_SplitDaySize = i_SplitDaySize % 32;
+        int  v_Day          = this.getDay();
+        Date v_NewDate      = this.getFirstDayOfMonth();
+        
+        if ( v_SplitDaySize <= 0 )
+        {
+            v_SplitDaySize = 1;
+        }
+        
+        v_Day = (int)Math.floor(v_Day / v_SplitDaySize) * v_SplitDaySize;
+        v_NewDate.setDate(v_Day);
         
         return v_NewDate;
     }

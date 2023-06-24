@@ -93,14 +93,16 @@ public class HelpNewInstance
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      * @throws InstantiationException
+     * @throws SecurityException
+     * @throws NoSuchMethodException
      */
-    public static Object executeNew(Class<?> i_Class) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException
+    public static Object executeNew(Class<?> i_Class) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException
     {
         Method v_NewMethod = findNew(i_Class);
         
         if ( v_NewMethod == null )
         {
-            return i_Class.newInstance();
+            return i_Class.getDeclaredConstructor().newInstance();
         }
         else
         {

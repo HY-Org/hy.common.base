@@ -24,6 +24,51 @@ public class JU_Date
     
     
     
+    @Test
+    public void test_getTimeGroup()
+    {
+        System.out.println(" 0值分组：" + new Date("2023-06-21 12:02:00").getTimeGroup(0));
+        System.out.println("58值分组：" + new Date("2023-06-21 12:58:00").getTimeGroup(58));
+        System.out.println("59值分组：" + new Date("2023-06-21 12:59:00").getTimeGroup(59));
+    }
+    
+    
+    
+    @Test
+    public void test_getTimeGroupSecond()
+    {
+        System.out.println(" 0值分组：" + new Date("2023-06-21 12:10:02").getTimeGroupSecond(0));
+        System.out.println("30值分组：" + new Date("2023-06-21 12:10:02").getTimeGroupSecond(30));
+        System.out.println("30值分组：" + new Date("2023-06-21 12:10:32").getTimeGroupSecond(30));
+        System.out.println("58值分组：" + new Date("2023-06-21 12:10:58").getTimeGroupSecond(58));
+        System.out.println("59值分组：" + new Date("2023-06-21 12:10:59").getTimeGroupSecond(59));
+    }
+    
+    
+    
+    @Test
+    public void test_getTimeGroupHour()
+    {
+        System.out.println(" 0值分组：" + new Date("2023-06-21 12:00:00").getTimeGroupHour(0));
+        System.out.println(" 1值分组：" + new Date("2023-06-21 12:00:00").getTimeGroupHour(1));
+        System.out.println(" 6值分组：" + new Date("2023-06-21 05:00:00").getTimeGroupHour(6));
+        System.out.println(" 8值分组：" + new Date("2023-06-21 07:00:00").getTimeGroupHour(8));
+        System.out.println("12值分组：" + new Date("2023-06-21 11:00:00").getTimeGroupHour(12));
+        System.out.println("12值分组：" + new Date("2023-06-21 13:00:00").getTimeGroupHour(12));
+    }
+    
+    
+    
+    @Test
+    public void test_getTimeGroupDay()
+    {
+        System.out.println(" 0值分组：" + new Date("2023-07-01 00:00:00").getTimeGroupDay(0));
+        System.out.println(" 2值分组：" + new Date("2023-07-06 00:00:00").getTimeGroupDay(2));
+        System.out.println(" 2值分组：" + new Date("2023-07-07 00:00:00").getTimeGroupDay(2));
+    }
+    
+    
+    
     public void test01(String i_Text)
     {
        

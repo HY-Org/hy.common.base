@@ -3808,7 +3808,7 @@ public class Help
         Map<String ,Object> v_Ret = null;
         try
         {
-            v_Ret = i_Map.getClass().newInstance();
+            v_Ret = i_Map.getClass().getDeclaredConstructor().newInstance();
             
             for (Map.Entry<String ,?> v_Item : i_Map.entrySet())
             {
@@ -4212,7 +4212,7 @@ public class Help
             }
             else
             {
-                v_Ret = (Map<Object ,Object>)i_MapClass.newInstance();
+                v_Ret = (Map<Object ,Object>)i_MapClass.getDeclaredConstructor().newInstance();
             }
         
             if ( MethodReflect.isExtendImplement(v_One ,Serializable.class) )
