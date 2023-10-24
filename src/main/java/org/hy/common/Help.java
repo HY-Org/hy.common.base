@@ -89,6 +89,8 @@ import org.hy.common.comparate.SerializableComparator;
  *               2020-06-10  1. 添加：数组填充方法 fillArray
  *               2020-07-21  1. 修复：数组填充方法Debug  发现人：马龙
  *               2021-09-27  1. 添加：是否为编程语言的基本数据类型
+ *               2023-10-24  1. 添加：扩充NVL方法
+ *                           2. 修改：NVL(i_Value ,i_ElseValue)的逻辑判定，不再判定i_ElseValue是否为NULL
  */
 public class Help
 {
@@ -1773,17 +1775,28 @@ public class Help
     {
         if ( i_Str == null || "".equals(i_Str.trim()) )
         {
-            if ( i_ElseReturn == null )
-            {
-                return "";
-            }
-            else
-            {
-                return i_ElseReturn;
-            }
+            return i_ElseReturn;
         }
         
         return i_Str;
+    }
+    
+    
+    /**
+     * 重载 NVL 方法
+     *
+     * @param i_Value
+     * @param i_ElseReturn
+     * @return BigDecimal
+     */
+    public final static BigDecimal NVL(BigDecimal i_Value ,BigDecimal i_ElseReturn)
+    {
+        if ( i_Value == null)
+        {
+            return i_ElseReturn;
+        }
+        
+        return i_Value;
     }
     
     
@@ -1798,14 +1811,7 @@ public class Help
     {
         if ( i_Value == null)
         {
-            if ( i_ElseReturn == null )
-            {
-                return 0d;
-            }
-            else
-            {
-                return i_ElseReturn;
-            }
+            return i_ElseReturn;
         }
         
         return i_Value;
@@ -1823,14 +1829,7 @@ public class Help
     {
         if ( i_Value == null)
         {
-            if ( i_ElseReturn == null )
-            {
-                return 0L;
-            }
-            else
-            {
-                return i_ElseReturn;
-            }
+            return i_ElseReturn;
         }
         
         return i_Value;
@@ -1848,14 +1847,25 @@ public class Help
     {
         if ( i_Value == null)
         {
-            if ( i_ElseReturn == null )
-            {
-                return 0f;
-            }
-            else
-            {
-                return i_ElseReturn;
-            }
+            return i_ElseReturn;
+        }
+        
+        return i_Value;
+    }
+    
+    
+    /**
+     * 重载 NVL 方法
+     *
+     * @param i_Value
+     * @param i_ElseReturn
+     * @return Integer
+     */
+    public final static Byte NVL(Byte i_Value ,Byte i_ElseReturn)
+    {
+        if ( i_Value == null)
+        {
+            return i_ElseReturn;
         }
         
         return i_Value;
@@ -1873,17 +1883,175 @@ public class Help
     {
         if ( i_Value == null)
         {
-            if ( i_ElseReturn == null )
-            {
-                return 0;
-            }
-            else
-            {
-                return i_ElseReturn;
-            }
+            return i_ElseReturn;
         }
         
         return i_Value;
+    }
+    
+    
+    /**
+     * 重载 NVL 方法
+     *
+     * @param i_Value
+     * @param i_ElseReturn
+     * @return Short
+     */
+    public final static Short NVL(Short i_Value ,Short i_ElseReturn)
+    {
+        if ( i_Value == null)
+        {
+            return i_ElseReturn;
+        }
+        
+        return i_Value;
+    }
+    
+    
+    /**
+     * 重载 NVL 方法
+     *
+     * @param i_Value
+     * @param i_ElseReturn
+     * @return Short
+     */
+    public final static Date NVL(Date i_Value ,Date i_ElseReturn)
+    {
+        if ( i_Value == null)
+        {
+            return i_ElseReturn;
+        }
+        
+        return i_Value;
+    }
+    
+    
+    /**
+     * 重载 NVL 方法
+     *
+     * @param i_Value
+     * @param i_ElseReturn
+     * @return Short
+     */
+    public final static java.util.Date NVL(java.util.Date i_Value ,java.util.Date i_ElseReturn)
+    {
+        if ( i_Value == null)
+        {
+            return i_ElseReturn;
+        }
+        
+        return i_Value;
+    }
+    
+    
+    /**
+     * 重载 NVL 方法
+     *
+     * @param i_Value
+     * @param i_ElseReturn
+     * @return Short
+     */
+    public final static java.sql.Date NVL(java.sql.Date i_Value ,java.sql.Date i_ElseReturn)
+    {
+        if ( i_Value == null)
+        {
+            return i_ElseReturn;
+        }
+        
+        return i_Value;
+    }
+    
+    
+    /**
+     * 重载 NVL 方法
+     *
+     * @param i_Value
+     * @param i_ElseReturn
+     * @return Short
+     */
+    public final static Timestamp NVL(Timestamp i_Value ,Timestamp i_ElseReturn)
+    {
+        if ( i_Value == null)
+        {
+            return i_ElseReturn;
+        }
+        
+        return i_Value;
+    }
+    
+    
+    /**
+     * 重载 NVL 方法
+     * @param <T>
+     *
+     * @param i_List
+     * @return Object
+     */
+    public final static <T> Collection<T> NVL(Collection<T> i_List ,Collection<T> i_ElseReturn)
+    {
+        if ( i_List == null || i_List.isEmpty() )
+        {
+            return i_ElseReturn;
+        }
+        
+        return i_List;
+    }
+    
+    
+    
+    /**
+     * 重载 NVL 方法
+     * @param <T>
+     *
+     * @param i_List
+     * @return Object
+     */
+    public final static <T> List<T> NVL(List<T> i_List ,List<T> i_ElseReturn)
+    {
+        if ( i_List == null || i_List.isEmpty() )
+        {
+            return i_ElseReturn;
+        }
+        
+        return i_List;
+    }
+    
+    
+    
+    /**
+     * 重载 NVL 方法
+     * @param <T1>
+     *
+     * @param i_Map
+     * @return Object
+     */
+    public final static <T1 ,T2> Map<T1 ,T2> NVL(Map<T1 ,T2> i_Map ,Map<T1 ,T2> i_ElseReturn)
+    {
+        if ( i_Map == null || i_Map.isEmpty() )
+        {
+            return i_ElseReturn;
+        }
+        
+        return i_Map;
+    }
+    
+    
+    
+    /**
+     * 重载 NVL 方法
+     * @param <T>
+     *
+     * @param i_Set
+     * @return Object
+     */
+    public final static <T> Set<T> NVL(Set<T> i_Set ,Set<T> i_ElseReturn)
+    {
+        if ( i_Set == null || i_Set.isEmpty() )
+        {
+            return i_ElseReturn;
+        }
+        
+        return i_Set;
     }
     
     
@@ -1958,6 +2126,125 @@ public class Help
     public final static boolean isNull(String i_Str)
     {
         if ( i_Str == null || "".equals(i_Str.trim()) )
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * 判断整数是否为空
+     *
+     * @param i_Value
+     * @return boolean  为空返回 True，其它返回 False
+     */
+    public final static boolean isNull(Integer i_Value)
+    {
+        if ( i_Value == null )
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * 判断Float是否为空
+     *
+     * @param i_Value
+     * @return boolean  为空返回 True，其它返回 False
+     */
+    public final static boolean isNull(Float i_Value)
+    {
+        if ( i_Value == null )
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * 判断Double是否为空
+     *
+     * @param i_Value
+     * @return boolean  为空返回 True，其它返回 False
+     */
+    public final static boolean isNull(Double i_Value)
+    {
+        if ( i_Value == null )
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * 判断BigDecimal是否为空
+     *
+     * @param i_Value
+     * @return boolean  为空返回 True，其它返回 False
+     */
+    public final static boolean isNull(BigDecimal i_Value)
+    {
+        if ( i_Value == null )
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * 判断Byte是否为空
+     *
+     * @param i_Value
+     * @return boolean  为空返回 True，其它返回 False
+     */
+    public final static boolean isNull(Byte i_Value)
+    {
+        if ( i_Value == null )
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * 判断Short是否为空
+     *
+     * @param i_Value
+     * @return boolean  为空返回 True，其它返回 False
+     */
+    public final static boolean isNull(Short i_Value)
+    {
+        if ( i_Value == null )
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    
+    /**
+     * 判断Long是否为空
+     *
+     * @param i_Value
+     * @return boolean  为空返回 True，其它返回 False
+     */
+    public final static boolean isNull(Long i_Value)
+    {
+        if ( i_Value == null )
         {
             return true;
         }
