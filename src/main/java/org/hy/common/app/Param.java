@@ -164,13 +164,13 @@ public class Param implements Serializable
      */
     public void setValueInt(Integer i_ValueInt)
     {
-        if ( this.isOnlyRead && !Help.isNull(this.value) )
+        if ( this.isOnlyRead && !Help.isNull(this.valueInt) )
         {
             throw new IllegalArgumentException("Value is only setting once. (isOnlyRead=" + this.isOnlyRead + ")");
         }
         
         Integer v_OldValue = this.valueInt;
-        this.valueInt = i_ValueInt;
+        this.valueInt      = i_ValueInt;
         
         if ( this.changedTrigger != null )
         {
@@ -204,13 +204,13 @@ public class Param implements Serializable
      */
     public void setValueLong(Long i_ValueLong)
     {
-        if ( this.isOnlyRead && !Help.isNull(this.value) )
+        if ( this.isOnlyRead && !Help.isNull(this.valueLong) )
         {
             throw new IllegalArgumentException("Value is only setting once. (isOnlyRead=" + this.isOnlyRead + ")");
         }
         
         Long v_OldValue = this.valueLong;
-        this.valueLong = i_ValueLong;
+        this.valueLong  = i_ValueLong;
         
         if ( this.changedTrigger != null )
         {
@@ -244,13 +244,13 @@ public class Param implements Serializable
      */
     public void setValueDouble(Double i_ValueDouble)
     {
-        if ( this.isOnlyRead && !Help.isNull(this.value) )
+        if ( this.isOnlyRead && !Help.isNull(this.valueDouble) )
         {
             throw new IllegalArgumentException("Value is only setting once. (isOnlyRead=" + this.isOnlyRead + ")");
         }
         
         Double v_OldValue = this.valueDouble;
-        this.valueDouble = i_ValueDouble;
+        this.valueDouble  = i_ValueDouble;
         
         if ( this.changedTrigger != null )
         {
@@ -284,13 +284,13 @@ public class Param implements Serializable
      */
     public void setValueTime(Date i_ValueTime)
     {
-        if ( this.isOnlyRead && !Help.isNull(this.value) )
+        if ( this.isOnlyRead && !Help.isNull(this.valueTime) )
         {
             throw new IllegalArgumentException("Value is only setting once. (isOnlyRead=" + this.isOnlyRead + ")");
         }
         
         Date v_OldValue = this.valueTime;
-        this.valueTime = i_ValueTime;
+        this.valueTime  = i_ValueTime;
         
         if ( this.changedTrigger != null )
         {
