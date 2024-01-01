@@ -91,6 +91,7 @@ import org.hy.common.comparate.SerializableComparator;
  *               2021-09-27  1. 添加：是否为编程语言的基本数据类型
  *               2023-10-24  1. 添加：扩充NVL方法
  *                           2. 修改：NVL(i_Value ,i_ElseValue)的逻辑判定，不再判定i_ElseValue是否为NULL
+ *               2023-12-29  1. 添加：时间类型的 max(...) 和 min(...)
  */
 public class Help
 {
@@ -413,6 +414,54 @@ public class Help
         
         return v_Ret;
     }
+    
+    
+    
+    /**
+     * 多值一起比较，得出最大值。
+     * 
+     *   注：空对象NULL，不参考比较。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2023-12-29
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_ValueX
+     * @return
+     */
+    public final static Date max(Date i_Value01 ,Date ... i_ValueX)
+    {
+    	Date v_Ret = i_Value01;
+        int   i     = 0;
+        
+        if ( v_Ret == null )
+        {
+            // 查找首个非空的对象
+            for (; i<i_ValueX.length; i++)
+            {
+                v_Ret = i_ValueX[i];
+                if ( v_Ret != null )
+                {
+                    break;
+                }
+            }
+        }
+        
+        
+        for (; i<i_ValueX.length; i++)
+        {
+            if ( i_ValueX[i] != null )
+            {
+            	if ( v_Ret.getTime() < i_ValueX[i].getTime() )
+            	{
+            		v_Ret = i_ValueX[i];
+            	}
+            }
+        }
+        
+        return v_Ret;
+    }
 
     
     
@@ -588,6 +637,54 @@ public class Help
             if ( i_ValueX[i] != null )
             {
                 v_Ret = Math.min(v_Ret ,i_ValueX[i]);
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 多值一起比较，得出最小值。
+     * 
+     *   注：空对象NULL，不参考比较。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2023-12-29
+     * @version     v1.0
+     *
+     * @param i_Value01
+     * @param i_ValueX
+     * @return
+     */
+    public final static Date min(Date i_Value01 ,Date ... i_ValueX)
+    {
+        Date v_Ret = i_Value01;
+        int   i     = 0;
+        
+        if ( v_Ret == null )
+        {
+            // 查找首个非空的对象
+            for (; i<i_ValueX.length; i++)
+            {
+                v_Ret = i_ValueX[i];
+                if ( v_Ret != null )
+                {
+                    break;
+                }
+            }
+        }
+        
+        
+        for (; i<i_ValueX.length; i++)
+        {
+            if ( i_ValueX[i] != null )
+            {
+                if ( v_Ret.getTime() > i_ValueX[i].getTime() )
+            	{
+            		v_Ret = i_ValueX[i];
+            	}
             }
         }
         

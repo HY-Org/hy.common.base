@@ -19,7 +19,8 @@ import org.hy.common.TriggerEvent;
  * @version  V1.0  2013-04-20
  *           V2.0  2015-11-02  添加：是否为只读状态，当为只读状态时，this.value只能被设置一次。默认为只读状态
  *                             添加：this.value 的数值改变事
- *           V3.0  2023-11-30  添加：Integer、Long、Double、Datel四种常用类型
+ *           V3.0  2023-11-30  添加：Integer、Long、Double、Date四种常用类型
+ *           V3.1  2023-12-27  添加：Boolean类型
  */
 public class Param implements Serializable
 {
@@ -44,6 +45,9 @@ public class Param implements Serializable
     
     /** 时间类型的 */
     private Date         valueTime;
+    
+    /** 逻辑类型的 */
+    private Boolean      valueBoolean;
     
     /** 注释说明 */
     private String       comment;
@@ -297,6 +301,46 @@ public class Param implements Serializable
             try
             {
                 this.changedTrigger.trigger("valueChanged" ,new ChangeEvent<Date>(this ,v_OldValue ,i_ValueTime));
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    
+    
+    /**
+     * 获取：逻辑类型的
+     */
+    public Boolean getValueBoolean()
+    {
+        return valueBoolean;
+    }
+
+
+    
+    /**
+     * 设置：逻辑类型的
+     * 
+     * @param i_ValueBoolean 逻辑类型的
+     */
+    public void setValueBoolean(Boolean i_ValueBoolean)
+    {
+        if ( this.isOnlyRead && !Help.isNull(this.valueBoolean) )
+        {
+            throw new IllegalArgumentException("Value is only setting once. (isOnlyRead=" + this.isOnlyRead + ")");
+        }
+        
+        Boolean v_OldValue = this.valueBoolean;
+        this.valueBoolean  = i_ValueBoolean;
+        
+        if ( this.changedTrigger != null )
+        {
+            try
+            {
+                this.changedTrigger.trigger("valueChanged" ,new ChangeEvent<Boolean>(this ,v_OldValue ,i_ValueBoolean));
             }
             catch (Exception e)
             {
