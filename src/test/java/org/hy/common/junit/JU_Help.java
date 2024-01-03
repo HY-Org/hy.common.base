@@ -22,7 +22,7 @@ import org.junit.runners.MethodSorters;
 
 
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING) 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JU_Help
 {
  
@@ -223,6 +223,8 @@ public class JU_Help
     @Test
     public void test_division()
     {
+        System.out.println(50D + Help.round(50D * Help.division(204 - 1 ,1351) ,2));
+        
         double v_Ret01 = Help.division("1" ,"3");
         double v_Ret02 = Help.division(1   ,3);
         

@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author   ZhengWei(HY)
  * @version  v1.0  2014-12-06
  *           v2.0  2023-05-08  修改：将父类由 Queue类改为 ConcurrentLinkedQueue
+ *           v3.0  2024-01-03  添加：用同类构造（克隆）另一个样的实例
  */
 public class Busway<O> extends ConcurrentLinkedQueue<O>
 {
@@ -36,7 +37,26 @@ public class Busway<O> extends ConcurrentLinkedQueue<O>
     
     
     
+    public Busway(Busway<O> i_Busway)
+    {
+        this(i_Busway.getWayLength());
+        
+        for (O v_Item : i_Busway)
+        {
+            this.put(v_Item);
+        }
+    }
+    
+    
+    
     public Busway(int i_WayLength)
+    {
+        this.setWayLength(i_WayLength);
+    }
+    
+    
+    
+    public Busway(long i_WayLength)
     {
         this.setWayLength(i_WayLength);
     }
