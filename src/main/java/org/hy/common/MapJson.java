@@ -329,7 +329,11 @@ public class MapJson extends HashMap<String ,Object>
     
     
     /**
-     * 复制另一个Map集合
+     * 复制另一个Map集合。
+     * 
+     *   支持1：深度克隆模式，即参数i_Map.clear()，也不影响this
+     *   支持2：不强制要求参数i_Map也是一个MapJson结构，但对不符合MapJson数据结构的数据不添加
+     *   支持3：参数i_Map.key允许是 keyA[indexA].keyB[indexB].keyC 等格式
      *
      * @author      ZhengWei(HY)
      * @createDate  2024-01-09
@@ -339,6 +343,7 @@ public class MapJson extends HashMap<String ,Object>
      *
      * @see java.util.HashMap#putAll(java.util.Map)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void putAll(Map<? extends String ,? extends Object> i_Map)
     {
@@ -346,8 +351,170 @@ public class MapJson extends HashMap<String ,Object>
         
         while (i.hasNext())
         {
-            Map.Entry<? extends String, ? extends Object> e = i.next();
-            this.put(e.getKey(), e.getValue());
+            Map.Entry<? extends String, ? extends Object> v_Item = i.next();
+            
+            Object v_OrgValue = this.get(v_Item.getKey());
+            if ( v_OrgValue == null )
+            {
+                if ( v_Item.getValue() == null )
+                {
+                    this.put(v_Item.getKey(), v_Item.getValue());
+                }
+                else if ( v_Item.getValue() instanceof List )
+                {
+                    List<MapJson> v_OrgValueList = new ArrayList<MapJson>();
+                    this.put(v_Item.getKey() ,v_OrgValueList);
+                    
+                    List<Object> v_ItemValueList = (List<Object>) v_Item.getValue();
+                    for (Object v_ItemChild : v_ItemValueList)
+                    {
+                        if ( v_ItemChild instanceof Map )
+                        {
+                            MapJson v_OrgJsonMap = new MapJson(this.splitValue ,this.indexLeft ,this.indexRight);
+                            v_OrgJsonMap.putAll((Map<String ,Object>) v_ItemChild);
+                            v_OrgValueList.add(v_OrgJsonMap);
+                        }
+                        else
+                        {
+                            // 非Map结构的，不添加
+                        }
+                    }
+                }
+                else if ( v_Item.getValue() instanceof Map )
+                {
+                    List<MapJson> v_OrgValueList = new ArrayList<MapJson>();
+                    this.put(v_Item.getKey() ,v_OrgValueList);
+                    
+                    MapJson v_OrgJsonMap = new MapJson(this.splitValue ,this.indexLeft ,this.indexRight);
+                    v_OrgJsonMap.putAll((Map<String ,Object>) v_Item.getValue());
+                    
+                    v_OrgValueList.add(v_OrgJsonMap);
+                }
+                else
+                {
+                    this.put(v_Item.getKey(), v_Item.getValue());
+                }
+            }
+            else if ( v_OrgValue instanceof List )
+            {
+                List<MapJson> v_OrgValueList = (List<MapJson>) v_OrgValue;
+                
+                if ( v_Item.getValue() == null )
+                {
+                    continue;
+                }
+                else if ( v_Item.getValue() instanceof List )
+                {
+                    List<Object> v_ItemValueList = (List<Object>) v_Item.getValue();
+                    for (Object v_ItemChild : v_ItemValueList)
+                    {
+                        if ( v_ItemChild instanceof Map )
+                        {
+                            MapJson v_OrgJsonMap = new MapJson(this.splitValue ,this.indexLeft ,this.indexRight);
+                            v_OrgJsonMap.putAll((Map<String ,Object>) v_ItemChild);
+                            v_OrgValueList.add(v_OrgJsonMap);
+                        }
+                        else
+                        {
+                            // 非Map结构的，不添加
+                        }
+                    }
+                }
+                else if ( v_Item.getValue() instanceof Map )
+                {
+                    MapJson v_OrgJsonMap = new MapJson(this.splitValue ,this.indexLeft ,this.indexRight);
+                    v_OrgJsonMap.putAll((Map<String ,Object>) v_Item.getValue());
+                    
+                    v_OrgValueList.add(v_OrgJsonMap);
+                }
+                else
+                {
+                    // 非Map结构的，不添加
+                }
+            }
+            else if ( v_OrgValue instanceof Map )
+            {
+                MapJson v_OrgJsonMap = (MapJson) v_OrgValue;
+                
+                if ( v_Item.getValue() == null )
+                {
+                    v_OrgJsonMap.put(v_Item.getKey() ,v_Item.getValue());
+                }
+                else if ( v_Item.getValue() instanceof List )
+                {
+                    // 按理说应当没有同层结构中我是Map对你List的情况，如果真出现了就覆盖
+                    v_OrgJsonMap.clear();
+                    
+                    List<MapJson> v_OrgValueList = new ArrayList<MapJson>();
+                    this.put(v_Item.getKey() ,v_OrgValueList);
+                    
+                    List<Object> v_ItemValueList = (List<Object>) v_Item.getValue();
+                    for (Object v_ItemChild : v_ItemValueList)
+                    {
+                        if ( v_ItemChild instanceof Map )
+                        {
+                            v_OrgJsonMap = new MapJson(this.splitValue ,this.indexLeft ,this.indexRight);
+                            v_OrgJsonMap.putAll((Map<String ,Object>) v_ItemChild);
+                            v_OrgValueList.add(v_OrgJsonMap);
+                        }
+                        else
+                        {
+                            // 非Map结构的，不添加
+                        }
+                    }
+                }
+                else if ( v_Item.getValue() instanceof Map )
+                {
+                    v_OrgJsonMap.putAll((Map<String ,Object>) v_Item.getValue());
+                }
+                else
+                {
+                    v_OrgJsonMap.put(v_Item.getKey() ,v_Item.getValue());
+                }
+            }
+            else
+            {
+                if ( v_Item.getValue() == null )
+                {
+                    this.put(v_Item.getKey() ,v_Item.getValue());
+                }
+                else if ( v_Item.getValue() instanceof List )
+                {
+                    // 按理说应当没有同层结构中我是普通类型对你List的情况，如果真出现了就覆盖
+                    List<MapJson> v_OrgValueList = new ArrayList<MapJson>();
+                    this.put(v_Item.getKey() ,v_OrgValueList);
+                    
+                    List<Object> v_ItemValueList = (List<Object>) v_Item.getValue();
+                    for (Object v_ItemChild : v_ItemValueList)
+                    {
+                        if ( v_ItemChild instanceof Map )
+                        {
+                            MapJson v_OrgJsonMap = new MapJson(this.splitValue ,this.indexLeft ,this.indexRight);
+                            v_OrgJsonMap.putAll((Map<String ,Object>) v_ItemChild);
+                            v_OrgValueList.add(v_OrgJsonMap);
+                        }
+                        else
+                        {
+                            // 非Map结构的，不添加
+                        }
+                    }
+                }
+                else if ( v_Item.getValue() instanceof Map )
+                {
+                    // 按理说应当没有同层结构中我是普通类型对你Map的情况，如果真出现了就覆盖
+                    List<MapJson> v_OrgValueList = new ArrayList<MapJson>();
+                    this.put(v_Item.getKey() ,v_OrgValueList);
+                    
+                    MapJson v_OrgJsonMap = new MapJson(this.splitValue ,this.indexLeft ,this.indexRight);
+                    v_OrgJsonMap.putAll((Map<String ,Object>) v_Item.getValue());
+                    
+                    v_OrgValueList.add(v_OrgJsonMap);
+                }
+                else
+                {
+                    this.put(v_Item.getKey() ,v_Item.getValue());
+                }
+            }
         }
     }
 
@@ -617,7 +784,6 @@ public class MapJson extends HashMap<String ,Object>
      * @author      ZhengWei(HY)
      * @createDate  2024-01-09
      * @version     v1.0
-     *
      *
      * @see java.util.HashMap#clear()
      */
