@@ -6,7 +6,7 @@
 
     <groupId>cn.openapis</groupId>
     <artifactId>hy.common.base</artifactId>
-    <version>1.0.176</version>
+    <version>1.0.177</version>
     <packaging>jar</packaging>
 
     <name>cn.openapis.hy.common.base</name>
