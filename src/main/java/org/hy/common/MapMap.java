@@ -164,6 +164,10 @@ public class MapMap extends HashMap<String ,Object>
 
     /**
      * 复制另一个Map集合
+     * 
+     *   支持1：深度克隆模式，即参数i_Map.clear()，也不影响this
+     *   支持2：不强制要求参数i_Map也是一个MapMap结构，但对不符合MapMap数据结构的数据不添加
+     *   支持3：参数i_Map.key允许是 keyA.keyB.keyC 等格式
      *
      * @author      ZhengWei(HY)
      * @createDate  2024-01-08
@@ -173,6 +177,7 @@ public class MapMap extends HashMap<String ,Object>
      *
      * @see java.util.HashMap#putAll(java.util.Map)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void putAll(Map<? extends String ,? extends Object> i_Map)
     {
@@ -180,8 +185,62 @@ public class MapMap extends HashMap<String ,Object>
         
         while (i.hasNext())
         {
-            Map.Entry<? extends String, ? extends Object> e = i.next();
-            this.put(e.getKey(), e.getValue());
+            Map.Entry<? extends String, ? extends Object> v_Item = i.next();
+            
+            Object v_OrgValue = this.get(v_Item.getKey());
+            if ( v_OrgValue == null )
+            {
+                if ( v_Item.getValue() == null )
+                {
+                    this.put(v_Item.getKey() ,v_Item.getValue());
+                }
+                else if ( v_Item.getValue() instanceof Map )
+                {
+                    MapMap v_OrgMapMap = new MapMap(this.splitValue);
+                    this.put(v_Item.getKey() ,v_OrgMapMap);
+                    
+                    v_OrgMapMap.putAll((Map<String ,Object>) v_Item.getValue());
+                }
+                else
+                {
+                    this.put(v_Item.getKey() ,v_Item.getValue());
+                }
+            }
+            else if ( v_OrgValue instanceof Map )
+            {
+                MapMap v_OrgMapMap = (MapMap) v_OrgValue;
+                if ( v_Item.getValue() == null )
+                {
+                    continue;
+                }
+                else if ( v_Item.getValue() instanceof Map )
+                {
+                    v_OrgMapMap.putAll((Map<String ,Object>) v_Item.getValue());
+                }
+                else
+                {
+                    v_OrgMapMap.put(v_Item.getKey() ,v_Item.getValue());
+                }
+            }
+            else
+            {
+                if ( v_Item.getValue() == null )
+                {
+                    this.put(v_Item.getKey() ,v_Item.getValue());
+                }
+                else if ( v_Item.getValue() instanceof Map )
+                {
+                    // 按理说应当没有同层结构中我是普通类型对你Map的情况，如果真出现了就覆盖
+                    MapMap v_OrgMapMap = new MapMap(this.splitValue);
+                    this.put(v_Item.getKey() ,v_OrgMapMap);
+                    
+                    v_OrgMapMap.putAll((Map<String ,Object>) v_Item.getValue());
+                }
+                else
+                {
+                    this.put(v_Item.getKey() ,v_Item.getValue());
+                }
+            }
         }
     }
 
