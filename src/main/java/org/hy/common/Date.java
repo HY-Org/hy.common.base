@@ -29,6 +29,10 @@ import java.util.Map;
  *              v2.0  2021-03-01  添加：将原先 setDate(...) 的方法重写，其它方法均改为toDate(...)方法。
  *                                      只保留这一个setDate(String)方法。为了方便SpringBoot中的FashJson类的序列化对象
  *              v2.1  2023-03-07  添加：$FORMAT_Milli3 的格式，用于SQLServer中DateTime2在RS.getObject()方法下的使用
+ *              v3.0  2024-01-14  添加：支持时分秒在前年月日在后的格式，即 HH24:MI:SS YYYY-MM-DD
+ *                                     支持月、日、时、分、秒为1位数字时，前面没有0的格式
+ *                                     支持YYYY-MM-DD HH24格式，以及时刻与日期交换位置的格式
+ *                                     支持YYYY-MM-DD HH24:MI格式，以及时刻与日期交换位置的格式
  */
 public final class Date extends java.util.Date
 {
@@ -51,13 +55,13 @@ public final class Date extends java.util.Date
     
     public  static final String               $FORMAT_YMD         = "yyyy-MM-dd";                  // length=10  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
-    public  static final String               $FORMAT_YMD_ID      = "yyyyMMdd";                    // length=8   需特殊处理
+    public  static final String               $FORMAT_YMD_ID      = "yyyyMMdd";                    // length=8
     
     public  static final String               $FORMAT_HMS         = "HH:mm:ss";                    // length=8   需特殊处理
     
-    public  static final String               $FORMAT_YM          = "yyyy-MM";                     // length=7   需特殊处理   同时支持 yyyy/MM 、yyyy年MM月 的格式
+    public  static final String               $FORMAT_YM          = "yyyy-MM";                     // length=7   同时支持 yyyy/MM 、yyyy年MM月 的格式
     
-    public  static final String               $FORMAT_YM_ID       = "yyyyMM";                      // length=6   需特殊处理   同时支持 yyyy/MM 、yyyy年MM月 的格式
+    public  static final String               $FORMAT_YM_ID       = "yyyyMM";                      // length=6   同时支持 yyyy/MM 、yyyy年MM月 的格式
     
     /** 实现上面7 + 3 + 3 + 1种时间格式的快速检索 */
     private static final Map<Integer ,String> $FORMATS;
@@ -80,18 +84,15 @@ public final class Date extends java.util.Date
     {
         // 只为少一点IF判断，多一点速度提升
         $FORMATS = new Hashtable<Integer ,String>();
-        $FORMATS.put($FORMAT_Milli3 .length()     ,$FORMAT_Milli3);
-        $FORMATS.put($FORMAT_Milli  .length()     ,$FORMAT_Milli);
-        $FORMATS.put($FORMAT_Milli  .length() + 1 ,$FORMAT_Milli);    // yyyy年MM月dd日多了一个 "日"
-        $FORMATS.put($FORMAT_Milli2 .length()     ,$FORMAT_Milli2);
-        $FORMATS.put($FORMAT_Milli2 .length() + 1 ,$FORMAT_Milli2);   // yyyy年MM月dd日多了一个 "日"
-        $FORMATS.put($FORMAT_MilliID.length()     ,$FORMAT_MilliID);
-        $FORMATS.put($FORMAT_Normal .length()     ,$FORMAT_Normal);
-        $FORMATS.put($FORMAT_Normal .length() + 1 ,$FORMAT_Normal);   // yyyy年MM月dd日多了一个 "日"
-        $FORMATS.put($FORMAT_UTC_ID .length()     ,$FORMAT_UTC_ID);
-        $FORMATS.put($FROMAT_ID     .length()     ,$FROMAT_ID);
-        $FORMATS.put($FORMAT_YMD    .length()     ,$FORMAT_YMD);
-        $FORMATS.put($FORMAT_YMD    .length() + 1 ,$FORMAT_YMD);      // yyyy年MM月dd日多了一个 "日"
+        $FORMATS.put($FORMAT_Milli3 .length() ,$FORMAT_Milli3);     // 27
+        $FORMATS.put($FORMAT_Milli  .length() ,$FORMAT_Milli);      // 23
+        $FORMATS.put($FORMAT_Milli2 .length() ,$FORMAT_Milli2);     // 21
+        $FORMATS.put($FORMAT_MilliID.length() ,$FORMAT_MilliID);    // 17
+        $FORMATS.put($FORMAT_UTC_ID .length() ,$FORMAT_UTC_ID);     // 15
+        $FORMATS.put($FORMAT_Normal .length() ,$FORMAT_Normal);     // 14
+        $FORMATS.put($FROMAT_ID     .length() ,$FROMAT_ID);         // 8
+        $FORMATS.put($FORMAT_YMD    .length() ,$FORMAT_YMD);        // 7
+        $FORMATS.put($FORMAT_YMD_ID .length() ,$FORMAT_YMD_ID);     // 6
     }
     
     
@@ -465,7 +466,10 @@ public final class Date extends java.util.Date
      */
     public Date toDate(String i_StrDateFormat)
     {
-        Date v_Date = null;
+        Date    v_Date       = null;
+        boolean v_Is00       = false;
+        String  v_DateStr    = null;
+        String  v_DateFormat = null;
         
         if ( Help.isNull(i_StrDateFormat) )
         {
@@ -475,43 +479,44 @@ public final class Date extends java.util.Date
         {
             try
             {
-                String v_DateStr    = StringHelp.replaceAll(i_StrDateFormat ,new String[]{"日" ,"/" ,"年" ,"月"} ,new String[]{"" ,"-"});
-                String v_DateFormat = $FORMATS.get(i_StrDateFormat.trim().length());
-                
+                v_DateStr    = StringHelp.replaceAll(i_StrDateFormat.trim() ,new String[]{"日" ,"/" ,"年" ,"月"} ,new String[]{"" ,"-"});
+                v_DateFormat = $FORMATS.get(v_DateStr.length());
                 if ( v_DateFormat == null )
                 {
-                    if ( i_StrDateFormat.length() == 13 && Help.isNumber(i_StrDateFormat) )
+                    if ( v_DateStr.length() == 13 && Help.isNumber(v_DateStr) )
                     {
-                        this.setTime(Long.parseLong(i_StrDateFormat));
+                        this.setTime(Long.parseLong(v_DateStr));
                         return this;
                     }
-                    
-                    String v_StrFullFormat = i_StrDateFormat.trim();
-                    int    v_Len           = v_StrFullFormat.length();
-                    if ( v_Len <= $FORMAT_YM_ID.length() )
+                    else
                     {
-                        v_StrFullFormat += "01";
-                        v_DateFormat     = $FORMAT_YMD_ID;
+                        v_DateStr    = toDate00(v_DateStr);
+                        v_Is00       = true;
+                        v_DateFormat = $FORMATS.get(v_DateStr.length());
+                        v_Date = new Date(v_DateStr ,v_DateFormat);
                     }
-                    else if ( v_Len <= $FORMAT_YM.length() )
-                    {
-                        v_StrFullFormat += "-01";
-                        v_DateFormat     = $FORMAT_YMD;
-                    }
-                    else if ( v_Len <= $FORMAT_HMS.length() )
-                    {
-                        // 支持 时:分:秒 格式的转换  ZhengWei(HY) Add 2018-05-04
-                        if ( v_StrFullFormat.contains(":") )
-                        {
-                            v_DateFormat    = $FORMAT_Normal;
-                            v_StrFullFormat = "2000-01-01 " + v_StrFullFormat;
-                        }
-                        else
-                        {
-                            v_DateFormat = $FORMAT_YMD_ID;
-                        }
-                    }
-                    
+                }
+                // 预防仅通长度而造成的误判
+                else if ( v_DateStr.indexOf("-") > 0 &&
+                         ($FORMAT_YMD_ID .equals(v_DateFormat)
+                       || $FORMAT_YM_ID  .equals(v_DateFormat)
+                       || $FORMAT_UTC_ID .equals(v_DateFormat)
+                       || $FORMAT_MilliID.equals(v_DateFormat)
+                       || $FROMAT_ID     .equals(v_DateFormat)) )
+                {
+                    v_DateStr    = toDate00(v_DateStr);
+                    v_Is00       = true;
+                    v_DateFormat = $FORMATS.get(v_DateStr.length());
+                    v_Date = new Date(v_DateStr ,v_DateFormat);
+                }
+                // 预防仅通长度而造成的误判。如有小时并未识别出来
+                else if ( v_DateStr.indexOf(" ") > 0 &&
+                         ($FORMAT_YMD.equals(v_DateFormat)
+                       || $FORMAT_YM.equals(v_DateFormat)) )
+                {
+                    v_DateStr    = toDate00(v_DateStr);
+                    v_Is00       = true;
+                    v_DateFormat = $FORMATS.get(v_DateStr.length());
                     v_Date = new Date(v_DateStr ,v_DateFormat);
                 }
                 else
@@ -526,12 +531,144 @@ public final class Date extends java.util.Date
             }
             catch (Exception exce)
             {
-                v_Date = new Date(i_StrDateFormat ,$FORMAT_US ,Locale.US);
+                if ( !v_Is00 )
+                {
+                    v_DateStr    = toDate00(v_DateStr);
+                    v_DateFormat = $FORMATS.get(v_DateStr.length());
+                }
+                else
+                {
+                    v_DateFormat = null;
+                }
+                
+                if ( v_DateFormat != null )
+                {
+                    v_Date = new Date(v_DateStr ,v_DateFormat);
+                }
+                else
+                {
+                    v_Date = new Date(v_DateStr ,$FORMAT_US ,Locale.US);
+                }
             }
         }
         
         this.setTime(v_Date.getTime());
         return this;
+    }
+    
+    
+
+    /**
+     * 处理 00 格式，即1月改为 01； 8点改为 08等
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-01-14
+     * @version     v1.0
+     *
+     * @param i_DateStr
+     * @return
+     */
+    private String toDate00(String i_DateStr)
+    {
+        String []     v_YMD_HMS = i_DateStr.split(" ");
+        StringBuilder v_Buffer  = new StringBuilder();
+        
+        for (int y=0; y<v_YMD_HMS.length; y++)
+        {
+            if ( y > 0 )
+            {
+                v_Buffer.append(" ");
+            }
+            
+            if ( v_YMD_HMS[y].indexOf("-") > 0 )
+            {
+                String [] v_YMD = v_YMD_HMS[y].split("-");
+                for (int x=0; x<v_YMD.length; x++)
+                {
+                    if ( x > 0 )
+                    {
+                        v_Buffer.append("-");
+                    }
+                    if ( v_YMD[x].length() == 1 )
+                    {
+                        v_Buffer.append("0");
+                    }
+                    v_Buffer.append(v_YMD[x]);
+                }
+                
+                // 支持YYYY-MM的格式，补全天
+                if ( v_YMD.length == 2 )
+                {
+                    v_Buffer.append("-01");
+                }
+            }
+            else if ( v_YMD_HMS[y].indexOf(":") > 0 )
+            {
+                // 支持 HH:MI:SS的格式，补全年月日
+                if ( y == 0 )
+                {
+                    if ( v_YMD_HMS.length == 1 )
+                    {
+                        v_Buffer.append("2000-01-01 ");
+                    }
+                    else
+                    {
+                        // 支持 HH:MI:SS YYYY-MM-DD的格式，即日期在时刻的后面
+                        return toDate00(v_YMD_HMS[1] + " " + v_YMD_HMS[0]);
+                    }
+                }
+                
+                String [] v_HMS = v_YMD_HMS[y].split(":");
+                for (int x=0; x<v_HMS.length; x++)
+                {
+                    if ( x > 0 )
+                    {
+                        v_Buffer.append(":");
+                    }
+                    if ( v_HMS[x].length() == 1 )
+                    {
+                        v_Buffer.append("0");
+                    }
+                    v_Buffer.append(v_HMS[x]);
+                }
+                
+                // 支持HH:MI的格式，补全秒
+                if ( v_HMS.length == 2 )
+                {
+                    v_Buffer.append(":00");
+                }
+            }
+            else if ( y == 1 )
+            {
+                // 支持 YYYY-MM-DD HH的格式，补全分钟和秒
+                if ( v_YMD_HMS[y].length() == 1 )
+                {
+                    v_Buffer.append("0");
+                    v_Buffer.append(v_YMD_HMS[y]);
+                    v_Buffer.append(":00:00");
+                }
+                else if ( v_YMD_HMS[y].length() == 2 )
+                {
+                    v_Buffer.append(v_YMD_HMS[y]);
+                    v_Buffer.append(":00:00");
+                }
+                else
+                {
+                    v_Buffer.append(v_YMD_HMS[y]);
+                }
+            }
+        }
+        
+        if ( v_Buffer.length() <= 0 )
+        {
+            if ( i_DateStr.length() <= $FORMAT_YM_ID.length() )
+            {
+                v_Buffer.append(i_DateStr);
+                v_Buffer.append("01");
+            }
+        }
+        
+        return v_Buffer.toString();
     }
     
     
