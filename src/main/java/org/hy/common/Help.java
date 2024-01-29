@@ -92,6 +92,7 @@ import org.hy.common.comparate.SerializableComparator;
  *               2023-10-24  1. 添加：扩充NVL方法
  *                           2. 修改：NVL(i_Value ,i_ElseValue)的逻辑判定，不再判定i_ElseValue是否为NULL
  *               2023-12-29  1. 添加：时间类型的 max(...) 和 min(...)
+ *               2024-01-29  1. 添加：自主选定任务（或自主认领任务）的算法
  */
 public class Help
 {
@@ -1235,6 +1236,52 @@ public class Help
     public final static String random(int i_Length ,boolean i_HaveNumber)
     {
         return StringHelp.random(i_Length ,i_HaveNumber);
+    }
+    
+    
+    
+    /**
+     * 算法：自主选定任务（或自主认领任务）
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-01-29
+     * @version     v1.0
+     *
+     * @param <W>        干活对象
+     * @param <T>        任务对象
+     * @param i_Workers  所有参与干活的集合
+     * @param i_Tasks    所有待分配的任务集合
+     * @return           认领出的结果应为下表（5个任务，3个认领人时）
+     *                   任务     认领人
+     *                   ---------------
+     *                   T1       W1
+     *                   T2       W2
+     *                   T3       W3
+     *                   T4       W1
+     *                   T5       W2
+     */
+    public final static <W ,T> PartitionMap<W ,T> claimTask(List<W> i_Workers ,List<T> i_Tasks)
+    {
+        PartitionMap<W ,T>  v_Ret = new TablePartitionLink<W ,T>();
+        
+        if ( Help.isNull(i_Workers) || Help.isNull(i_Tasks) )
+        {
+            return v_Ret;
+        }
+        
+        int v_WorkerIndex = 0;
+        for (T v_Task : i_Tasks)
+        {
+            v_Ret.putRow(i_Workers.get(v_WorkerIndex) ,v_Task);
+            
+            v_WorkerIndex++;
+            if ( v_WorkerIndex >= i_Workers.size() )
+            {
+                v_WorkerIndex = 0;
+            }
+        }
+        
+        return v_Ret;
     }
     
     

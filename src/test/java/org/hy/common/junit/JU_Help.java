@@ -12,6 +12,7 @@ import org.hy.common.Counter;
 import org.hy.common.Date;
 import org.hy.common.Help;
 import org.hy.common.MethodReflect;
+import org.hy.common.PartitionMap;
 import org.hy.common.StringHelp;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -26,6 +27,29 @@ import org.junit.runners.MethodSorters;
 public class JU_Help
 {
  
+    
+    @Test
+    public void test_claimTask()
+    {
+        List<String> v_Workers = new ArrayList<String>();
+        List<String> v_Tasks   = new ArrayList<String>();
+        
+        for (int x=1; x<=3; x++)
+        {
+            v_Workers.add("W" + x);
+        }
+        
+        for (int x=1; x<=5; x++)
+        {
+            v_Tasks.add("T" + x);
+        }
+        
+        PartitionMap<String ,String> v_ClaimTask = Help.claimTask(v_Workers ,v_Tasks);
+        Help.print(v_ClaimTask);
+    }
+    
+    
+    
     @Test
     public void test_FatherChild()
     {
