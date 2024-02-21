@@ -28,3 +28,5 @@ copy hy.common.base-sources.jar ..\..\..
 del /Q hy.common.base-sources.jar
 rd /s/q META-INF
 cd ..\..\..
+
+pause
