@@ -1,7 +1,9 @@
 package org.hy.common.junit;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hy.common.Help;
 import org.hy.common.RelationList;
@@ -23,6 +25,124 @@ import org.junit.Test;
  */
 public class JU_StringHelp
 {
+    
+    @Test
+    public void test_SplitMaxMatch()
+    {
+        String              v_Info       = "UKO3O4SZX1";
+        Map<String ,String> v_MatchDatas = new HashMap<String ,String>();
+        
+        v_MatchDatas.put("U"   ,"两");
+        v_MatchDatas.put("K"   ,"岸");
+        v_MatchDatas.put("KO"  ,"-1");      // 干扰项
+        v_MatchDatas.put("O3"  ,"猿声");
+        v_MatchDatas.put("O4"  ,"啼不");
+        //v_MatchDatas.put("O"   ,"-2");      // 干扰项
+        v_MatchDatas.put("S"   ,"住");
+        v_MatchDatas.put("Z"   ,"轻");
+        v_MatchDatas.put("ZX1" ,"轻舟已");
+        //v_MatchDatas.put("UK"  ,"-3");      // 干扰项
+        
+        System.out.println("\n\n最大匹配");
+        Help.print(StringHelp.SplitMaxMatch(v_Info ,v_MatchDatas ,false));
+        
+        System.out.println("\n\n最大匹配：全匹配");
+        Help.print(StringHelp.SplitMaxMatch(v_Info ,v_MatchDatas ,true));
+        
+        System.out.println("\n\n最小匹配");
+        Help.print(StringHelp.SplitMinMatch(v_Info ,v_MatchDatas ,false));
+        
+        System.out.println("\n\n最小匹配：全匹配");
+        Help.print(StringHelp.SplitMinMatch(v_Info ,v_MatchDatas ,true));
+    }
+    
+    
+    
+    @Test
+    public void test_SplitMaxMatch_ALotOf()
+    {
+        Map<String ,String> v_MatchDatas = new HashMap<String ,String>();
+        
+        v_MatchDatas.put("A"       ,"禁石墨(阀体组件)");
+        v_MatchDatas.put("A1"      ,"禁石墨(法兰垫片)");
+        v_MatchDatas.put("B"       ,"不锈钢材质防雨帽");
+        v_MatchDatas.put("C"       ,"禁水");
+        v_MatchDatas.put("D"       ,"禁硫");
+        v_MatchDatas.put("DP"      ,"垫片");
+        v_MatchDatas.put("DZ"      ,"电动执行机构");
+        v_MatchDatas.put("E1"      ,"禁油W1级(阀体组件)");
+        v_MatchDatas.put("E2"      ,"禁油W2级(阀体组件)");
+        v_MatchDatas.put("E3"      ,"禁油W3级");
+        v_MatchDatas.put("E4"      ,"禁油W1级(配对法兰)");
+        v_MatchDatas.put("E5"      ,"禁油W1级(法兰垫片)");
+        v_MatchDatas.put("E6"      ,"禁油W2级(配对法兰)");
+        v_MatchDatas.put("E7"      ,"禁油W2级(法兰垫片)");
+        v_MatchDatas.put("F"       ,"禁用PTFE");
+        v_MatchDatas.put("FJ"      ,"附件连接");
+        v_MatchDatas.put("FL"      ,"配对法兰");
+        v_MatchDatas.put("FLKS"    ,"DN65法兰4孔");
+        v_MatchDatas.put("FLLS"    ,"法兰螺栓为全螺纹螺柱");
+        v_MatchDatas.put("FT"      ,"阀体组件");
+        v_MatchDatas.put("G"       ,"出口");
+        v_MatchDatas.put("G1"      ,"特殊标识");
+        v_MatchDatas.put("G2070"   ,"G2070软密封球阀");
+        v_MatchDatas.put("G2070ZJ" ,"阀体和执行机构采用支架连接");
+        v_MatchDatas.put("H"       ,"开启时间");
+        v_MatchDatas.put("I"       ,"禁橡胶(阀体组件)");
+        v_MatchDatas.put("J"       ,"关闭时间");
+        v_MatchDatas.put("K"       ,"环境禁铜");
+        v_MatchDatas.put("KLJZ"    ,"颗粒介质");
+        v_MatchDatas.put("L"       ,"介质禁铜");
+        v_MatchDatas.put("LL"      ,"流量特性试验");
+        v_MatchDatas.put("M"       ,"光洁度");
+        v_MatchDatas.put("O1"      ,"指定色涂层(阀体组件底漆)");
+        v_MatchDatas.put("O2"      ,"指定色涂层(阀体组件面漆)");
+        v_MatchDatas.put("O3"      ,"指定色涂层(执行机构面漆)");
+        v_MatchDatas.put("O4"      ,"指定色涂层(执行机构底漆)");
+        v_MatchDatas.put("P"       ,"探伤检验");
+        v_MatchDatas.put("Q"       ,"高温试验");
+        v_MatchDatas.put("QZ"      ,"气动执行机构");
+        v_MatchDatas.put("R"       ,"低温试验");
+        v_MatchDatas.put("S"       ,"材料检查");
+        v_MatchDatas.put("SCTL"    ,"双重填料");
+        v_MatchDatas.put("SM"      ,"配管栓母");
+        v_MatchDatas.put("U"       ,"环境温度低于-45℃");
+        v_MatchDatas.put("U1"      ,"高温V级");
+        v_MatchDatas.put("W"       ,"NACE MR 0103(阀体组件)");
+        v_MatchDatas.put("W1"      ,"NACE MR 0175(阀体组件)");
+        v_MatchDatas.put("W2"      ,"NACE MR 0103(配对法兰)");
+        v_MatchDatas.put("W3"      ,"NACE MR 0175(配对法兰)");
+        v_MatchDatas.put("WH"      ,"位号牌");
+        v_MatchDatas.put("WZ"      ,"外购执行机构连接");
+        v_MatchDatas.put("Y"       ,"低温");
+        v_MatchDatas.put("Z"       ,"低温禁铜");
+        
+        Map<String ,String> v_Infos = new HashMap<String ,String>();
+        v_Infos.put("A"      ,"标准型");
+        v_Infos.put("K"      ,"环境禁铜");
+        v_Infos.put("KO3"    ,"环境禁铜+特殊面漆");
+        v_Infos.put("KO3O4"  ,"环境禁铜+特殊面漆底漆");
+        v_Infos.put("KO4"    ,"环境禁铜+特殊底漆");
+        v_Infos.put("O3"     ,"指定色涂层（执行机构面漆）");
+        v_Infos.put("O3O4"   ,"指定色涂层（执行机构底漆+面漆）");
+        v_Infos.put("O4"     ,"指定色涂层（执行机构底漆）");
+        v_Infos.put("U"      ,"环境温度低于-45℃");
+        v_Infos.put("UK"     ,"环境温度低于-45℃+环境禁铜");
+        v_Infos.put("UKO3"   ,"环境温度低于-45℃+环境禁铜+特殊面漆");
+        v_Infos.put("UKO3O4" ,"环境温度低于-45℃+环境禁铜+特殊面漆底漆");
+        v_Infos.put("UKO4"   ,"环境温度低于-45℃+环境禁铜+特殊底漆");
+        v_Infos.put("UO3"    ,"环境温度低于-45℃+特殊面漆");
+        v_Infos.put("UO3O4"  ,"环境温度低于-45℃+特殊面漆底漆");
+        v_Infos.put("UO4"    ,"环境温度低于-45℃+特殊底漆");
+        
+        for (Map.Entry<String ,String> v_Info : v_Infos.entrySet())
+        {
+            System.out.println("\n\n" + v_Info.getKey() + " = " + v_Info.getValue());
+            Help.print(StringHelp.SplitMaxMatch(v_Info.getKey() ,v_MatchDatas ,true));
+        }
+    }
+    
+    
     
     @Test
     public void test_findLastTimeAndName()

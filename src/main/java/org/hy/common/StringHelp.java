@@ -56,6 +56,7 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.17 2020-06-08   1.修改 解释占位符的系列方法parsePlaceholders()的返回结构改成PartitionMap
  *              v1.18 2021-09-27   1.添加 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
  *              v1.19 2022-05-19   1.添加 货币转字符串转数字的方法 toNumber()
+ *              v1.20 2024-03-22   1.添加 无明确分割符的拆分。类似于简单的分词 SplitMaxMatch()
  * 
  * @createDate  2009-08-21
  */
@@ -4309,6 +4310,286 @@ public final class StringHelp
         */
         
         return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 拆分匹配（最大字符匹配规则）
+     * 
+     * 应用场景：无明确分割符的拆分。
+     * 匹配原理：用文本信息的最大长度字符在匹配数据库中查询，未查到时信息长度减少1个（从尾部减少），再次查询，
+     *          直到查到时添加到返回结果中去。文本信息截取后面的文本信息，再次进入上面的循环。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-03-22
+     * @version     v1.0
+     *
+     * @param <E>
+     * @param i_Info         被拆分的文本信息
+     * @param i_MatchDatas   匹配数据库
+     * @param i_IsFullMatch  是否为全匹配。即，文本信息能被无遗漏的匹配到
+     * @return
+     */
+    public static <E> List<E> SplitMaxMatch(String i_Info ,Map<String ,E> i_MatchDatas ,boolean i_IsFullMatch)
+    {
+        if ( Help.isNull(i_Info) )
+        {
+            return null;
+        }
+        if ( Help.isNull(i_MatchDatas) )
+        {
+            return null;
+        }
+        
+        List<E> v_Ret = new ArrayList<E>();
+        
+        int    v_Len     = i_Info.length();
+        int    v_SIndex  = 0;
+        int    v_EIndex  = v_Len;
+        String v_KeyLast = "";             // 上次匹配成功的关键字
+        
+        do
+        {
+            String v_Key   = i_Info.substring(v_SIndex ,v_EIndex);
+            E      v_Value = i_MatchDatas.get(v_Key);
+            
+            if ( v_Value != null )
+            {
+                // 匹配成功
+                v_Ret.add(v_Value);
+                v_KeyLast = v_Key;
+                v_SIndex += v_Key.length();
+                v_EIndex  = v_Len;
+            }
+            else
+            {
+                v_EIndex--;
+                
+                if ( v_SIndex >= v_EIndex )
+                {
+                    if ( i_IsFullMatch && !Help.isNull(v_Ret) )
+                    {
+                        // 未匹配到，可能是前一个匹配模式有问题，尝试一次修复
+                        v_Ret.remove(v_Ret.size() - 1);
+                        v_SIndex -= v_KeyLast.length();
+                        v_EIndex = v_Len;
+                        Return<E> v_MinFirst = StringHelp.SplitMinMatchFirst(i_Info.substring(v_SIndex ,v_EIndex) ,i_MatchDatas);
+                        if ( v_MinFirst == null || v_KeyLast.equals(v_MinFirst.getParamStr()) )
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            // 匹配成功
+                            v_Ret.add(v_MinFirst.getParamObj());
+                            v_KeyLast = v_MinFirst.getParamStr();
+                            v_SIndex += v_MinFirst.getParamStr().length();
+                            v_EIndex  = v_Len;
+                        }
+                    }
+                    else
+                    {
+                        // 未匹配到，准备跳过
+                        v_SIndex++;
+                        v_EIndex = v_Len;
+                    }
+                }
+            }
+        } while ( v_SIndex < v_Len );
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 拆分匹配（最大字符匹配规则）
+     * 
+     * 应用场景：无明确分割符的拆分。
+     * 匹配原理：用文本信息的最大长度字符在匹配数据库中查询，未查到时信息长度减少1个（从尾部减少），再次查询，
+     *          直到查到时添加到返回结果中去。文本信息截取后面的文本信息，再次进入上面的循环。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-03-22
+     * @version     v1.0
+     *
+     * @param <E>
+     * @param i_Info         被拆分的文本信息
+     * @param i_MatchDatas   匹配数据库
+     * @return
+     */
+    private static <E> Return<E> SplitMaxMatchFirst(String i_Info ,Map<String ,E> i_MatchDatas)
+    {
+        int v_Len    = i_Info.length();
+        int v_SIndex = 0;
+        int v_EIndex = v_Len;
+        
+        do
+        {
+            String v_Key     = i_Info.substring(v_SIndex ,v_EIndex);
+            E      v_Value   = i_MatchDatas.get(v_Key);
+            
+            if ( v_Value != null )
+            {
+                // 匹配成功
+                return new Return<E>().paramObj(v_Value).paramStr(v_Key);
+            }
+            else
+            {
+                v_EIndex--;
+                
+                if ( v_SIndex >= v_EIndex )
+                {
+                    // 未匹配到，准备跳过
+                    v_SIndex++;
+                    v_EIndex = v_Len;
+                    return null;
+                }
+            }
+        } while ( v_SIndex < v_Len );
+        
+        return null;
+    }
+    
+    
+    
+    /**
+     * 拆分匹配（最小字符匹配规则）
+     * 
+     * 应用场景：无明确分割符的拆分。
+     * 匹配原理：用文本信息的最小长度字符在匹配数据库中查询，未查到时信息长度增加1个（从首向后增加），再次查询，
+     *          直到查到时添加到返回结果中去。文本信息截取后面的文本信息，再次进入上面的循环。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-03-22
+     * @version     v1.0
+     *
+     * @param <E>
+     * @param i_Info         被拆分的文本信息
+     * @param i_MatchDatas   匹配数据库
+     * @param i_IsFullMatch  是否为全匹配。即，文本信息能被无遗漏的匹配到
+     * @return
+     */
+    public static <E> List<E> SplitMinMatch(String i_Info ,Map<String ,E> i_MatchDatas ,boolean i_IsFullMatch)
+    {
+        if ( Help.isNull(i_Info) )
+        {
+            return null;
+        }
+        if ( Help.isNull(i_MatchDatas) )
+        {
+            return null;
+        }
+        
+        List<E> v_Ret = new ArrayList<E>();
+        
+        int v_Len        = i_Info.length();
+        int v_SIndex     = 0;
+        int v_EIndex     = v_SIndex + 1;
+        String v_KeyLast = "";             // 上次匹配成功的关键字
+        
+        do
+        {
+            String v_Key    = i_Info.substring(v_SIndex ,v_EIndex);
+            E      v_Value  = i_MatchDatas.get(v_Key);
+            
+            if ( v_Value != null )
+            {
+                // 匹配成功
+                v_Ret.add(v_Value);
+                v_KeyLast = v_Key;
+                v_SIndex += v_Key.length();
+                v_EIndex  = v_SIndex + 1;
+            }
+            else
+            {
+                v_EIndex++;
+                
+                if ( v_EIndex >= v_Len )
+                {
+                    if ( i_IsFullMatch && !Help.isNull(v_Ret) )
+                    {
+                        // 未匹配到，可能是前一个匹配模式有问题，尝试一次修复
+                        v_Ret.remove(v_Ret.size() - 1);
+                        v_SIndex -= v_KeyLast.length();
+                        v_EIndex = v_Len;
+                        Return<E> v_MaxFirst = StringHelp.SplitMaxMatchFirst(i_Info.substring(v_SIndex ,v_EIndex) ,i_MatchDatas);
+                        if ( v_MaxFirst == null || v_KeyLast.equals(v_MaxFirst.getParamStr()) )
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            // 匹配成功
+                            v_Ret.add(v_MaxFirst.getParamObj());
+                            v_KeyLast = v_MaxFirst.getParamStr();
+                            v_SIndex += v_MaxFirst.getParamStr().length();
+                            v_EIndex  = v_SIndex + 1;
+                        }
+                    }
+                    else
+                    {
+                        // 未匹配到，准备跳过
+                        v_SIndex++;
+                        v_EIndex = v_SIndex + 1;
+                    }
+                }
+            }
+        } while ( v_SIndex < v_Len );
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 拆分匹配（最小字符匹配规则）
+     * 
+     * 应用场景：无明确分割符的拆分。
+     * 匹配原理：用文本信息的最小长度字符在匹配数据库中查询，未查到时信息长度增加1个（从首向后增加），再次查询，
+     *          直到查到时添加到返回结果中去。文本信息截取后面的文本信息，再次进入上面的循环。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-03-22
+     * @version     v1.0
+     *
+     * @param <E>
+     * @param i_Info        被拆分的文本信息
+     * @param i_MatchDatas  匹配数据库
+     * @return
+     */
+    private static <E> Return<E> SplitMinMatchFirst(String i_Info ,Map<String ,E> i_MatchDatas)
+    {
+        int v_Len    = i_Info.length();
+        int v_SIndex = 0;
+        int v_EIndex = v_SIndex + 1;
+        
+        do
+        {
+            String v_Key    = i_Info.substring(v_SIndex ,v_EIndex);
+            E      v_Value  = i_MatchDatas.get(v_Key);
+            
+            if ( v_Value != null )
+            {
+                // 匹配成功
+                return new Return<E>().paramObj(v_Value).paramStr(v_Key);
+            }
+            else
+            {
+                v_EIndex++;
+                
+                if ( v_EIndex >= v_Len )
+                {
+                    // 未匹配到，准备跳过
+                    v_SIndex++;
+                    v_EIndex = v_SIndex + 1;
+                    return null;
+                }
+            }
+        } while ( v_SIndex < v_Len );
+        
+        return null;
     }
     
     
