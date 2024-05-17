@@ -6,7 +6,7 @@
 
     <groupId>org</groupId>
     <artifactId>hy.common.base</artifactId>
-    <version>1.0.183</version>
+    <version>1.0.184</version>
     <packaging>jar</packaging>
 
     <name>org.hy.common.base</name>
@@ -19,20 +19,6 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>maven-public</id>
-            <name>oss sonatype snapshots</name>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
-        </snapshotRepository>
-
-        <repository>
-            <id>maven-public</id>
-            <name>oss sonatype releases</name>
-            <url>https://s01.oss.sonatype.org/content/repositories/releases/</url>
-        </repository>
-    </distributionManagement>
 
     <licenses>
         <license>
@@ -65,13 +51,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <scm>
-        <tag>master</tag>
-        <url>git@github.com:HY-ZhengWei/hy.common.base.git</url>
-        <connection>git@github.com:HY-ZhengWei/hy.common.base.git</connection>
-        <developerConnection>git@github.com:HY-ZhengWei/hy.common.base.git</developerConnection>
-    </scm>
 
     <build>
         <resources>
