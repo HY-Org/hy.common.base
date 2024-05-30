@@ -1,10 +1,13 @@
 package org.hy.common.junit;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import org.hy.common.Date;
 import org.hy.common.Lunar;
 import org.hy.common.SolarTerm;
+import org.hy.common.StringHelp;
 import org.junit.Test;
 
 
@@ -18,6 +21,11 @@ public class JU_Date
     public void test_Format()
     {
         String [] v_Datas = new String[] {
+                "2024-05-30T01:01:01.123-04:00[America/New_York]",
+                "2024-05-30T01:01:01.123456789-04:00[America/New_York]",
+                "2024-05-30T01:01:01.123456789+08:00[Asia/Shanghai]",
+                "2024-05-30T14:43:38.976177400",
+                "2024-05-30T14:43:38.976",
                 "2024-1-2",
                 "2024-1-02",
                 "2024-1-2 9:8:7",
@@ -33,6 +41,8 @@ public class JU_Date
                 "2024-01-02 09:8",
                 "2024-01-02 09",
                 "2024-01-02 09:08:7",
+                "2024-01-02 09:08:07",
+                "2024-01-02T09:08:07",
                 "2024-01-02 09:08",
                 "99991231010101Z",
                 "99991231010101",
@@ -58,6 +68,105 @@ public class JU_Date
         {
             System.out.println(new Date(v_Data).getFullMilli() + "\t\t" + v_Data);
         }
+    }
+    
+    
+    
+    /**
+     * 时区的测试
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-05-30
+     * @version     v1.0
+     *
+     */
+    @Test
+    public void test_setTimeZone()
+    {
+        String [] v_TimeZones = new String[] {
+                 "GMT+05:00"
+                ,"GMT+05"
+                ,"GMT+5"
+                ,"GMT05:00"
+                ,"GMT05"
+                ,"GMT5"
+                ,"+05:00"
+                ,"05:00"
+                ,"05"
+                ,"5"
+        };
+        
+        String [] v_TimeZoneTypes = new String[] {"GMT" ,"UTC" ,"CST" ,"CET" ,"DST" ,"EDT" ,"PDT"};
+        
+        for (String v_TimeZoneType : v_TimeZoneTypes)
+        {
+            Date v_Time = new Date("2024-05-30 11:22:33.123");
+            System.out.println(v_Time.getFullMilli() + " \t 初始时间");
+            
+            for (String v_TimeZone : v_TimeZones)
+            {
+                if ( v_TimeZone.startsWith("GMT") )
+                {
+                    v_TimeZone = StringHelp.replaceAll(v_TimeZone ,"GMT" ,v_TimeZoneType);
+                }
+                else if ( !"GMT".equals(v_TimeZoneType) )
+                {
+                    continue;
+                }
+                
+                // v_Time = new Date("2024-05-30 11:22:33.123");
+                String v_NewTimeZone = v_Time.setTimeZone(v_TimeZone);
+                System.out.println(v_Time.getFullMilli() + " \t " + v_NewTimeZone + " for " + v_TimeZone);
+            }
+            
+            System.out.println("\n");
+        }
+    }
+    
+    
+    
+    /**
+     * 带时区的时间转换
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-05-30
+     * @version     v1.0
+     */
+    @Test
+    public void test_getZonedDateTime()
+    {
+        Date v_Time = new Date("2024-05-30 11:22:33.123");
+        
+        ZonedDateTime v_ZonedDateTime = v_Time.getZonedDateTime();
+        
+        System.out.println(v_ZonedDateTime);
+        System.out.println(Date.getNowTime());
+        System.out.println(ZonedDateTime.now());
+        
+        v_ZonedDateTime = ZonedDateTime.now(ZoneId.of("America/New_York"));
+        System.out.println("美国时间：" + v_ZonedDateTime);
+        System.out.println("中国时间：" + new Date(v_ZonedDateTime));
+    }
+    
+    
+    
+    /**
+     * 本地时间的转换
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-05-30
+     * @version     v1.0
+     */
+    @Test
+    public void test_getLocalDateTime()
+    {
+        Date v_Time = new Date("2024-05-30 11:22:33.123");
+        
+        LocalDateTime v_LocalDateTime = v_Time.getLocalDateTime();
+        
+        System.out.println(v_LocalDateTime);
+        System.out.println(Date.getNowTime());
+        System.out.println(LocalDateTime.now());
     }
     
     

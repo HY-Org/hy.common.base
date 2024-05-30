@@ -2,10 +2,16 @@ package org.hy.common;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 
 
@@ -33,35 +39,42 @@ import java.util.Map;
  *                                     支持月、日、时、分、秒为1位数字时，前面没有0的格式
  *                                     支持YYYY-MM-DD HH24格式，以及时刻与日期交换位置的格式
  *                                     支持YYYY-MM-DD HH24:MI格式，以及时刻与日期交换位置的格式
+ *              v4.0  2024-05-30  添加：时区换算 GMT、UTC、CST、CET、DST、EDT、PDT 7种时间标准
+ *                                添加：支持2024-05-30T01:01:01          格式的转时间。即LocalDateTime的格式
+ *                                添加：支持2024-05-30T01:01:01.123456789格式的转时间。即LocalDateTime的格式
+ *                                添加：支持2024-05-30T01:01:01.123+08:00[Asia/Shanghai]       格式的转时间。即ZonedDateTime的格式
+ *                                添加：支持2024-05-30T01:01:01.123456789+08:00[Asia/Shanghai] 格式的转时间。即ZonedDateTime的格式
  */
 public final class Date extends java.util.Date
 {
     
     private static final long serialVersionUID = 8529353384393262590L;
     
-    public  static final String               $FORMAT_Milli3      = "yyyy-MM-dd HH:mm:ss.SSSSSSS"; // length=27  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+    public  static final String               $FORMAT_Nano        = "yyyy-MM-ddTHH:mm:ss.SSSSSSSSS"; // length=29  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
-    public  static final String               $FORMAT_Milli       = "yyyy-MM-dd HH:mm:ss.SSS";     // length=23  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
-    
-    public  static final String               $FORMAT_Milli2      = "yyyy-MM-dd HH:mm:ss.S";       // length=21  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
-    
-    public  static final String               $FORMAT_MilliID     = "yyyyMMddHHmmssSSS";           // length=17
-    
-    public  static final String               $FORMAT_Normal      = "yyyy-MM-dd HH:mm:ss";         // length=19  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
-    
-    public  static final String               $FORMAT_UTC_ID      = "yyyyMMddHHmmssZ";             // length=15
-    
-    public  static final String               $FROMAT_ID          = "yyyyMMddHHmmss";              // length=14
-    
-    public  static final String               $FORMAT_YMD         = "yyyy-MM-dd";                  // length=10  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
-    
-    public  static final String               $FORMAT_YMD_ID      = "yyyyMMdd";                    // length=8
-    
-    public  static final String               $FORMAT_HMS         = "HH:mm:ss";                    // length=8   需特殊处理
-    
-    public  static final String               $FORMAT_YM          = "yyyy-MM";                     // length=7   同时支持 yyyy/MM 、yyyy年MM月 的格式
-    
-    public  static final String               $FORMAT_YM_ID       = "yyyyMM";                      // length=6   同时支持 yyyy/MM 、yyyy年MM月 的格式
+    public  static final String               $FORMAT_Milli3      = "yyyy-MM-dd HH:mm:ss.SSSSSSS";   // length=27  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+                                                                                                     
+    public  static final String               $FORMAT_Milli       = "yyyy-MM-dd HH:mm:ss.SSS";       // length=23  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+                                                                                                     
+    public  static final String               $FORMAT_Milli2      = "yyyy-MM-dd HH:mm:ss.S";         // length=21  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+                                                                                                     
+    public  static final String               $FORMAT_MilliID     = "yyyyMMddHHmmssSSS";             // length=17
+                                                                                                     
+    public  static final String               $FORMAT_Normal      = "yyyy-MM-dd HH:mm:ss";           // length=19  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+                                                                                                     
+    public  static final String               $FORMAT_UTC_ID      = "yyyyMMddHHmmssZ";               // length=15
+                                                                                                     
+    public  static final String               $FROMAT_ID          = "yyyyMMddHHmmss";                // length=14
+                                                                                                     
+    public  static final String               $FORMAT_YMD         = "yyyy-MM-dd";                    // length=10  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
+                                                                                                     
+    public  static final String               $FORMAT_YMD_ID      = "yyyyMMdd";                      // length=8
+                                                                                                     
+    public  static final String               $FORMAT_HMS         = "HH:mm:ss";                      // length=8   需特殊处理
+                                                                                                     
+    public  static final String               $FORMAT_YM          = "yyyy-MM";                       // length=7   同时支持 yyyy/MM 、yyyy年MM月 的格式
+                                                                                                     
+    public  static final String               $FORMAT_YM_ID       = "yyyyMM";                        // length=6   同时支持 yyyy/MM 、yyyy年MM月 的格式
     
     /** 实现上面7 + 3 + 3 + 1种时间格式的快速检索 */
     private static final Map<Integer ,String> $FORMATS;
@@ -93,6 +106,22 @@ public final class Date extends java.util.Date
         $FORMATS.put($FROMAT_ID     .length() ,$FROMAT_ID);         // 8
         $FORMATS.put($FORMAT_YMD    .length() ,$FORMAT_YMD);        // 7
         $FORMATS.put($FORMAT_YMD_ID .length() ,$FORMAT_YMD_ID);     // 6
+    }
+    
+    
+    
+    /**
+     * 与 getNowTime 同义。与 LocalDateTime.now() 、ZonedDateTime.now() 保持同步
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-05-30
+     * @version     v1.0
+     *
+     * @return
+     */
+    public static Date now()
+    {
+        return new Date();
     }
     
     
@@ -310,6 +339,38 @@ public final class Date extends java.util.Date
     
     
     /**
+     * 丢精度转时间
+     *
+     * @author      ZhengWei(HY)
+     * @createDate  2024-05-30
+     * @version     v1.0
+     *
+     * @param i_LocalDateTime
+     */
+    public Date(LocalDateTime i_LocalDateTime)
+    {
+        super(Date.from(i_LocalDateTime.atZone(ZoneId.systemDefault()).toInstant()).getTime());
+    }
+    
+    
+    
+    /**
+     * 丢精度转时间。时区转换算成当前系统的时区
+     *
+     * @author      ZhengWei(HY)
+     * @createDate  2024-05-30
+     * @version     v1.0
+     *
+     * @param i_ZonedDateTime
+     */
+    public Date(ZonedDateTime i_ZonedDateTime)
+    {
+        super(Date.from(i_ZonedDateTime.toInstant()).getTime());
+    }
+    
+    
+    
+    /**
      * 将指定格式的时间字符及格式化字符转为日期对象
      * 
      * 自适应多种时间格式
@@ -459,6 +520,42 @@ public final class Date extends java.util.Date
     
     
     /**
+     * 类型转换。丢精度
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-05-30
+     * @version     v1.0
+     *
+     * @param i_LocalDateTime
+     * @return
+     */
+    public Date toDate(LocalDateTime i_LocalDateTime)
+    {
+        this.setTime(Date.from(i_LocalDateTime.atZone(ZoneId.systemDefault()).toInstant()).getTime());
+        return this;
+    }
+    
+    
+    
+    /**
+     * 类型转换。丢精度转时间。时区转换算成当前系统的时区
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-05-30
+     * @version     v1.0
+     *
+     * @param i_ZonedDateTime
+     * @return
+     */
+    public Date toDate(ZonedDateTime i_ZonedDateTime)
+    {
+        this.setTime(Date.from(i_ZonedDateTime.toInstant()).getTime());
+        return this;
+    }
+    
+    
+    
+    /**
      * 类型转换
      * 
      * @param i_StrDateFormat
@@ -479,54 +576,70 @@ public final class Date extends java.util.Date
         {
             try
             {
-                v_DateStr    = StringHelp.replaceAll(i_StrDateFormat.trim() ,new String[]{"日" ,"/" ,"年" ,"月"} ,new String[]{"" ,"-"});
-                v_DateFormat = $FORMATS.get(v_DateStr.length());
-                if ( v_DateFormat == null )
+                v_DateStr = i_StrDateFormat.trim();
+                if ( v_DateStr.lastIndexOf("+") > 19 || v_DateStr.lastIndexOf("-") > 19 )
                 {
-                    if ( v_DateStr.length() == 13 && Help.isNumber(v_DateStr) )
+                    ZonedDateTime v_ZonedDateTime = ZonedDateTime.parse(v_DateStr);
+                    v_Date = new Date(v_ZonedDateTime);
+                }
+                else if ( v_DateStr.length() == $FORMAT_Nano.length() )
+                {
+                    LocalDateTime v_LocalDateTime = LocalDateTime.parse(v_DateStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                    v_Date = new Date(v_LocalDateTime);
+                }
+                else
+                {
+                    v_DateStr    = StringHelp.replaceAll(i_StrDateFormat.trim()
+                                                        ,new String[]{"T" ,"日" ,"/" ,"年" ,"月" ,}
+                                                        ,new String[]{" " ,""  ,"-"});
+                    v_DateFormat = $FORMATS.get(v_DateStr.length());
+                    if ( v_DateFormat == null )
                     {
-                        this.setTime(Long.parseLong(v_DateStr));
-                        return this;
+                        if ( v_DateStr.length() == 13 && Help.isNumber(v_DateStr) )
+                        {
+                            this.setTime(Long.parseLong(v_DateStr));
+                            return this;
+                        }
+                        else
+                        {
+                            v_DateStr    = toDate00(v_DateStr);
+                            v_Is00       = true;
+                            v_DateFormat = $FORMATS.get(v_DateStr.length());
+                            v_Date = new Date(v_DateStr ,v_DateFormat);
+                        }
                     }
-                    else
+                    // 预防仅通长度而造成的误判
+                    else if ( v_DateStr.indexOf("-") > 0 &&
+                             ($FORMAT_YMD_ID .equals(v_DateFormat)
+                           || $FORMAT_YM_ID  .equals(v_DateFormat)
+                           || $FORMAT_UTC_ID .equals(v_DateFormat)
+                           || $FORMAT_MilliID.equals(v_DateFormat)
+                           || $FROMAT_ID     .equals(v_DateFormat)) )
                     {
                         v_DateStr    = toDate00(v_DateStr);
                         v_Is00       = true;
                         v_DateFormat = $FORMATS.get(v_DateStr.length());
                         v_Date = new Date(v_DateStr ,v_DateFormat);
                     }
-                }
-                // 预防仅通长度而造成的误判
-                else if ( v_DateStr.indexOf("-") > 0 &&
-                         ($FORMAT_YMD_ID .equals(v_DateFormat)
-                       || $FORMAT_YM_ID  .equals(v_DateFormat)
-                       || $FORMAT_UTC_ID .equals(v_DateFormat)
-                       || $FORMAT_MilliID.equals(v_DateFormat)
-                       || $FROMAT_ID     .equals(v_DateFormat)) )
-                {
-                    v_DateStr    = toDate00(v_DateStr);
-                    v_Is00       = true;
-                    v_DateFormat = $FORMATS.get(v_DateStr.length());
-                    v_Date = new Date(v_DateStr ,v_DateFormat);
-                }
-                // 预防仅通长度而造成的误判。如有小时并未识别出来
-                else if ( v_DateStr.indexOf(" ") > 0 &&
-                         ($FORMAT_YMD.equals(v_DateFormat)
-                       || $FORMAT_YM.equals(v_DateFormat)) )
-                {
-                    v_DateStr    = toDate00(v_DateStr);
-                    v_Is00       = true;
-                    v_DateFormat = $FORMATS.get(v_DateStr.length());
-                    v_Date = new Date(v_DateStr ,v_DateFormat);
-                }
-                else
-                {
-                    if ( $FORMAT_UTC_ID == v_DateFormat )
+                    // 预防仅通长度而造成的误判。如有小时并未识别出来
+                    else if ( v_DateStr.indexOf(" ") > 0 &&
+                             ($FORMAT_YMD.equals(v_DateFormat)
+                           || $FORMAT_YM.equals(v_DateFormat)) )
                     {
-                        v_DateStr = StringHelp.replaceAll(v_DateStr ,"Z" ,"UTC");
+                        v_DateStr    = toDate00(v_DateStr);
+                        v_Is00       = true;
+                        v_DateFormat = $FORMATS.get(v_DateStr.length());
+                        v_Date = new Date(v_DateStr ,v_DateFormat);
                     }
-                    
-                    v_Date = new Date(v_DateStr ,v_DateFormat);
+                    else
+                    {
+                        if ( $FORMAT_UTC_ID == v_DateFormat )
+                        {
+                            v_DateStr = StringHelp.replaceAll(v_DateStr ,"Z" ,"UTC");
+                        }
+                        
+                        v_Date = new Date(v_DateStr ,v_DateFormat);
+                    }
                 }
             }
             catch (Exception exce)
@@ -994,6 +1107,171 @@ public final class Date extends java.util.Date
         v_Calendar.set(Calendar.MILLISECOND ,i_MilliSecond);
         
         this.setTime(v_Calendar.getTimeInMillis());
+    }
+    
+    
+    
+    /**
+     * 格式化时区的格式
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-05-30
+     * @version     v1.0
+     *
+     * @param i_TimeZone  时区。支持如下格式
+     *                         1. GMT+08:00    同时支持 GMT、UTC、CST、CET、DST、EDT、PDT 7种时间标准
+     *                         2. GMT+08       同时支持 GMT、UTC、CST、CET、DST、EDT、PDT 7种时间标准
+     *                         3. GMT+8        同时支持 GMT、UTC、CST、CET、DST、EDT、PDT 7种时间标准
+     *                         4. GMT08:00     同时支持 GMT、UTC、CST、CET、DST、EDT、PDT 7种时间标准
+     *                         5. GMT08        同时支持 GMT、UTC、CST、CET、DST、EDT、PDT 7种时间标准
+     *                         6. GMT8         同时支持 GMT、UTC、CST、CET、DST、EDT、PDT 7种时间标准
+     *                         7. +08:00       默认为：GMT
+     *                         8. 08:00        默认为：GMT
+     *                         9. 08           默认为：GMT
+     *                        10. 8            默认为：GMT
+     * @return
+     */
+    public static String formatTimeZone(String i_TimeZone)
+    {
+        if ( Help.isNull(i_TimeZone) )
+        {
+            return i_TimeZone;
+        }
+        
+        String v_TimeZone = i_TimeZone.trim().toUpperCase();
+        
+        // 解释与格式化时区格式。如，GMT+08:00
+        if ( v_TimeZone.length() != 9 )
+        {
+            StringBuilder v_TimeZoneBuff = new StringBuilder();
+            
+            // 格林威治标准时间
+            if ( v_TimeZone.startsWith("GMT") )
+            {
+                v_TimeZoneBuff.append(v_TimeZone.substring(0 ,3));
+                v_TimeZone = v_TimeZone.substring(3);
+            }
+            // 协调世界时（Coordinated Universal Time）
+            else if ( v_TimeZone.startsWith("UTC") )
+            {
+                v_TimeZoneBuff.append(v_TimeZone.substring(0 ,3));
+                v_TimeZone = v_TimeZone.substring(3);
+            }
+            // 中央标准时间（Central Standard Time）
+            else if ( v_TimeZone.startsWith("CST") )
+            {
+                v_TimeZoneBuff.append(v_TimeZone.substring(0 ,3));
+                v_TimeZone = v_TimeZone.substring(3);
+            }
+            // 中欧时间（Central European Time）
+            else if ( v_TimeZone.startsWith("CET") )
+            {
+                v_TimeZoneBuff.append(v_TimeZone.substring(0 ,3));
+                v_TimeZone = v_TimeZone.substring(3);
+            }
+            // 夏令时（Daylight Saving Time）
+            else if ( v_TimeZone.startsWith("DST") )
+            {
+                v_TimeZoneBuff.append(v_TimeZone.substring(0 ,3));
+                v_TimeZone = v_TimeZone.substring(3);
+            }
+            // 东部夏令时时间（Eastern Daylight Time）
+            else if ( v_TimeZone.startsWith("EDT") )
+            {
+                v_TimeZoneBuff.append(v_TimeZone.substring(0 ,3));
+                v_TimeZone = v_TimeZone.substring(3);
+            }
+            // 太平洋夏令时时间（Pacific Daylight Time）
+            else if ( v_TimeZone.startsWith("PDT") )
+            {
+                v_TimeZoneBuff.append(v_TimeZone.substring(0 ,3));
+                v_TimeZone = v_TimeZone.substring(3);
+            }
+            else
+            {
+                v_TimeZoneBuff.append("GMT");
+            }
+            
+            if ( v_TimeZone.startsWith("+") || v_TimeZone.startsWith("-") )
+            {
+                v_TimeZoneBuff.append(v_TimeZone.substring(0 ,1));
+                v_TimeZone = v_TimeZone.substring(1);
+            }
+            else
+            {
+                v_TimeZoneBuff.append("+");
+            }
+            
+            if ( v_TimeZone.length() == 1 )
+            {
+                v_TimeZoneBuff.append("0");
+            }
+            
+            v_TimeZoneBuff.append(v_TimeZone);
+            
+            if ( v_TimeZone.length() <= 2 )
+            {
+                v_TimeZoneBuff.append(":00");
+            }
+            
+            v_TimeZone = v_TimeZoneBuff.toString();
+        }
+        
+        return v_TimeZone;
+    }
+    
+    
+    
+    /**
+     * 用指定时区与当前时区的差值，计算出新的时间（新实例）。this不受影响。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-05-30
+     * @version     v1.0
+     *
+     * @param i_TimeZone  时区
+     * @return
+     */
+    public Date getTimezone(String i_TimeZone)
+    {
+        if ( Help.isNull(i_TimeZone) )
+        {
+            return null;
+        }
+        
+        String           v_TimeZone         = formatTimeZone(i_TimeZone);
+        SimpleDateFormat v_SimpleDateFormat = new SimpleDateFormat($FORMAT_Milli);
+        v_SimpleDateFormat.setTimeZone(TimeZone.getTimeZone(v_TimeZone));
+        
+        String v_TimeStr = v_SimpleDateFormat.format(this);
+        return new Date(v_TimeStr ,$FORMAT_Milli);
+    }
+    
+    
+    
+    /**
+     * 设置时间的时区，时间会重新计算。
+     * 注：当前时区与指定时间的差值进行换算的
+     * 注：this 会被修改
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-05-30
+     * @version     v1.0
+     *
+     * @param i_TimeZone  时区
+     * @return  返回格式化之后时区
+     */
+    public String setTimeZone(String i_TimeZone)
+    {
+        if ( Help.isNull(i_TimeZone) )
+        {
+            return i_TimeZone;
+        }
+        
+        String v_TimeZone = formatTimeZone(i_TimeZone);
+        Date   v_New      = getTimezone(v_TimeZone);
+        this.setTime(v_New.getTime());
+        return v_TimeZone;
     }
     
     
@@ -2185,6 +2463,42 @@ public final class Date extends java.util.Date
     public Timestamp getSQLTimestamp()
     {
         return new Timestamp(this.getTime());
+    }
+    
+    
+    
+    /**
+     * 不带时区信息的时间
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-05-30
+     * @version     v1.0
+     *
+     * @return
+     */
+    public LocalDateTime getLocalDateTime()
+    {
+        return getZonedDateTime().toLocalDateTime();
+    }
+    
+    
+    
+    /**
+     * 获取带时区的时间
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-05-30
+     * @version     v1.0
+     *
+     * @return
+     */
+    public ZonedDateTime getZonedDateTime()
+    {
+        Instant v_Instant = this.toInstant(); // 精确到纳秒的时间戳的类
+        
+        // 使用 Instant 对象和所需的时区信息创建 ZonedDateTime 对象
+        ZonedDateTime v_ZonedDateTime = v_Instant.atZone(ZoneId.systemDefault());
+        return v_ZonedDateTime;
     }
     
     
