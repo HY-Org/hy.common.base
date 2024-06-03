@@ -44,6 +44,8 @@ import java.util.TimeZone;
  *                                添加：支持2024-05-30T01:01:01.123456789格式的转时间。即LocalDateTime的格式
  *                                添加：支持2024-05-30T01:01:01.123+08:00[Asia/Shanghai]       格式的转时间。即ZonedDateTime的格式
  *                                添加：支持2024-05-30T01:01:01.123456789+08:00[Asia/Shanghai] 格式的转时间。即ZonedDateTime的格式
+ *              v4.1 2024-06-03   添加：支持2024-05-30T01:01:01.123+08:00                      格式的转时间。即ZonedDateTime的格式
+ *                                添加：支持2024-05-30T01:01:01+08:00                          格式的转时间。即ZonedDateTime的格式
  */
 public final class Date extends java.util.Date
 {
@@ -577,7 +579,7 @@ public final class Date extends java.util.Date
             try
             {
                 v_DateStr = i_StrDateFormat.trim();
-                if ( v_DateStr.lastIndexOf("+") > 19 || v_DateStr.lastIndexOf("-") > 19 )
+                if ( v_DateStr.lastIndexOf("+") >= 19 || v_DateStr.lastIndexOf("-") >= 19 )
                 {
                     ZonedDateTime v_ZonedDateTime = ZonedDateTime.parse(v_DateStr);
                     v_Date = new Date(v_ZonedDateTime);
