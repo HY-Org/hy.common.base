@@ -2878,10 +2878,57 @@ public final class StringHelp
         // 使用Matcher进行各种查找替换操作
         Matcher v_Matcher = v_Pattern.matcher(i_XML);
         
-        
-        while( v_Matcher.find() )
+        while ( v_Matcher.find() )
         {
-            return i_XML.substring(v_Matcher.start() ,v_Matcher.end());
+            return v_Matcher.group();
+        }
+        
+        return "";
+    }
+    
+    
+    
+    /**
+     * 获取指定XML标记及其下的所有内容。
+     * 
+     * 可支持，不区分大小写的匹配。
+     * 
+     * 注意：只查找首次匹配的内容
+     * 
+     * @param i_XML          XML完整内容
+     * @param i_XMLSignName  XML标记
+     * @param i_Index        匹配第几个，最小下标从0开始。
+     * @return
+     */
+    public final static String getXMLSignContent(String i_XML ,String i_XMLSignName ,int i_Index)
+    {
+        if ( Help.isNull(i_XML) )
+        {
+            throw new java.lang.NullPointerException("XML is null.");
+        }
+        
+        if ( Help.isNull(i_XMLSignName) )
+        {
+            throw new java.lang.NullPointerException("XML sign name is null.");
+        }
+        
+        
+        // 使用Pattern建立匹配模式
+        Pattern v_Pattern = Pattern.compile($XMLSign.replaceAll("XMLSignName" ,toPatternUL(i_XMLSignName)));
+        // 使用Matcher进行各种查找替换操作
+        Matcher v_Matcher = v_Pattern.matcher(i_XML);
+        
+        int v_Index = 0;
+        while ( v_Matcher.find() )
+        {
+            if ( v_Index == i_Index )
+            {
+                return v_Matcher.group();
+            }
+            else
+            {
+                v_Index++;
+            }
         }
         
         return "";

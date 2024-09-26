@@ -27,6 +27,48 @@ public class JU_StringHelp
 {
     
     @Test
+    public void test_XML()
+    {
+        String v_XML = """
+                        <html lang="">
+                        
+                            <head>
+                                <meta charset="utf-8">
+                                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                                <meta name="viewport" content="width=device-width,initial-scale=1">
+                                <link rel="icon" href="/datacenter/favicon.ico">
+                                <title>数据中台</title>
+                                <link rel="stylesheet" href="/datacenter/css/bootstrap.css">
+                                <script defer="defer" src="/datacenter/js/chunk-vendors.9c4c0e43.js"></script>
+                                <script defer="defer" src="/datacenter/js/index.5c132055.js"></script>
+                                <link href="/datacenter/css/chunk-vendors.53db00c5.css" rel="stylesheet">
+                                <link href="/datacenter/css/index.00bf86ed.css" rel="stylesheet">
+                            </head>
+                        
+                            <body>
+                                <noscript>
+                                    <strong>Please enable it to continue.</strong>
+                                </noscript>
+                                <div id="app">
+                                    <div id="1"><div id="name001">ZhengWei</div><div id="age001">9</div></div>
+                                    <div id="2"><div id="name002">HY</div><div id="age002">18</div></div>
+                                    <div id="3"><div id="name003">MS</div><div id="age003">27</div></div>
+                                    <div id="4"><div id="name004">OpenApis</div><div id="age004">36</div></div>
+                                </div>
+                                
+                                <div id="info">
+                                </div>
+                            </body>
+                        
+                        </html>
+                       """;
+        
+        System.out.println(StringHelp.getString(v_XML ,"<div" ,"</div>"));
+    }
+    
+    
+    
+    @Test
     public void test_SplitMaxMatch()
     {
         String              v_Info       = "UKO3O4SZX1";
