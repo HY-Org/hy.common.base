@@ -20,6 +20,7 @@ import java.io.UnsupportedEncodingException;
  *              v4.0  2021-12-10  添加：byte[] 转 Byte[]
  *                                     Byte[] 转 byte[]
  *              v5.0  2022-08-26  修复：substr() 马龙：发现截取长度大于数据长度时，多减了一个1
+ *              v6.0  2025-01-03  添加：短整数与字节数组相互转换。
  */
 public final class ByteHelp
 {
@@ -496,6 +497,45 @@ public final class ByteHelp
     
     
     /**
+     * 重载。短整数转为字节数组
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-01-03
+     * @version     v1.0
+     * 
+     * @param i_Value
+     * @return
+     */
+    public static byte [] toByte(short i_Value)
+    {
+        return shortToByte(i_Value);
+    }
+    
+    
+    
+    /**
+     * 16位整数转为字节数组
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-01-03
+     * @version     v1.0
+     * 
+     * @param i_Value
+     * @return
+     */
+    public static byte [] shortToByte(short i_Value)
+    {
+        byte [] v_Ret = new byte[2];
+        
+        v_Ret[0] = (byte)((i_Value >>>  8) & 0xFF);
+        v_Ret[1] = (byte)((i_Value >>>  0) & 0xFF);
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
      * 32位整数转为字节数组
      * 
      * @param i_Value
@@ -512,6 +552,37 @@ public final class ByteHelp
         v_Ret[3] = (byte)((i_Value >>>  0) & 0xFF);
         
         return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 字节数组转为16位整数。
+     * 
+     * 注：这里的返回值类型没有用 short ,因为是为了将0xFFFF转为65535，而不是-1。
+     *    如果想要将0xFFFF转为-1时，只须将本方法的结果强转为short即可。
+     *    
+     * @author      ZhengWei(HY)
+     * @createDate  2025-01-03
+     * @version     v1.0
+     * 
+     * @param i_Value
+     * @return
+     */
+    public static int byteToShort(byte [] i_Value)
+    {
+        if ( i_Value.length >= 2 )
+        {
+            return (((i_Value[0] & 0xFF) << 8) + ((i_Value[1] & 0xFF) << 0));
+        }
+        else if ( i_Value.length == 1 )
+        {
+            return (((i_Value[0] & 0xFF) << 0));
+        }
+        else
+        {
+            return 0;
+        }
     }
     
     
@@ -588,6 +659,34 @@ public final class ByteHelp
      * @return
      */
     public static byte [] intToByteArray(int [] i_Value)
+    {
+        if ( Help.isNull(i_Value) )
+        {
+            return null;
+        }
+        
+        byte [] v_Ret = new byte[i_Value.length];
+        for (int i=0; i<i_Value.length; i++)
+        {
+            v_Ret[i] = (byte)i_Value[i];
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 将无符号整数转为有符号的字节数组。如 183(int) 转换为 -73(byte)
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-01-03
+     * @version     v1.0
+     *
+     * @param i_Value
+     * @return
+     */
+    public static byte [] shortToByteArray(short [] i_Value)
     {
         if ( Help.isNull(i_Value) )
         {

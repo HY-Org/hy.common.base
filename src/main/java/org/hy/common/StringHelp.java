@@ -2955,7 +2955,7 @@ public final class StringHelp
     
     
     /**
-     * 判断是否只由英文、数字(0~9)和下划线组成
+     * 判断是否只由英文组成
      * 
      * @param i_Str   为空时返回真
      * @return
