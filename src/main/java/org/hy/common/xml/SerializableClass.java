@@ -291,7 +291,7 @@ public class SerializableClass implements Serializable
     {
         try
         {
-            return this.myClass.newInstance();
+            return this.myClass.getDeclaredConstructor().newInstance();
         }
         catch (Exception exce)
         {

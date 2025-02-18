@@ -346,6 +346,7 @@ public class TablePartitionSet<P ,R> extends Hashtable<P ,Set<R>> implements Map
      * 
      * @param i_Partition
      */
+    @SuppressWarnings("unlikely-arg-type")
     public synchronized void clear(R i_Partition)
     {
         if ( super.containsKey(i_Partition) )

@@ -364,6 +364,7 @@ public class TablePartitionRID<P ,R> extends Hashtable<P ,Map<String ,R>> implem
      * 
      * @param i_Partition
      */
+    @SuppressWarnings("unlikely-arg-type")
     public synchronized void clear(R i_Partition)
     {
         if ( super.containsKey(i_Partition) )

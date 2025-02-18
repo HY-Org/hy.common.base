@@ -130,7 +130,7 @@ public class FieldReflect
     public static void set(Field i_Field ,Object i_Instance ,Object i_Value ,Map<String ,String> i_Replaces) throws IllegalArgumentException, IllegalAccessException, ClassNotFoundException
     {
         Class<?> v_ClassType  = i_Field.getType();
-        boolean  v_Accessible = i_Field.isAccessible();
+        boolean  v_Accessible = i_Field.canAccess(i_Instance);
         
         if ( !v_Accessible )
         {

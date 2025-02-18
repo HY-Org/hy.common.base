@@ -9,6 +9,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -1053,7 +1054,7 @@ public class Help
                 return 0;
             }
             
-            v_Ret = v_Ret.divide(v_Value ,i_Scale ,BigDecimal.ROUND_HALF_UP);
+            v_Ret = v_Ret.divide(v_Value ,i_Scale ,RoundingMode.HALF_UP);
         }
         
         return v_Ret.doubleValue();
@@ -4884,6 +4885,7 @@ public class Help
      * @param i_Array
      * @return
      */
+    @SuppressWarnings("unchecked")
     public final static <T> List<T> toList(T ... i_Array)
     {
         return new ArrayList<T>(Arrays.asList(i_Array));
