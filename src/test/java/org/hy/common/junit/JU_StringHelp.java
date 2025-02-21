@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.hy.common.Help;
 import org.hy.common.RelationList;
@@ -11,6 +12,8 @@ import org.hy.common.Return;
 import org.hy.common.SplitSegment;
 import org.hy.common.StringHelp;
 import org.junit.Test;
+
+import com.fasterxml.uuid.Generators;
 
 
 
@@ -440,7 +443,19 @@ public class JU_StringHelp
         }
         
         v_IDs = Help.toDistinct(v_IDs);
+        Help.print(v_IDs);
         System.out.println(v_IDs.size());
+    }
+    
+    
+    
+    @Test
+    public void test_UUID9n()
+    {
+        UUID v_UUID = Generators.timeBasedGenerator().generate();  // UUID.randomUUID();
+        System.out.println(StringHelp.getUUID(   v_UUID));
+        System.out.println(StringHelp.getUUID9n( v_UUID));
+        System.out.println(StringHelp.getUUIDNum(v_UUID));
     }
     
 }

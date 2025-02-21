@@ -9,6 +9,11 @@ import java.security.MessageDigest;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -20,6 +25,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.hy.common.SplitSegment.InfoType;
+
+import com.fasterxml.uuid.Generators;
 
 
 
@@ -57,6 +64,7 @@ import org.hy.common.SplitSegment.InfoType;
  *              v1.18 2021-09-27   1.添加 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
  *              v1.19 2022-05-19   1.添加 货币转字符串转数字的方法 toNumber()
  *              v1.20 2024-03-22   1.添加 无明确分割符的拆分。类似于简单的分词 SplitMaxMatch()
+ *              v1.21 2025-02-21   1.添加 时间格式的UUID
  * 
  * @createDate  2009-08-21
  */
@@ -251,14 +259,53 @@ public final class StringHelp
      */
     public final static String getUUID()
     {
-        return UUID.randomUUID().toString().replace("-" ,"").toUpperCase();
+        return getUUID(UUID.randomUUID());
     }
     
     
     
+    /**
+     * 获取UUID。全部大写，并且去除"-"字符的东东
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-02-21
+     * @version     v1.0
+     *
+     * @param i_UUID  UUID
+     * @return
+     */
+    public final static String getUUID(UUID i_UUID)
+    {
+        return i_UUID.toString().replace("-" ,"").toUpperCase();
+    }
+    
+    
+    
+    /**
+     * UUID的纯数字形式
+     * 
+     * @return
+     */
     public final static String getUUIDNum()
     {
-        String []     v_UUIDArr = UUID.randomUUID().toString().split("-");
+        return getUUIDNum(UUID.randomUUID());
+    }
+    
+    
+    
+    /**
+     * UUID的纯数字形式
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-02-21
+     * @version     v1.0
+     *
+     * @param i_UUID  UUID
+     * @return
+     */
+    public final static String getUUIDNum(UUID i_UUID)
+    {
+        String []     v_UUIDArr = i_UUID.toString().split("-");
         StringBuilder v_Buffer  = new StringBuilder();
         
         for (String v_UUID : v_UUIDArr)
@@ -269,6 +316,82 @@ public final class StringHelp
         }
         
         return v_Buffer.toString();
+    }
+    
+    
+    
+    /**
+     * 将 UUID 的时间戳部分提取并格式化为高精度时间，放在最前面
+     * 
+     * 注：按当前时区的时间显示
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-02-21
+     * @version     v1.0
+     *
+     * @return
+     */
+    public static String getUUID9n() 
+    {
+        return getUUID9n(Generators.timeBasedGenerator().generate());
+    }
+    
+    
+    
+    /**
+     * 将 UUID 的时间戳部分提取并格式化为高精度时间，放在最前面
+     * 
+     * 注：按当前时区的时间显示
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-02-21
+     * @version     v1.0
+     *
+     * @param i_UUID  UUID
+     * @return
+     */
+    public static String getUUID9n(UUID i_UUID) 
+    {
+        LocalDateTime v_Time = uuidTimestampToDateTime(i_UUID.timestamp());
+        
+        // 偏移到当前时区
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        ZoneOffset offset = defaultZoneId.getRules().getOffset(java.time.LocalDateTime.now());
+        v_Time = v_Time.plusSeconds(offset.getTotalSeconds());
+
+        DateTimeFormatter v_Formatter = DateTimeFormatter.ofPattern(Date.$FORMAT_Nano_9nID);
+        String v_9n = v_Time.format(v_Formatter);
+
+        // 获取 UUID 的其他部分（去掉时间戳）
+        String v_UUIDStr   = i_UUID.toString().replace("-", "");
+        String v_UUIDOther = v_UUIDStr.substring(16); // 去掉前 16 个字符（时间戳部分）
+
+        // 将格式化后的时间戳放在最前面，拼接其他部分
+        return v_9n + v_UUIDOther;
+    }
+
+    
+    
+    /**
+     * 将 UUID 的时间戳转换为本地时间
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-02-21
+     * @version     v1.0
+     *
+     * @param i_Timestamp  UUID的时间戳
+     * @return             返回本地时间
+     */
+    private static LocalDateTime uuidTimestampToDateTime(long i_Timestamp) 
+    {
+        // UUID 时间戳的起始时间：1582-10-15 00:00:00（UUID 纪元）
+        final long UUID_EPOCH_OFFSET = -12219292800000L; // 毫秒数
+
+        // 将 UUID 时间戳（100 纳秒间隔）转换为纳秒
+        long nanoseconds = (i_Timestamp * 100) + (UUID_EPOCH_OFFSET * 1_000_000L);
+
+        // 转换为 LocalDateTime
+        return LocalDateTime.ofInstant(Instant.ofEpochSecond(0, nanoseconds), ZoneOffset.UTC);
     }
     
     

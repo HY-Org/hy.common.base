@@ -21,6 +21,7 @@ public class JU_Date
     public void test_Format()
     {
         String [] v_Datas = new String[] {
+                "2025-02-21 08:39:00.123456789",
                 "2024-05-30T14:43:38-05:00",
                 "2024-05-30T14:43:38+05:00",
                 "2024-05-30T14:43:38.976-05:00",
@@ -261,13 +262,6 @@ public class JU_Date
         System.out.println(new Lunar(new Date()));
         System.out.println(SolarTerm.getSoralTerm(new Date("2021-12-21")));
         System.out.println(SolarTerm.getSoralTerm(new Date("2022-01-05")));
-    }
-    
-    
-    
-    public void test_LocalDateTime()
-    {
-        LocalDateTime v_Now = LocalDateTime.now();
     }
     
 }

@@ -46,11 +46,16 @@ import java.util.TimeZone;
  *                                添加：支持2024-05-30T01:01:01.123456789+08:00[Asia/Shanghai] 格式的转时间。即ZonedDateTime的格式
  *              v4.1 2024-06-03   添加：支持2024-05-30T01:01:01.123+08:00                      格式的转时间。即ZonedDateTime的格式
  *                                添加：支持2024-05-30T01:01:01+08:00                          格式的转时间。即ZonedDateTime的格式
+ *              v4.2 2025-02-21   添加：支持2025-02-21 01:01:01.123456789格式的转时间
  */
 public final class Date extends java.util.Date
 {
     
     private static final long serialVersionUID = 8529353384393262590L;
+    
+    public  static final String               $FORMAT_Nano_9nID   = "yyyyMMddHHmmssnnnnnnnnn";       // length=23  与23冲突未配置到自动识别中
+    
+    public  static final String               $FORMAT_Nano_9n     = "yyyy-MM-dd HH:mm:ss.nnnnnnnnn"; // length=29  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
     public  static final String               $FORMAT_Nano        = "yyyy-MM-ddTHH:mm:ss.SSSSSSSSS"; // length=29  同时支持 yyyy/MM/dd... 、yyyy年MM月dd日... 的格式
     
@@ -586,8 +591,17 @@ public final class Date extends java.util.Date
                 }
                 else if ( v_DateStr.length() == $FORMAT_Nano.length() )
                 {
-                    LocalDateTime v_LocalDateTime = LocalDateTime.parse(v_DateStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                    v_Date = new Date(v_LocalDateTime);
+                    if ( v_DateStr.indexOf("T") > 0 )
+                    {
+                        LocalDateTime v_LocalDateTime = LocalDateTime.parse(v_DateStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                        v_Date = new Date(v_LocalDateTime);
+                    }
+                    else
+                    {
+                        DateTimeFormatter v_Formatter = DateTimeFormatter.ofPattern($FORMAT_Nano_9n);
+                        LocalDateTime v_LocalDateTime = LocalDateTime.parse(v_DateStr, v_Formatter);
+                        v_Date = new Date(v_LocalDateTime);
+                    }
                 }
                 else
                 {
