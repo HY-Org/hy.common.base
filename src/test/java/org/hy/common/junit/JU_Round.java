@@ -19,6 +19,7 @@ import org.hy.common.StringHelp;
 public class JU_Round
 {
     
+    @SuppressWarnings("deprecation")
     public static void main(String [] args)
     {
         int        v_Digit = 2;
