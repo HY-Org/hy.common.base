@@ -78,6 +78,41 @@ public class JU_Date
     
     
     /**
+     * 纳秒测试
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-02-22
+     * @version     v1.0
+     * @throws InterruptedException 
+     *
+     */
+    @Test
+    public void test_Nano() throws InterruptedException
+    {
+        long v_NanoTimestamp1 = Date.getTimeNano();
+        long v_NanoTimestamp2 = Date.getTimeNano();
+        
+        Thread.sleep(1000);
+        
+        long v_NanoTimestamp3 = Date.getTimeNano();
+        long v_NanoDiffA      = v_NanoTimestamp2 - v_NanoTimestamp1;
+        long v_NanoDiffB      = v_NanoTimestamp3 - v_NanoTimestamp2;
+        
+        System.out.println("纳秒级时间戳: " + v_NanoTimestamp1);
+        System.out.println(Date.nanoToDate(v_NanoTimestamp1).getFullMilli());
+        
+        System.out.println("纳秒级差值2-1: " + Date.toTimeLenNano(v_NanoDiffA));
+        System.out.println("纳秒级差值3-2: " + Date.toTimeLenNano(v_NanoDiffB));
+        
+        System.out.println("逆转纳秒级差值2-1: " + Date.toTimeValueNano(Date.toTimeLenNano(v_NanoDiffA)));
+        System.out.println("逆转纳秒级差值3-2: " + Date.toTimeValueNano(Date.toTimeLenNano(v_NanoDiffB)));
+        
+        System.out.println("0 = " + Date.toTimeLenNano(0L));
+    }
+    
+    
+    
+    /**
      * 时区的测试
      * 
      * @author      ZhengWei(HY)

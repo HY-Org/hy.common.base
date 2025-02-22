@@ -47,6 +47,7 @@ import java.util.TimeZone;
  *              v4.1 2024-06-03   添加：支持2024-05-30T01:01:01.123+08:00                      格式的转时间。即ZonedDateTime的格式
  *                                添加：支持2024-05-30T01:01:01+08:00                          格式的转时间。即ZonedDateTime的格式
  *              v4.2 2025-02-21   添加：支持2025-02-21 01:01:01.123456789格式的转时间
+ *                                添加：纳秒相关的格式转换
  */
 public final class Date extends java.util.Date
 {
@@ -143,6 +144,125 @@ public final class Date extends java.util.Date
     public static Date getNowTime()
     {
         return new Date();
+    }
+    
+    
+    
+    /**
+     * 将时长转为有格式的文本显示
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-02-22
+     * @version     v1.0
+     *
+     * @param i_NanoSecond  纳秒级的时差或时长
+     * @return
+     */
+    public static String toTimeLenNano(long i_NanoSecond)
+    {
+        int  v_NanoSecond = (int)(i_NanoSecond % 1_000_000_000);
+        long v_Time   = (i_NanoSecond - v_NanoSecond) / 1_000_000_000;
+        
+        if ( 0 >= v_Time )
+        {
+            return "0 00:00:00." + StringHelp.lpad(v_NanoSecond ,9 ,"0");
+        }
+        else if ( 60 > v_Time )
+        {
+            return "0 00:00:" + StringHelp.lpad(v_Time ,2 ,"0") + "." + StringHelp.lpad(v_NanoSecond ,9 ,"0");
+        }
+        
+        int v_Second = (int)( v_Time % 60);                // 处理秒
+        int v_Minute = (int)((v_Time % 3600)  / 60);       // 处理分钟
+        int v_Hour   = (int)((v_Time % 86400) / 3600);     // 处理小时
+        int v_Day    = (int)( v_Time          / 86400);    // 处理天
+        
+        StringBuilder v_Buffer = new StringBuilder();
+        v_Buffer.append(v_Day).append(" ");
+        v_Buffer.append(StringHelp.lpad(v_Hour        ,2 ,"0")).append(":");
+        v_Buffer.append(StringHelp.lpad(v_Minute      ,2 ,"0")).append(":");
+        v_Buffer.append(StringHelp.lpad(v_Second      ,2 ,"0")).append(".");
+        v_Buffer.append(StringHelp.lpad(v_NanoSecond  ,9 ,"0"));
+        return v_Buffer.toString();
+    }
+    
+    
+    
+    /**
+     * Date.toTimeLenNano() 方法的逆向操作。
+     * 
+     * 即：将 0 00:00:00.0 的字符串格式，转为时间戳
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-02-22
+     * @version     v1.0
+     * 
+     * @param i_TimeString
+     * @return              非法格式返回 null
+     */
+    public static Long toTimeValueNano(String i_TimeString)
+    {
+        if ( Help.isNull(i_TimeString) )
+        {
+            return null;
+        }
+        
+        String [] v_DayAndTime = i_TimeString.trim().split(" ");
+        String [] v_HMS        = null;
+        long      v_TimeValue  = 0L;
+        if ( v_DayAndTime.length == 2 )
+        {
+            // 解释天
+            v_DayAndTime[0] = v_DayAndTime[0].trim();
+            if ( Help.isNumber(v_DayAndTime[0]) )
+            {
+                v_TimeValue = Long.parseLong(v_DayAndTime[0]) * 24 * 60 * 60 * 1000;
+            }
+            
+            v_HMS = v_DayAndTime[1].trim().split(":");
+        }
+        else if ( v_DayAndTime.length == 1 )
+        {
+            v_HMS = v_DayAndTime[0].trim().split(":");
+        }
+        else
+        {
+            return null;
+        }
+        
+        if ( v_HMS.length != 3 )
+        {
+            return null;
+        }
+        
+        // 解释毫秒
+        String [] v_MilliSecond = v_HMS[2].trim().split("\\.");
+        if ( v_MilliSecond.length == 2 )
+        {
+            v_MilliSecond[1] = v_MilliSecond[1].trim();
+            if ( Help.isNumber(v_MilliSecond[1]) )
+            {
+                v_TimeValue += Long.parseLong(v_MilliSecond[1]);
+            }
+            
+            v_HMS[2] = v_MilliSecond[0];
+        }
+        
+        // 解释时分秒
+        int [] v_Times = {60 * 60 * 1000_000_000 ,60 * 1000_000_000 ,1000_000_000};
+        for (int i=0; i<v_HMS.length; i++)
+        {
+            v_HMS[i] = v_HMS[i].trim();
+            
+            if ( !Help.isNumber(v_HMS[i]) )
+            {
+                return null;
+            }
+            
+            v_TimeValue += Long.parseLong(v_HMS[i]) * v_Times[i];
+        }
+        
+        return v_TimeValue;
     }
     
     
@@ -1123,6 +1243,60 @@ public final class Date extends java.util.Date
         v_Calendar.set(Calendar.MILLISECOND ,i_MilliSecond);
         
         this.setTime(v_Calendar.getTimeInMillis());
+    }
+    
+    
+    
+    /**
+     * 纳秒级时间戳 转为 毫秒级时间戳
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-02-22
+     * @version     v1.0
+     *
+     * @param i_NanoTimestamp  纳秒级时间戳
+     * @return
+     */
+    public static long nanoToMillis(long i_NanoTimestamp)
+    {
+        return i_NanoTimestamp / 1_000_000; // 1 毫秒 = 1,000,000 纳秒
+    }
+    
+    
+    
+    /**
+     * 纳秒级时间戳 转为 时间对象（丢精度转时间）
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-02-22
+     * @version     v1.0
+     *
+     * @param i_NanoTimestamp  纳秒级时间戳
+     * @return
+     */
+    public static Date nanoToDate(long i_NanoTimestamp)
+    {
+        return new Date(nanoToMillis(i_NanoTimestamp));
+    }
+    
+    
+    
+    /**
+     * 获取当前时间的纳秒级时间戳
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-02-22
+     * @version     v1.0
+     *
+     * @return
+     */
+    public static long getTimeNano() 
+    {
+        Instant v_Instant       = Instant.now();
+        long    v_Seconds       = v_Instant.getEpochSecond();           // 秒部分
+        int     v_Nanos         = v_Instant.getNano();                  // 纳秒部分
+        long    v_NanoTimestamp = v_Seconds * 1_000_000_000L + v_Nanos; // 转换为纳秒
+        return v_NanoTimestamp;
     }
     
     

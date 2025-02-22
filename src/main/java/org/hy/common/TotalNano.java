@@ -81,7 +81,7 @@ public class TotalNano
     {
         ++this.requestTotal;
         ++this.requestCount;
-        this.executeTime = System.nanoTime();
+        this.executeTime = Date.getTimeNano();
         return this.executeTime;
     }
     
@@ -101,7 +101,7 @@ public class TotalNano
         ++this.successCount;
         this.successTimeLen += i_TimeLen;
         this.successTimeLenMax = Math.max(this.successTimeLenMax ,i_TimeLen);
-        this.executeTime = System.nanoTime();
+        this.executeTime = Date.getTimeNano();
     }
     
     
@@ -210,6 +210,33 @@ public class TotalNano
     public Long getExecuteTime()
     {
         return this.executeTime;
+    }
+    
+    
+    /**
+     * 最后执行时间点。
+     *   1. 在开始执行时，此时间点会记录一次。
+     *   2. 在执行结束后，此时间点会记录一次。
+     *   3. 当出现异常时，此时间点保持最近一次，不变。
+     *   4. 当多个线程同时操作时，记录最新的时间点。
+     *   5. 未执行时，此属性为NULL
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-02-22
+     * @version     v1.0
+     *
+     * @return  精度达到毫秒
+     */
+    public Date getExecuteDate()
+    {
+        if ( this.executeTime == null )
+        {
+            return null;
+        }
+        else
+        {
+            return Date.nanoToDate(this.executeTime);
+        }
     }
     
 }
