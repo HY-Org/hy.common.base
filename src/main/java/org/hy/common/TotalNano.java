@@ -7,13 +7,13 @@ package org.hy.common;
 /**
  * 统计。可用于执行统计、请求统计等
  * 
- * 时间精度达到：毫秒
+ * 时间精度达到：纳秒
  *
  * @author      ZhengWei(HY)
- * @createDate  2025-02-18
+ * @createDate  2025-02-22
  * @version     v1.0
  */
-public class Total
+public class TotalNano
 {
     
     /** 累计的执行次数 */
@@ -29,10 +29,10 @@ public class Total
     private long   successCount;
     
     /** 执行成功，并成功返回的累计用时时长 */
-    private double successTimeLen;
+    private long   successTimeLen;
     
     /** 执行成功，并成功返回的最大用时时长 */
-    private double successTimeLenMax;
+    private long   successTimeLenMax;
     
     /**
      * 最后执行时间点。
@@ -42,11 +42,11 @@ public class Total
      *   4. 当多个线程同时操作时，记录最新的时间点。
      *   5. 未执行时，此属性为NULL
      */
-    private Date   executeTime;
+    private Long   executeTime;
     
     
     
-    public Total()
+    public TotalNano()
     {
         this(0L ,0L);
     }
@@ -62,7 +62,7 @@ public class Total
      * @param i_RequestTotal  累计的执行次数
      * @param i_SuccessTotal  累计的执行成功次数
      */
-    public Total(long i_RequestTotal ,long i_SuccessTotal)
+    public TotalNano(long i_RequestTotal ,long i_SuccessTotal)
     {
         this.reset(i_RequestTotal ,i_SuccessTotal);
     }
@@ -75,13 +75,13 @@ public class Total
      * @createDate  2025-02-17
      * @version     v1.0
      *
-     * @return
+     * @return  精度达到纳秒
      */
-    protected synchronized Date request()
+    protected synchronized Long request()
     {
         ++this.requestTotal;
         ++this.requestCount;
-        this.executeTime = new Date();
+        this.executeTime = System.nanoTime();
         return this.executeTime;
     }
     
@@ -93,15 +93,15 @@ public class Total
      * @createDate  2025-02-17
      * @version     v1.0
      *
-     * @param i_TimeLen  执行时长
+     * @param i_TimeLen  执行时长。精度达到纳秒
      */
-    protected synchronized void success(double i_TimeLen)
+    protected synchronized void success(long i_TimeLen)
     {
         ++this.successTotal;
         ++this.successCount;
         this.successTimeLen += i_TimeLen;
         this.successTimeLenMax = Math.max(this.successTimeLenMax ,i_TimeLen);
-        this.executeTime = new Date();
+        this.executeTime = System.nanoTime();
     }
     
     
@@ -134,8 +134,8 @@ public class Total
         this.successTotal      = i_SuccessTotal;
         this.requestCount      = 0L;
         this.successCount      = 0L;
-        this.successTimeLen    = 0D;
-        this.successTimeLenMax = 0D;
+        this.successTimeLen    = 0L;
+        this.successTimeLenMax = 0L;
     }
     
     
@@ -176,19 +176,18 @@ public class Total
     
     
     /**
-     * 获取：执行成功，并成功返回的累计用时时长。
-     * 用的是Double，而不是long，因为在批量执行时。为了精度，会出现小数
+     * 获取：执行成功，并成功返回的累计用时时长。精度达到纳秒
      */
-    public double getSuccessTimeLen()
+    public long getSuccessTimeLen()
     {
         return successTimeLen;
     }
     
     
     /**
-     * 获取：执行成功，并成功返回的最大用时时长。
+     * 获取：执行成功，并成功返回的最大用时时长。精度达到纳秒
      */
-    public double getSuccessTimeLenMax()
+    public long getSuccessTimeLenMax()
     {
         return successTimeLenMax;
     }
@@ -206,9 +205,9 @@ public class Total
      * @createDate  2025-02-17
      * @version     v1.0
      *
-     * @return
+     * @return  精度达到纳秒
      */
-    public Date getExecuteTime()
+    public Long getExecuteTime()
     {
         return this.executeTime;
     }
