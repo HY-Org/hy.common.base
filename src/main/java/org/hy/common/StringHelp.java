@@ -65,6 +65,7 @@ import com.fasterxml.uuid.Generators;
  *              v1.19 2022-05-19   1.添加 货币转字符串转数字的方法 toNumber()
  *              v1.20 2024-03-22   1.添加 无明确分割符的拆分。类似于简单的分词 SplitMaxMatch()
  *              v1.21 2025-02-21   1.添加 时间格式的UUID
+ *              v1.22 2025-02-25   1.添加 与Java自带的String.split()方法功能一样，但不是通过正则表达式做的。
  * 
  * @createDate  2009-08-21
  */
@@ -2786,7 +2787,6 @@ public final class StringHelp
             return 0;
         }
         
-        
         // 使用Pattern建立匹配模式
         Pattern v_Pattern = Pattern.compile(i_FindStr);
         // 使用Matcher进行各种查找替换操作
@@ -2820,7 +2820,6 @@ public final class StringHelp
             return 0;
         }
         
-        
         StringBuilder v_Buffer       = new StringBuilder();
         int           v_FindStrCount = 0;
         for (int v_Index=0; v_Index<i_FindStrArr.length; v_Index++ )
@@ -2837,12 +2836,10 @@ public final class StringHelp
             }
         }
         
-        
         if ( v_FindStrCount <= 0 )
         {
             return 0;
         }
-        
         
         // 使用Pattern建立匹配模式
         Pattern v_Pattern = Pattern.compile(v_Buffer.toString());
@@ -3840,6 +3837,48 @@ public final class StringHelp
     public final static PartitionMap<String ,Integer> parsePlaceholders(String i_Placeholder ,String i_Text ,boolean i_StrictRules)
     {
         return Help.toReverse(parsePlaceholdersSequence(i_Placeholder ,i_Text ,i_StrictRules));
+    }
+    
+    
+    
+    /**
+     * 分割字符串
+     * 
+     * Java自带的String.split()方法，是通过正则表达式做的分割动作，
+     * 对于一些特殊字符，要做十分复杂的处理，并不好用。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-02-25
+     * @version     v1.0
+     *
+     * @param i_Info   被分割的字符串
+     * @param i_Split  分割关键字
+     * @return         不会返回 NULL ，但会返回元素个数为0的空数组
+     */
+    public final static String [] split(String i_Info ,String i_Split)
+    {
+        if ( i_Info == null || i_Split == null )
+        {
+            return new String[] {};
+        }
+        
+        List<String> v_Datas = new ArrayList<String>();
+        int v_Len = i_Split.length();
+        int v_Old = 0 - v_Len;
+        int v_New = i_Info.indexOf(i_Split);
+        
+        while ( v_New >= 0 )
+        {
+            v_Datas.add(i_Info.substring(v_Old + v_Len ,v_New));
+            v_Old = v_New;
+            v_New = i_Info.indexOf(i_Split ,v_Old + v_Len);
+        }
+        v_Datas.add(i_Info.substring(v_Old + v_Len));
+        
+        String [] v_Ret = v_Datas.toArray(new String[] {});
+        v_Datas.clear();
+        v_Datas = null;
+        return v_Ret;
     }
     
     
