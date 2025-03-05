@@ -117,6 +117,23 @@ public class Help
     
     
     /**
+     * 是否为数组类型
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-03-05
+     * @version     v1.0
+     *
+     * @param i_Data
+     * @return
+     */
+    public static boolean isArray(Object i_Data) 
+    {
+        return i_Data != null && i_Data.getClass().isArray();
+    }
+    
+    
+    
+    /**
      * 判断是否为数字
      * 
      * @param i_Str
