@@ -622,7 +622,7 @@ public class MapJson extends HashMap<String ,Object>
      *               当元素不存时，返回NULL
      */
     @SuppressWarnings("unchecked")
-    public Integer getSize(Object i_Key)
+    public Integer getSize(String i_Key)
     {
         Object v_Value = null;
         try
