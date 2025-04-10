@@ -3231,7 +3231,7 @@ public class Help
             
             while ( v_Addresses.hasMoreElements() )
             {
-                InetAddress v_IP  = (InetAddress) v_Addresses.nextElement();;
+                InetAddress v_IP  = (InetAddress) v_Addresses.nextElement();
                 byte []     v_Mac = null;
                 
                 if ( v_IP instanceof Inet4Address )

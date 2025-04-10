@@ -32,12 +32,13 @@ import java.util.Map;
  *    再次 put("datas.name" ,"World") 时，会判定 List 最后一元素的Map是否有值，如果有值则创建新 Map，并添加到List中。
  *    所以 Map.get("datas.name") 返回的是 "World"，即List中最后一个元素的Map的元素name的值。
  * 
- *    但可以通过 Map.get("datas[0].name") 返回 Hello
- *              Map.get("datas[1].name") 返回 World
+ *    可以通过 Map.get("datas[0].name") 返回 Hello
+ *    可以通过 Map.get("datas[1].name") 返回 World
  *
  * @author      ZhengWei(HY)
  * @createDate  2024-01-09
  * @version     v1.0
+ *              v1.1  2025-04-10  添加：获取子元素数量的方法 getSize(Key)
  */
 public class MapJson extends HashMap<String ,Object>
 {
@@ -521,13 +522,13 @@ public class MapJson extends HashMap<String ,Object>
 
 
     /**
-     * 获取元素数值，支持
+     * 获取元素数值
      *
      * @author      ZhengWei(HY)
      * @createDate  2024-01-09
      * @version     v1.0
      *
-     * @param i_Key    支持数据结构层次的分隔符分层的模式
+     * @param i_Key  支持数据结构层次的分隔符分层的模式
      * @return
      *
      * @see java.util.HashMap#get(java.lang.Object)
@@ -603,6 +604,51 @@ public class MapJson extends HashMap<String ,Object>
         else
         {
             return super.get(i_Key);
+        }
+    }
+    
+    
+    
+    /**
+     * 获取子元素的数量
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-04-10
+     * @version     v1.0
+     *
+     * @param i_Key  支持数据结构层次的分隔符分层的模式
+     * @return       当元素是List类型时，获取List大小。
+     *               当元素是普通类型时，返回-1
+     *               当元素不存时，返回NULL
+     */
+    @SuppressWarnings("unchecked")
+    public Integer getSize(Object i_Key)
+    {
+        Object v_Value = null;
+        try
+        {
+            v_Value = this.get(i_Key);
+        }
+        catch (NullPointerException exce)
+        {
+            throw exce;
+        }
+        catch (IndexOutOfBoundsException exce)
+        {
+            throw exce;
+        }
+        
+        if ( v_Value == null )
+        {
+            return null;
+        }
+        else if ( v_Value instanceof List )
+        {
+            return ((List<MapJson>) v_Value).size();
+        }
+        else
+        {
+            return -1;
         }
     }
 
