@@ -30,6 +30,14 @@ public class JU_StringHelp
 {
     
     @Test
+    public void test_toNumberIEEE754()
+    {
+        System.out.println(StringHelp.toNumberIEEE754Big("41D71EB8"));
+    }
+    
+    
+    
+    @Test
     public void test_XML()
     {
         String v_XML = """

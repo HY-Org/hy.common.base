@@ -66,6 +66,8 @@ import com.fasterxml.uuid.Generators;
  *              v1.20 2024-03-22   1.添加 无明确分割符的拆分。类似于简单的分词 SplitMaxMatch()
  *              v1.21 2025-02-21   1.添加 时间格式的UUID
  *              v1.22 2025-02-25   1.添加 与Java自带的String.split()方法功能一样，但不是通过正则表达式做的。
+ *              v1.23 2025-05-09   1.添加 将一个大字符串分割为多个小的字符串。分割条件是长度
+ *                                 2.添加 按IEEE754标准将十六进制转为浮点数，按大端字节序。
  * 
  * @createDate  2009-08-21
  */
@@ -1649,6 +1651,26 @@ public final class StringHelp
     {
         String v_Number = StringHelp.replaceAll(i_Number ,$Currency ,$ReplaceNil);
         return new BigDecimal(v_Number);
+    }
+    
+    
+    
+    /**
+     * 按IEEE754标准将十六进制转为浮点数，按大端字节序。
+     * 
+     * 如：将 41D71EB8 转为 26.89  
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-05-09
+     * @version     v1.0
+     *
+     * @param i_Hex  十六进制
+     * @return
+     */
+    public static float toNumberIEEE754Big(String i_Hex)
+    {
+        int v_IntBits = (int) Long.parseLong(i_Hex ,16);
+        return Float.intBitsToFloat(v_IntBits);
     }
     
     
@@ -3837,6 +3859,34 @@ public final class StringHelp
     public final static PartitionMap<String ,Integer> parsePlaceholders(String i_Placeholder ,String i_Text ,boolean i_StrictRules)
     {
         return Help.toReverse(parsePlaceholdersSequence(i_Placeholder ,i_Text ,i_StrictRules));
+    }
+    
+    
+    
+    /**
+     * 将一个大字符串分割为多个小的字符串。分割条件是长度
+     * 
+     * 如将1234567890每2个字符分割为5个小段，变成 {"12" ,"34" ,"56" ,"78" ,"90"}
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-05-09
+     * @version     v1.0
+     *
+     * @param i_Text     大字符串
+     * @param i_EachLen  每段有几个小字符
+     * @return
+     */
+    public static String[] splitToArray(String i_Text ,int i_EachLen)
+    {
+        int       v_Len   = (int) Math.ceil(i_Text.length() * 1.0D / i_EachLen);
+        String [] v_Datas = new String[v_Len];
+        
+        for (int x=0; x<v_Len; x++)
+        {
+            v_Datas[x] = i_Text.substring(x * i_EachLen ,(x + 1) * i_EachLen);
+        }
+        
+        return v_Datas;
     }
     
     
