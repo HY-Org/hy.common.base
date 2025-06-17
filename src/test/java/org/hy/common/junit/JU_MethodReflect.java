@@ -2,6 +2,7 @@ package org.hy.common.junit;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.hy.common.Date;
 import org.hy.common.Help;
@@ -22,6 +23,21 @@ import org.junit.Test;
 public class JU_MethodReflect
 {
     
+    private Map<String ,JU_MethodReflectUser> users;
+    
+    
+    
+    public JU_MethodReflect()
+    {
+        this.users = new HashMap<String ,JU_MethodReflectUser>();
+        this.users.put("A" ,new JU_MethodReflectUser("张三" ,18 ,"B"));
+        this.users.put("B" ,new JU_MethodReflectUser("李四" ,19 ,"C"));
+        this.users.put("C" ,new JU_MethodReflectUser("王五" ,20 ,"A"));
+    }
+    
+    
+    
+    
     @Test
     public void test_MethodParams() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
     {
@@ -41,6 +57,33 @@ public class JU_MethodReflect
     {
         System.out.println(MethodReflect.allowNew(Help.class));
         System.out.println(MethodReflect.allowNew(Date.class));
+    }
+    
+    
+    
+    @Test
+    public void test_getMapValue()
+    {
+        Map<String ,Object> v_Datas = new HashMap<String ,Object>();
+        v_Datas.put("SchoolA"  ,new JU_MethodReflect());
+        v_Datas.put("FactoryA" ,new JU_MethodReflect());
+        
+        System.out.println(MethodReflect.getMapValue(v_Datas ,"SchoolA.users.$get(A).name"));
+        System.out.println(MethodReflect.getMapValue(v_Datas ,"FactoryA.users.$get(A).ref"));
+    }
+    
+    
+    
+    public Map<String ,JU_MethodReflectUser> getUsers()
+    {
+        return users;
+    }
+    
+    
+    
+    public void setUsers(Map<String ,JU_MethodReflectUser> i_Users)
+    {
+        this.users = i_Users;
     }
     
 }

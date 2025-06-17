@@ -3737,6 +3737,7 @@ public final class StringHelp
      * 解释占位符。:xx （保持占位符原顺序不变）
      * 
      * Map.key    为占位符。前缀为:符号。不包含:符号，同时也是分区字段
+     *                    当用{}限定占位符边界时，返回结果也是包括{}的。
      * Map.Value  为占位符在原文本信息的顺序的集合（下标从0开始）
      * 
      * @author      ZhengWei(HY)
@@ -3749,6 +3750,8 @@ public final class StringHelp
      *              v6.0  2020-06-08  修改：Map.value 修改为顺序。
      *                                修改：将返回结果的Map结构，改为 TablePartitionLink 结构。
      *              v7.0  2023-05-25  添加：支持外界定义占位符是什么
+     *              v8.0  2025-06-17  添加：支持用{}限定占位符边界，如格式 {:School.users.$get(A).ref} 
+     *                                     注：当用{}限定占位符时，返回结果的Map.key也是包括{}的。
      *
      * @param i_Placeholder   占位符是什么。如冒号:、井号#等
      * @param i_Text          要解释的字符串
@@ -3758,20 +3761,48 @@ public final class StringHelp
     public final static PartitionMap<String ,Integer> parsePlaceholdersSequence(String i_Placeholder ,String i_Text ,boolean i_StrictRules)
     {
         // 匹配占位符
-        List<SplitSegment>                  v_Segments = StringHelp.SplitOnlyFind("[ (,='%_\\s]?" + i_Placeholder + "[\\w\\.\\u4e00-\\u9fa5]+[ ),='%_\\s]?" ,i_Text);
+        List<SplitSegment>                  v_Segments = StringHelp.SplitOnlyFind("[ (,='%_\\s\\{]?" + i_Placeholder + "[\\(\\)\\$\\w\\.\\u4e00-\\u9fa5]+[ ),='%_\\s\\}]?" ,i_Text);
         TablePartitionLink<String ,Integer> v_Ret      = new TablePartitionLink<String ,Integer>();
         int                                 v_Index    = 0;
         
         for (SplitSegment v_Segment : v_Segments)
         {
-            String v_PlaceHolder = StringHelp.SplitOnlyFind(i_Placeholder + "[\\w\\.\\u4e00-\\u9fa5]+" ,v_Segment.getInfo().trim()).get(0).getInfo();
-            v_PlaceHolder = v_PlaceHolder.substring(1);
+            // 格式为  {:占位符}
+            List<SplitSegment> v_ChildSeg    = StringHelp.SplitOnlyFind("\\{" + i_Placeholder + "[\\(\\)\\$\\w\\.\\u4e00-\\u9fa5]+\\}" ,v_Segment.getInfo().trim());
+            String             v_PlaceHolder = "";
+            int                v_StrictRules = 5;
+            
+            if ( !Help.isNull(v_ChildSeg) )
+            {
+                v_PlaceHolder = v_ChildSeg.get(0).getInfo();
+                v_ChildSeg.clear();
+            }
+            else
+            {
+                // 格式为  :占位符
+                v_ChildSeg    = StringHelp.SplitOnlyFind(i_Placeholder + "[\\(\\)\\$\\w\\.\\u4e00-\\u9fa5]+" ,v_Segment.getInfo().trim());
+                v_PlaceHolder = v_ChildSeg.get(0).getInfo();
+                v_PlaceHolder = v_PlaceHolder.substring(1);
+                v_StrictRules = 2;
+                v_ChildSeg.clear();
+                v_ChildSeg = null;
+            }
+            
+            String v_Last = v_PlaceHolder.substring(v_PlaceHolder.length() - 1);
+            if ( v_Last.equals("(") )
+            {
+                continue;
+            }
+            else if ( v_Last.equals(".") )
+            {
+                continue;
+            }
             
             if ( i_StrictRules )
             {
                 // 严格规则：占位符的命名，不能是小于等于2位的纯数字
                 //            防止将类似于时间格式 00:00:00 的字符解释为占位符
-                if ( v_PlaceHolder.length() <= 2 )
+                if ( v_PlaceHolder.length() <= v_StrictRules )
                 {
                     if ( Help.isNumber(v_PlaceHolder) )
                     {
@@ -3783,6 +3814,8 @@ public final class StringHelp
             v_Ret.putRow(v_PlaceHolder ,v_Index++);
         }
         
+        v_Segments.clear();
+        v_Segments = null;
         return v_Ret;
     }
     

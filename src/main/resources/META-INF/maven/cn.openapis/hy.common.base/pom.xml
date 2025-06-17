@@ -6,7 +6,7 @@
 
     <groupId>org</groupId>
     <artifactId>hy.common.base</artifactId>
-    <version>1.0.196</version>
+    <version>1.0.197</version>
     <packaging>jar</packaging>
 
     <name>org.hy.common.base</name>
