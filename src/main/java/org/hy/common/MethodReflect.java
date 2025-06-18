@@ -2602,6 +2602,7 @@ public class MethodReflect implements Serializable
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      */
+    @SuppressWarnings("unchecked")
     private void parser() throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
     {
         int v_Index = 0;
@@ -2679,7 +2680,22 @@ public class MethodReflect implements Serializable
                 
                 if ( Help.isNull(v_Methods) )
                 {
-                    throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
+                    if ( MethodReflect.isExtendImplement(v_Class ,Map.class) )
+                    {
+                        String v_MapGetValueName = this.methodNames[v_Index];
+                        if ( v_MapGetValueName.startsWith("get") )
+                        {
+                            v_MapGetValueName = v_MapGetValueName.substring(3);
+                        }
+                        
+                        this.methodsParams.set(v_Index ,new ArrayList<String>());
+                        this.methodsParams.get(v_Index).add(v_MapGetValueName);
+                        v_Methods = MethodReflect.getMethods(Map.class ,"get");
+                    }
+                    else
+                    {
+                        throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
+                    }
                 }
                 else if ( v_Methods.size() >= 2 )
                 {
@@ -2719,27 +2735,46 @@ public class MethodReflect implements Serializable
                 
                 if ( Help.isNull(v_Methods) )
                 {
-                    throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
+                    if ( MethodReflect.isExtendImplement(v_Class ,Map.class) )
+                    {
+                        String v_MapGetValueName = this.methodNames[v_Index];
+                        if ( v_MapGetValueName.startsWith("get") )
+                        {
+                            v_MapGetValueName = v_MapGetValueName.substring(3);
+                        }
+                        
+                        this.methodsParams.set(v_Index ,new ArrayList<String>());
+                        this.methodsParams.get(v_Index).add(v_MapGetValueName);
+                        v_Methods = MethodReflect.getMethods(Map.class ,"get");
+                        v_ChildInstance = Help.getValueIgnoreCase((Map<? ,Object>) this.instances.get(v_Index) ,v_MapGetValueName);
+                    }
+                    else
+                    {
+                        throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
+                    }
                 }
                 else if ( v_Methods.size() >= 2 )
                 {
                     throw new RuntimeException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is more same Method name.");
                 }
                 
-                if ( this.methodsParams.get(v_Index).size() <= 0 )
+                if ( v_ChildInstance == null )
                 {
-                    v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1));
-                }
-                else
-                {
-                    Object   [] v_ParamObjs  = new Object[this.methodsParams.get(v_Index).size()];
-                    Class<?> [] v_ParamClass = v_Methods.get(0).getParameterTypes();
-                    for (int x=0; x<v_ParamClass.length; x++)
+                    if ( this.methodsParams.get(v_Index).size() <= 0 )
                     {
-                        v_ParamObjs[x] = Help.toObject(v_ParamClass[x] ,this.methodsParams.get(v_Index).get(x));
+                        v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1));
                     }
-                    
-                    v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1) ,v_ParamObjs);
+                    else
+                    {
+                        Object   [] v_ParamObjs  = new Object[this.methodsParams.get(v_Index).size()];
+                        Class<?> [] v_ParamClass = v_Methods.get(0).getParameterTypes();
+                        for (int x=0; x<v_ParamClass.length; x++)
+                        {
+                            v_ParamObjs[x] = Help.toObject(v_ParamClass[x] ,this.methodsParams.get(v_Index).get(x));
+                        }
+                        
+                        v_ChildInstance = v_Methods.get(0).invoke(this.instances.get(this.instances.size() - 1) ,v_ParamObjs);
+                    }
                 }
                 
                 this.methods.add(MethodInfo.toMethods(v_Methods));

@@ -68,7 +68,12 @@ public class JU_MethodReflect
         v_Datas.put("SchoolA"  ,new JU_MethodReflect());
         v_Datas.put("FactoryA" ,new JU_MethodReflect());
         
+        System.out.println(MethodReflect.getMapValue(new JU_MethodReflect().getUsers() ,"A.name"));
+        
+        System.out.println(MethodReflect.getMapValue(v_Datas ,"SchoolA.users.A.name"));
         System.out.println(MethodReflect.getMapValue(v_Datas ,"SchoolA.users.$get(A).name"));
+        
+        System.out.println(MethodReflect.getMapValue(v_Datas ,"FactoryA.users.A.ref"));
         System.out.println(MethodReflect.getMapValue(v_Datas ,"FactoryA.users.$get(A).ref"));
     }
     
