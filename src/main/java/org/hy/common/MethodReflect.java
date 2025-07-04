@@ -65,6 +65,7 @@ import org.hy.common.comparate.MethodFieldComparator;
  *              v13.1 2021-02-01  修正：解释xx.yy.zz时，当yy为空指针时的解释异常
  *              v14.0 2021-12-16  添加：判定类是否允许被实例化（默认无参构造器的实例化）allowNew()
  *              v14.0 2022-05-17  优化：isExtendImplement 方法的判定性能 10万次计算减少用时3秒
+ *              v15.0 2025-07-04  修正：在替换子组方法路径时，用 StringHelp.replaceFirst() 方法替换 StringHelp.replaceAll() 方法
  */
 public class MethodReflect implements Serializable
 {
@@ -1777,6 +1778,9 @@ public class MethodReflect implements Serializable
      * @author      ZhengWei(HY)
      * @createDate  2016-07-29
      * @version     v1.0
+     *              v2.0  2025-07-04  修正：在替换子组方法路径时，用 StringHelp.replaceFirst() 方法替换 StringHelp.replaceAll() 方法
+     *                                     解决：父级名称与子组名称一样的问题，
+     *                                       如：占位符 :APIRets.data.data.Automatic 中的第二级与第三级的 data 相同  
      *
      * @param i_MapValues  Map集合
      * @param i_MethodURL  方法全路径（不区分大小写）
@@ -1797,7 +1801,7 @@ public class MethodReflect implements Serializable
             return null;
         }
         
-        String v_ChildMethodURL = StringHelp.replaceAll(i_MethodURL ,v_MethodURLArr[0] + "." ,"");
+        String v_ChildMethodURL = StringHelp.replaceFirst(i_MethodURL ,v_MethodURLArr[0] + "." ,"");
         
         if ( MethodReflect.isExtendImplement(v_MapValue ,Map.class) )
         {
