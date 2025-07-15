@@ -1,7 +1,9 @@
 package org.hy.common.junit;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.hy.common.Date;
@@ -24,6 +26,8 @@ public class JU_MethodReflect
 {
     
     private Map<String ,JU_MethodReflectUser> users;
+    
+    private List<JU_MethodReflect>            userList;
     
     
     
@@ -79,6 +83,36 @@ public class JU_MethodReflect
     
     
     
+    @Test
+    public void test_getListValue()
+    {
+        List<Object> v_Datas = new ArrayList<Object>();
+        v_Datas.add(new JU_MethodReflect());
+        
+        System.out.println(MethodReflect.getListValue(v_Datas ,"0.users.A.name"));
+        System.out.println(MethodReflect.getListValue(v_Datas ,"0.users.$get(A).name"));
+    }
+    
+    
+    
+    @Test
+    public void test_getMapValueList()
+    {
+        List<JU_MethodReflect> v_ListDatas = new ArrayList<JU_MethodReflect>();
+        v_ListDatas.add(new JU_MethodReflect());
+        
+        JU_MethodReflect v_Object = new JU_MethodReflect();
+        v_Object.setUserList(v_ListDatas);
+        
+        Map<String ,Object> v_MapDatas = new HashMap<String ,Object>();
+        v_MapDatas.put("SchoolA" ,v_Object);
+        
+        System.out.println(MethodReflect.getMapValue(v_MapDatas ,"SchoolA.userList.0.users.A.name"));
+        System.out.println(MethodReflect.getMapValue(v_MapDatas ,"SchoolA.userList.0.users.$get(A).name"));
+    }
+    
+    
+    
     public Map<String ,JU_MethodReflectUser> getUsers()
     {
         return users;
@@ -89,6 +123,20 @@ public class JU_MethodReflect
     public void setUsers(Map<String ,JU_MethodReflectUser> i_Users)
     {
         this.users = i_Users;
+    }
+
+
+
+    public List<JU_MethodReflect> getUserList()
+    {
+        return userList;
+    }
+
+
+
+    public void setUserList(List<JU_MethodReflect> i_UserList)
+    {
+        this.userList = i_UserList;
     }
     
 }

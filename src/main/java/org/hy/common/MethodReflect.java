@@ -66,6 +66,8 @@ import org.hy.common.comparate.MethodFieldComparator;
  *              v14.0 2021-12-16  添加：判定类是否允许被实例化（默认无参构造器的实例化）allowNew()
  *              v14.0 2022-05-17  优化：isExtendImplement 方法的判定性能 10万次计算减少用时3秒
  *              v15.0 2025-07-04  修正：在替换子组方法路径时，用 StringHelp.replaceFirst() 方法替换 StringHelp.replaceAll() 方法
+ *              v16.0 2025-07-14  添加：从List集合中取值。实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的解释
+ *              v16.1 2025-07-15  添加：支持 Map.Object.List.0.name 的方法路径取值
  */
 public class MethodReflect implements Serializable
 {
@@ -1807,6 +1809,10 @@ public class MethodReflect implements Serializable
         {
             return getMapValue((Map<String ,?>)v_MapValue ,v_ChildMethodURL);
         }
+        else if ( MethodReflect.isExtendImplement(v_MapValue ,List.class) )
+        {
+            return getListValue((List<?>)v_MapValue ,v_ChildMethodURL);
+        }
         else if ( MethodReflect.class.equals(v_MapValue.getClass()) )
         {
             return v_MapValue;
@@ -1818,6 +1824,82 @@ public class MethodReflect implements Serializable
             try
             {
                 v_MethodReflect = new MethodReflect(v_MapValue ,v_ChildMethodURL ,true ,MethodReflect.$NormType_Getter);
+                Object v_Ret = v_MethodReflect.invoke();
+                
+                v_MethodReflect.clearDestroy();
+                v_MethodReflect = null;
+                
+                return v_Ret;
+            }
+            catch (Exception exce)
+            {
+                exce.printStackTrace();
+            }
+            
+            return null;
+        }
+    }
+    
+    
+    
+    /**
+     * 从List集合中取值。实现xxx.yyy.www(或getXxx.getYyy.getWww)全路径的解释
+     * 
+     * 支持如下占位符
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2024-07-14
+     * @version     v1.0
+     *
+     * @param i_ListValues  List集合
+     * @param i_MethodURL   方法全路径（不区分大小写）
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static Object getListValue(List<?> i_ListValues ,String i_MethodURL)
+    {
+        String [] v_MethodURLArr = i_MethodURL.split("\\.");
+        Object    v_ListValue    = null;
+        
+        if ( Help.isNumber(v_MethodURLArr[0]) )
+        {
+            int v_Index = Integer.parseInt(v_MethodURLArr[0]);
+            if ( 0 <= v_Index && v_Index < i_ListValues.size() )
+            {
+                v_ListValue = i_ListValues.get(v_Index);
+            }
+        }
+        else if ( "size".equalsIgnoreCase(v_MethodURLArr[0]) )
+        {
+            v_ListValue = i_ListValues.size();
+        }
+        
+        if ( v_ListValue == null )
+        {
+            return null;
+        }
+        
+        String v_ChildMethodURL = StringHelp.replaceFirst(i_MethodURL ,v_MethodURLArr[0] + "." ,"");
+        
+        if ( MethodReflect.isExtendImplement(v_ListValue ,Map.class) )
+        {
+            return getMapValue((Map<String ,?>)v_ListValue ,v_ChildMethodURL);
+        }
+        else if ( MethodReflect.isExtendImplement(v_ListValue ,List.class) )
+        {
+            return getListValue((List<?>)v_ListValue ,v_ChildMethodURL);
+        }
+        else if ( MethodReflect.class.equals(v_ListValue.getClass()) )
+        {
+            return v_ListValue;
+        }
+        else
+        {
+            MethodReflect v_MethodReflect = null;
+            
+            try
+            {
+                v_MethodReflect = new MethodReflect(v_ListValue ,v_ChildMethodURL ,true ,MethodReflect.$NormType_Getter);
                 Object v_Ret = v_MethodReflect.invoke();
                 
                 v_MethodReflect.clearDestroy();
@@ -2696,6 +2778,31 @@ public class MethodReflect implements Serializable
                         this.methodsParams.get(v_Index).add(v_MapGetValueName);
                         v_Methods = MethodReflect.getMethods(Map.class ,"get");
                     }
+                    else if ( MethodReflect.isExtendImplement(v_Class ,List.class) )
+                    {
+                        String v_MapGetValueName = this.methodNames[v_Index];
+                        if ( v_MapGetValueName.startsWith("get") )
+                        {
+                            v_MapGetValueName = v_MapGetValueName.substring(3);
+                        }
+                        
+                        if ( Help.isNumber(v_MapGetValueName) )
+                        {
+                            List<?> v_ListValues = (List<?>) this.instances.get(v_Index);
+                            int v_ListIndex = Integer.parseInt(v_MapGetValueName);
+                            if ( 0 <= v_ListIndex && v_ListIndex < v_ListValues.size() )
+                            {
+                                this.methodsParams.set(v_Index ,new ArrayList<String>());
+                                this.methodsParams.get(v_Index).add(v_MapGetValueName);
+                                v_Methods = MethodReflect.getMethods(List.class ,"get");
+                            }
+                        }
+                        else if ( "size".equalsIgnoreCase(v_MapGetValueName) )
+                        {
+                            this.methodsParams.set(v_Index ,new ArrayList<String>());
+                            v_Methods = MethodReflect.getMethods(List.class ,"size");
+                        }
+                    }
                     else
                     {
                         throw new NullPointerException("Method[" + methodURL + "]'s '" + this.methodNames[v_Index] + "' is not exists.");
@@ -2751,6 +2858,34 @@ public class MethodReflect implements Serializable
                         this.methodsParams.get(v_Index).add(v_MapGetValueName);
                         v_Methods = MethodReflect.getMethods(Map.class ,"get");
                         v_ChildInstance = Help.getValueIgnoreCase((Map<? ,Object>) this.instances.get(v_Index) ,v_MapGetValueName);
+                    }
+                    else if ( MethodReflect.isExtendImplement(v_Class ,List.class) )
+                    {
+                        String v_MapGetValueName = this.methodNames[v_Index];
+                        if ( v_MapGetValueName.startsWith("get") )
+                        {
+                            v_MapGetValueName = v_MapGetValueName.substring(3);
+                        }
+                        
+                        if ( Help.isNumber(v_MapGetValueName) )
+                        {
+                            List<?> v_ListValues = (List<?>) this.instances.get(v_Index);
+                            int v_ListIndex = Integer.parseInt(v_MapGetValueName);
+                            if ( 0 <= v_ListIndex && v_ListIndex < v_ListValues.size() )
+                            {
+                                this.methodsParams.set(v_Index ,new ArrayList<String>());
+                                this.methodsParams.get(v_Index).add(v_MapGetValueName);
+                                v_Methods = MethodReflect.getMethods(List.class ,"get");
+                                v_ChildInstance = v_ListValues.get(v_ListIndex);
+                            }
+                        }
+                        else if ( "size".equalsIgnoreCase(v_MapGetValueName) )
+                        {
+                            List<?> v_ListValues = (List<?>) this.instances.get(v_Index);
+                            this.methodsParams.set(v_Index ,new ArrayList<String>());
+                            v_Methods = MethodReflect.getMethods(List.class ,"size");
+                            v_ChildInstance = v_ListValues.size();
+                        }
                     }
                     else
                     {
