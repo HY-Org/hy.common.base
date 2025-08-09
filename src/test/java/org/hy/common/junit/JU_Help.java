@@ -79,11 +79,11 @@ public class JU_Help
     @Test
     public void test_executeCommand()
     {
-    	Help.print(Help.executeCommand("GBK" ,true ,true ,60 ,"systeminfo"));
+    	// Help.print(Help.executeCommand("GBK" ,true ,true ,60 ,"systeminfo"));
         // Help.print(Help.executeCommand("ls -aln /"));
         // Help.print(Help.executeCommand("ls" ,"-aln" ,"/"));
         // Help.print(Help.executeCommand("GBK" ,false ,"cmd.exe /c d: && cd D:\\apache-tomcat-7.0.47\\bin && D:\\apache-tomcat-7.0.47\\bin\\shutdown.bat"));
-        // Help.print(Help.executeCommand("GBK" ,false ,"cmd.exe" ,"/c" ,"dir" ,"c:\\"));
+        Help.print(Help.executeCommand("GBK" ,true ,true ,"cmd.exe" ,"/c" ,"dir" ,"c:\\"));
     }
     
     
