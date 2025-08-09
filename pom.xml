@@ -12,7 +12,7 @@
     <name>cn.openapis.hy.common.base</name>
     <!-- https://gitee.com/HY-ZhengWei/hy.common.base -->
     <url>https://github.com/HY-ZhengWei/hy.common.base</url>
-    <description>基础通讯组件（Basic Common Components）</description>
+    <description>基础通用组件（Basic Common Components）</description>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
