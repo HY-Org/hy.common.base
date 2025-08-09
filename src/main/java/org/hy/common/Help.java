@@ -8451,6 +8451,7 @@ public class Help
      * @author      ZhengWei(HY)
      * @createDate  2018-09-28
      * @version     v1.0
+     *              v2.0  修正：将异常抛出去
      *
      * @param i_CharEncoding   命令结果返回时字符集
      * @param i_IsWaitProcess  是否等待命令执行完成。当等待时调用线程将被阻塞
@@ -8503,9 +8504,10 @@ public class Help
                                 v_FinalProcess.destroy();  // destroyForcibly(); 1.7没有此强制方法
                             }
                         }
-                        catch (Exception e)
+                        catch (Exception exce)
                         {
-                            e.printStackTrace();
+                            String v_CMD = StringHelp.toString(i_Commands ,"" ," ");
+                            throw new RuntimeException("Command[" + v_CMD + "] is Timeout(" + v_Timeout + " sec) error" ,exce);
                         }
                     }
                 }).start();
@@ -8564,7 +8566,8 @@ public class Help
         }
         catch (Exception exce)
         {
-            exce.printStackTrace();
+            String v_CMD = StringHelp.toString(i_Commands ,"" ," ");
+            throw new RuntimeException("Command[" + v_CMD + "] is execute error" ,exce);
         }
         finally
         {

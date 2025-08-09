@@ -6,13 +6,13 @@
 
     <groupId>org</groupId>
     <artifactId>hy.common.base</artifactId>
-    <version>1.0.201</version>
+    <version>1.0.202</version>
     <packaging>jar</packaging>
 
     <name>org.hy.common.base</name>
     <!-- https://gitee.com/HY-ZhengWei/hy.common.base -->
     <url>https://github.com/HY-ZhengWei/hy.common.base</url>
-    <description>org.hy.common.base</description>
+    <description>基础通讯组件（Basic Common Components）</description>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

@@ -82,9 +82,9 @@ public final class StaticReflect
      * @createDate  2019-05-27
      * @version     v1.0
      *
-     * @param i_StaticMethod               静态方法
-     * @param i_ParameterTypes             静态方法的参数
-     * @return                             返回静态方法的返回值 
+     * @param i_StaticMethod   静态方法
+     * @param i_Parameters     静态方法的参数
+     * @return                 返回静态方法的返回值 
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
