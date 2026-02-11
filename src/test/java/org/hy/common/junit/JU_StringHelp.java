@@ -38,6 +38,14 @@ public class JU_StringHelp
     
     
     @Test
+    public void IndexOf()
+    {
+        System.out.println("ABC.123".indexOf("."));
+    }
+    
+    
+    
+    @Test
     public void test_XML()
     {
         String v_XML = """

@@ -37,6 +37,7 @@ import org.hy.common.TablePartition;
  *           V2.0  2017-06-09  添加：this.initNotNull(...) 初始化'我自己' (将自己设置成于别人对象一样)，但只初始非空的有效的值。
  *           V3.0  2017-06-13  优化：this.init()方法的中用Map集合初始化'我自己'的执行性能，并不再区分Map.key大小写的匹配模式。
  *           V4.0  2022-05-17  优化：无继承关系两对象的相互初始化方法的性能
+ *           v5.0  2026-02-11  优化：将属性方法变成静态缓存保存
  */
 public abstract class SerializableDef extends SerializableClass implements Serializable
 {
@@ -90,7 +91,7 @@ public abstract class SerializableDef extends SerializableClass implements Seria
         Object v_Ret = v_SettersCache.get(i_PropertyIndex);
         if ( v_Ret instanceof Integer )
         {
-            String v_Name = this.propertyMethods.get(i_PropertyIndex).toMethod(this).getName();
+            String v_Name = $PropertyMethodCache.get(this.myClass).get(i_PropertyIndex).toMethod(this).getName();
             
             // 只要 Setter 与 Getter(Is) 方法成对出现的 Getter(Is) 方法
             if ( v_Name.startsWith("get") )

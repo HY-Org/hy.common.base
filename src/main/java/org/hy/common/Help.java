@@ -3055,9 +3055,72 @@ public class Help
     
     
     /**
+     * IP地址转为数字
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-09-08
+     * @version     v1.0
+     *
+     * @param i_IP
+     * @return
+     */
+    public final static long ipToLong(String i_IP)
+    {
+        String [] v_Parts = i_IP.split("\\.");
+        long v_Value = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            v_Value = v_Value << 8 | Integer.parseInt(v_Parts[i]);
+        }
+        return v_Value;
+    }
+    
+    
+    
+    /**
+     * IP地址（数字形式）转为字符
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-09-08
+     * @version     v1.0
+     *
+     * @param i_IP
+     * @return
+     */
+    public final static String ipToString(long i_IP) 
+    {
+        return ((i_IP >> 24) & 0xFF) + "." +
+               ((i_IP >> 16) & 0xFF) + "." +
+               ((i_IP >> 8)  & 0xFF) + "." +
+                (i_IP        & 0xFF);
+    }
+    
+    
+    
+    /**
+     * IP地址（数字形式）转为字符，但只有三段IP地址位
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-09-08
+     * @version     v1.0
+     *
+     * @param i_IP
+     * @return
+     */
+    public final static String ipToString3(long i_IP) 
+    {
+        return ((i_IP >> 24) & 0xFF) + "." +
+               ((i_IP >> 16) & 0xFF) + "." +
+               ((i_IP >> 8)  & 0xFF) + ".";
+    }
+    
+    
+    
+    /**
      * 获得本机IP
      * 
      * 注意：OpenSUSE要在YaST中配置主机名称：System -> Network Settings -> Hostname/DNS -> Static Hostname
+     * 注意：Ubuntu要在/etc/hostname和/etc/hosts两文件中配置
      * 
      * @param i_Split  分割符是多少。如，用.分割
      * @param i_IsPad  是否填充 0

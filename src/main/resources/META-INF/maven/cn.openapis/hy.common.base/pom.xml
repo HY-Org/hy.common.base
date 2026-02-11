@@ -6,7 +6,7 @@
 
     <groupId>org</groupId>
     <artifactId>hy.common.base</artifactId>
-    <version>1.0.202</version>
+    <version>1.0.203</version>
     <packaging>jar</packaging>
 
     <name>org.hy.common.base</name>
@@ -48,6 +48,12 @@
             <artifactId>pinyin4j</artifactId>
             <version>2.5.1</version>
             <optional>true</optional>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.5.0-jre</version>
         </dependency>
 
         <dependency>

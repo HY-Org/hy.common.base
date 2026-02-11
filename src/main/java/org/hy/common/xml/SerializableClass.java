@@ -16,6 +16,7 @@ import org.hy.common.MethodInfo;
 import org.hy.common.MethodReflect;
 import org.hy.common.Serializable;
 import org.hy.common.StringHelp;
+import org.hy.common.TablePartition;
 import org.hy.common.comparate.MethodComparator;
 
 
@@ -30,17 +31,22 @@ import org.hy.common.comparate.MethodComparator;
  * 注意：1.继承父接口的 gatPropertyValue() 方法，永远返回 null。
  *      2. 只要 Setter 与 Getter(Is) 方法成对出现的 Getter(Is) 方法
  *
- * @author   ZhengWei(HY)
- * @version  V1.0  2014-04-28
+ * @author      ZhengWei(HY)
+ * @createDate  2014-04-28
+ * @version     v1.0
+ *              v2.0  2026-02-11  优化：将属性方法变成静态缓存保存
  */
 public class SerializableClass implements Serializable
 {
-    private static final long serialVersionUID = -3234155217835228159L;
+    private   static final long serialVersionUID = -3234155217835228159L;
     
     
-    protected List<MethodInfo> propertyMethods;
+    /** 成员方法的统一缓存 */
+    protected static final TablePartition<Class<?> ,MethodInfo> $PropertyMethodCache = new TablePartition<Class<?> ,MethodInfo>();
     
-    protected Class<?>         myClass;
+    
+    /** 元类型 */
+    protected Class<?> myClass;
     
     
     
@@ -53,48 +59,53 @@ public class SerializableClass implements Serializable
      */
     public SerializableClass(Class<?> i_Class)
     {
-        this.myClass = i_Class;
-        if ( myClass == null )
+        synchronized (this)
         {
-            myClass = this.getClass();
-        }
-        
-        List<Method> v_Methods = MethodReflect.getStartMethods(myClass ,new String[]{"get" ,"is"} ,0);
-        List<Method> v_Setters = MethodReflect.getStartMethods(myClass ,"set" ,1);
-        
-        Collections.sort(v_Methods ,MethodComparator.getInstance());
-        
-        for (int i=v_Methods.size() - 1; i>=0; i--)
-        {
-            // 只要 Setter 与 Getter(Is) 方法成对出现的 Getter(Is) 方法
-            String v_Name = v_Methods.get(i).getName();
-            
-            if ( v_Name.startsWith("get") )
+            this.myClass = i_Class;
+            if ( this.myClass == null )
             {
-                v_Name = "s"   + v_Name.substring(1);
+                this.myClass = this.getClass();
             }
-            else
+            if ( !$PropertyMethodCache.containsKey(this.myClass) )
             {
-                v_Name = "set" + v_Name.substring(2);
-            }
-            
-            boolean v_IsExistSetter = false;
-            for (int x=0; x<v_Setters.size(); x++)
-            {
-                if ( v_Name.equals(v_Setters.get(x).getName()) )
+                List<Method> v_Methods = MethodReflect.getStartMethods(this.myClass ,new String[]{"get" ,"is"} ,0);
+                List<Method> v_Setters = MethodReflect.getStartMethods(this.myClass ,"set" ,1);
+                
+                Collections.sort(v_Methods ,MethodComparator.getInstance());
+                
+                for (int i=v_Methods.size() - 1; i>=0; i--)
                 {
-                    v_IsExistSetter = true;
-                    x = v_Setters.size() + 1;
+                    // 只要 Setter 与 Getter(Is) 方法成对出现的 Getter(Is) 方法
+                    String v_Name = v_Methods.get(i).getName();
+                    
+                    if ( v_Name.startsWith("get") )
+                    {
+                        v_Name = "s"   + v_Name.substring(1);
+                    }
+                    else
+                    {
+                        v_Name = "set" + v_Name.substring(2);
+                    }
+                    
+                    boolean v_IsExistSetter = false;
+                    for (int x=0; x<v_Setters.size(); x++)
+                    {
+                        if ( v_Name.equals(v_Setters.get(x).getName()) )
+                        {
+                            v_IsExistSetter = true;
+                            x = v_Setters.size() + 1;
+                        }
+                    }
+                    
+                    if ( !v_IsExistSetter )
+                    {
+                        v_Methods.remove(i);
+                    }
                 }
-            }
-            
-            if ( !v_IsExistSetter )
-            {
-                v_Methods.remove(i);
+                
+                $PropertyMethodCache.put(this.myClass ,MethodInfo.toMethods(v_Methods));
             }
         }
-        
-        this.propertyMethods = MethodInfo.toMethods(v_Methods);
     }
     
     
@@ -107,7 +118,7 @@ public class SerializableClass implements Serializable
     @Override
     public int gatPropertySize()
     {
-        return this.propertyMethods.size();
+        return $PropertyMethodCache.rowCount(this.myClass);
     }
     
     
@@ -121,7 +132,7 @@ public class SerializableClass implements Serializable
     @Override
     public String gatPropertyName(int i_PropertyIndex)
     {
-        return this.propertyMethods.get(i_PropertyIndex).toMethod(this).getName();
+        return $PropertyMethodCache.get(this.myClass).get(i_PropertyIndex).toMethod(this).getName();
     }
     
     
@@ -161,7 +172,7 @@ public class SerializableClass implements Serializable
     {
         try
         {
-            Object v_Value = this.propertyMethods.get(i_PropertyIndex).toMethod(i_Instance).invoke(i_Instance);
+            Object v_Value = $PropertyMethodCache.get(this.myClass).get(i_PropertyIndex).toMethod(i_Instance).invoke(i_Instance);
             
             if ( v_Value == null )
             {
@@ -380,10 +391,11 @@ public class SerializableClass implements Serializable
     {
         Map<String ,DocInfo> v_Ret           = XDocument.getDocFields(this.myClass);
         if ( Help.isNull(v_Ret) ) return v_Ret;
-        Map<String ,Method>  v_Methods       = new Hashtable<String ,Method>(this.propertyMethods.size());
+        List<MethodInfo>     v_MethodInfos   = $PropertyMethodCache.get(this.myClass);
+        Map<String ,Method>  v_Methods       = new Hashtable<String ,Method>(v_MethodInfos.size());
         List<String>         v_DocFieldNames = Help.toListKeys(v_Ret);
         
-        for (MethodInfo v_Item : this.propertyMethods)
+        for (MethodInfo v_Item : v_MethodInfos)
         {
             Method v_Method = v_Item.toMethod(this);
             v_Methods.put(v_Method.getName() ,v_Method);
@@ -779,11 +791,7 @@ public class SerializableClass implements Serializable
     @Override
     public void freeResource()
     {
-        if ( this.propertyMethods != null )
-        {
-            this.propertyMethods.clear();
-            this.propertyMethods = null;
-        }
+        // Nothing. 不用释放 $PropertyMethodCache 中的信息
     }
     
     
