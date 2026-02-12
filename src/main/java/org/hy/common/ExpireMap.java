@@ -39,7 +39,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * 主要用于 ExpireMap.values() 和 ExpireMap.entrySet() 两个方法。
      * 注意：ExpireMap并没有直接继承 Hashtable<K ,V>，而是将 Hashtable<K ,V>作为内部属性。
      */
-    private ConcurrentHashMap<K ,V>                   datasSame;
+    private ConcurrentHashMap<K ,V>            datasSame;
     
     /**
      * 最小的过期时间戳。
@@ -48,7 +48,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      *   1. 0值 不计算在内。
      *   2. 但初始化值为 0值。
      */
-    private long                                      minTime;
+    private long                               minTime;
     
     
     
@@ -64,7 +64,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
     public ExpireMap(int i_InitialCapacity)
     {
         this.datas     = new ConcurrentHashMap<K ,Expire<K ,V>>(i_InitialCapacity);
-        this.datasSame = new ConcurrentHashMap<K ,V>                  (i_InitialCapacity);
+        this.datasSame = new ConcurrentHashMap<K ,V>           (i_InitialCapacity);
         this.minTime   = 0L;
     }
     
@@ -133,7 +133,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2016-02-25
      * @version     v1.0
      *
-     * @param i_Key
+     * @param i_Key      主键
      * @param i_Second   过期时长（单位：秒）
      * @return
      */
@@ -153,31 +153,13 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2016-02-25
      * @version     v1.0
      *
-     * @param i_Key
+     * @param i_Key           主键
      * @param i_Millisecond   过期时长（单位：毫秒）
      * @return                当Map.key已经过期时，返回 null
      */
-    public synchronized V setExpireTimeMilli(K i_Key ,long i_Millisecond)
+    public V setExpireTimeMilli(K i_Key ,long i_Millisecond)
     {
-        Expire<K ,V> v_Data = this.datas.get(i_Key);
-        
-        if ( null == v_Data )
-        {
-            return null;
-        }
-        else if ( ((ExpireElement<K ,V>)v_Data).checkExpire() == null )
-        {
-            return null;
-        }
-        
-        long v_Time = Date.getNowTime().getTime() + i_Millisecond;
-        ((ExpireElement<K ,V>)v_Data).time = v_Time;
-        if ( this.minTime == 0L || v_Time < this.minTime )
-        {
-            this.minTime = v_Time;
-        }
-        
-        return v_Data.getValue();
+        return this.getAndKeepMilli(i_Key ,i_Millisecond);
     }
     
     
@@ -189,8 +171,8 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2016-02-24
      * @version     v1.0
      *
-     * @param i_Key
-     * @param i_Value
+     * @param i_Key     主键
+     * @param i_Value   数值
      * @param i_Second  过期时长(单位：秒)。指当前时刻过i_Second秒后过期失效。
      *                  小于 0 时，表示永远不失效。
      * @return
@@ -209,8 +191,8 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2016-02-24
      * @version     v1.0
      *
-     * @param i_Key
-     * @param i_Value
+     * @param i_Key          主键
+     * @param i_Value        数值
      * @param i_Millisecond  过期时长(单位：毫秒)。指当前时刻过i_Millisecond毫秒后过期失效。
      *                       小于 0 时，表示永远不失效。
      * @return
@@ -256,8 +238,8 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2022-06-22
      * @version     v1.0
      *
-     * @param i_Key
-     * @param i_Value
+     * @param i_Key          主键
+     * @param i_Value        数值
      * @param i_CreateTime   创建时间
      * @param i_ExpireTime   过期的时间戳，与 getExpireTimeLen() 方法返回值同义
      * @return
@@ -296,7 +278,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2016-02-24
      * @version     v1.0
      *
-     * @param i_Datas
+     * @param i_Datas  过期集合数据
      */
     public synchronized void putAll(ExpireMap<K ,V> i_Datas)
     {
@@ -331,8 +313,8 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2016-02-24
      * @version     v1.0
      *
-     * @param i_Key
-     * @param i_Value
+     * @param i_Key    主键
+     * @param i_Value  数值
      * @return
      */
     @Override
@@ -350,7 +332,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2016-02-24
      * @version     v1.0
      *
-     * @param i_Datas
+     * @param i_Datas  过期集合数据
      */
     @Override
     public synchronized void putAll(Map<? extends K ,? extends V> i_Datas)
@@ -375,7 +357,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2016-02-25
      * @version     v1.0
      *
-     * @param i_Key
+     * @param i_Key  主键
      * @return       已过期的Map.key，返回 null
      *               返回 0 时，表示永远有效
      */
@@ -402,7 +384,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2016-02-25
      * @version     v1.0
      *
-     * @param i_Key
+     * @param i_Key  主键
      * @return       已过期的Map.key，返回 -1
      *               不存在的Map.key，返回 -1
      *               永远有效Map.key，返回 Long.MAX_VALUE
@@ -442,7 +424,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2016-02-24
      * @version     v1.0
      *
-     * @param i_Key
+     * @param i_Key  主键
      * @return
      */
     @Override
@@ -470,7 +452,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2022-06-22
      * @version     v1.0
      *
-     * @param i_Key
+     * @param i_Key  主键
      * @return
      */
     public synchronized Expire<K ,V> getExpire(Object i_Key)
@@ -503,11 +485,11 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2017-11-20
      * @version     v1.0
      *
-     * @param i_Key
-     * @param i_Second
+     * @param i_Key     主键
+     * @param i_Second  过期时长(单位：秒)。指当前时刻过i_Second秒后过期失效。
      * @return
      */
-    public V getAndKeep(Object i_Key ,long i_Second)
+    public V getAndKeep(K i_Key ,long i_Second)
     {
         return this.getAndKeepMilli(i_Key ,i_Second * 1000L);
     }
@@ -528,11 +510,11 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2017-11-20
      * @version     v1.0
      *
-     * @param i_Key
-     * @param i_Second
+     * @param i_Key          主键
+     * @param i_Millisecond  过期时长(单位：毫秒)。指当前时刻过i_Millisecond毫秒后过期失效。
      * @return
      */
-    public synchronized V getAndKeepMilli(Object i_Key ,long i_Millisecond)
+    public synchronized V getAndKeepMilli(K i_Key ,long i_Millisecond)
     {
         ExpireElement<K ,V> v_Data = (ExpireElement<K ,V>)this.datas.get(i_Key);
         
@@ -707,7 +689,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2016-02-24
      * @version     v1.0
      *
-     * @param i_Key
+     * @param i_Key  主键
      * @return
      */
     @Override
@@ -735,7 +717,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
      * @createDate  2016-02-24
      * @version     v1.0
      *
-     * @param i_Key
+     * @param i_Key  主键
      * @return
      */
     @Override
@@ -754,7 +736,7 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
     /**
      * 删除元素
      *
-     * @param i_Key
+     * @param i_Key  主键
      * @return
      */
     @Override
@@ -859,41 +841,6 @@ public class ExpireMap<K ,V> implements Map<K ,V> ,java.io.Serializable ,Cloneab
         super.finalize();
     }
     */
-    
-    
-    
-    
-    
-    /**
-     * 定义此接口后，外界才能有限制的访问。如访问 ExpireMap.put( , , ) 的返回值。
-     *
-     * @author      ZhengWei(HY)
-     * @createDate  2016-02-25
-     * @version     v1.0
-     *              v2.0  2017-02-28 添加：创建时间
-     */
-    public interface Expire<K ,V> extends Map.Entry<K ,V> ,java.io.Serializable
-    {
-        
-        /**
-         * 获取：时间戳。保存期满时间。0表示永远有效
-         */
-        public long getTime();
-        
-        
-        
-        /**
-         * 创建时间(首次将Key添加到集合时的时间)
-         * 
-         * @author      ZhengWei(HY)
-         * @createDate  2017-02-28
-         * @version     v1.0
-         *
-         * @return
-         */
-        public Date getCreateTime();
-        
-    }
     
     
     

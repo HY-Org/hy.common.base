@@ -99,10 +99,10 @@ public class Help
 {
     
     /** ToMap()方法的高速缓存 */
-    private static final ExpireMap<Class<?> ,List<Method>> $ToMapCaches  = new ExpireMap<Class<?> ,List<Method>>();
+    private static final ExpireCache<Class<?> ,List<Method>> $ToMapCaches  = new ExpireCache<Class<?> ,List<Method>>();
     
     /** ToMap()方法缓存的超时时长。单位：秒 */
-    public  static       long                              $ToMapTimeOut = 30;
+    public  static       long                                $ToMapTimeOut = 30;
     
     
     
