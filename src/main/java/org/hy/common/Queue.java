@@ -1,7 +1,7 @@
 package org.hy.common;
 
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 
 
@@ -23,6 +23,7 @@ import java.util.LinkedList;
  *           v1.2  2014-12-07  1.添加：查看队列中的数据，并不影响队列，类似于只读模式。
  *           v1.3  2018-08-24  1.添加：remove()方法添加返回值，表示是否删除成功。
  *           v1.4  2023-04-28  1.添加：iterator()获取迭代器，大数量频繁操作时，比 toArray 安全
+ *           v2.0  2026-02-15  1.优化：ConcurrentLinkedDeque替换LinkedList，增强线程安全
  */
 public class Queue<O> implements java.io.Serializable
 {
@@ -42,16 +43,16 @@ public class Queue<O> implements java.io.Serializable
     
     
     
-    private LinkedList<O>    linkedList;
+    private ConcurrentLinkedDeque<O> linkedList;
     
     /** 独立出大小是为性能与速度 */
-    private long             queueSize;
+    private long                     queueSize;
     
     /** 曾经进入过队列的对象次数 */
-    private long             putedCount;
+    private long                     putedCount;
     
     /** 队列类型 */
-    private QueueType        queueType;
+    private QueueType                queueType;
     
     
     
@@ -70,7 +71,7 @@ public class Queue<O> implements java.io.Serializable
         
         this.queueSize  = 0;
         this.putedCount = 0;
-        this.linkedList = new LinkedList<O>();
+        this.linkedList = new ConcurrentLinkedDeque<O>();
         this.queueType  = i_QueueType;
     }
     
