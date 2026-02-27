@@ -8348,7 +8348,7 @@ public class Help
     {
         try
         {
-            return Class.forName(i_ClassName ,false ,Thread.currentThread().getContextClassLoader());
+            return Class.forName(i_ClassName ,false ,GlobalClassLoader.getClassLoader());
         }
         catch (ClassNotFoundException exce)
         {
