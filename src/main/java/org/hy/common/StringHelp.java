@@ -68,6 +68,7 @@ import com.fasterxml.uuid.Generators;
  *              v1.22 2025-02-25   1.添加 与Java自带的String.split()方法功能一样，但不是通过正则表达式做的。
  *              v1.23 2025-05-09   1.添加 将一个大字符串分割为多个小的字符串。分割条件是长度
  *                                 2.添加 按IEEE754标准将十六进制转为浮点数，按大端字节序。
+ *              v1.24 2026-04-03   1.添加 52位和62位随机字符串的生成
  * 
  * @createDate  2009-08-21
  */
@@ -86,7 +87,13 @@ public final class StringHelp
     
     private static final String    $ABC           = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     
+    private static final String    $abc           = $ABC.toLowerCase();
+    
     private static final String    $ABC36         = "0123456789" + $ABC;
+    
+    private static final String    $ABCabc52      = $ABC + $abc;
+    
+    private static final String    $ABCabc62      = $ABC36 + $abc;
     
     private static final char      last2byte      = (char) Integer.parseInt("00000011", 2);
     private static final char      last4byte      = (char) Integer.parseInt("00001111", 2);
@@ -153,6 +160,8 @@ public final class StringHelp
     /**
      * 随机生成指定长度的数字与字母混合的字符串
      * 
+     * 注：默认生成的全大写的随机，如果要生成全小成的随机，请变通处理一下toLowerCase()。
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2018-05-23
      * @version     v1.0
@@ -162,13 +171,15 @@ public final class StringHelp
      */
     public final static String random(int i_Length)
     {
-        return random(i_Length ,true);
+        return random(i_Length ,true ,false);
     }
     
     
     
     /**
      * 随机生成指定长度的数字与字母混合的字符串
+     * 
+     * 注：默认生成的全大写的随机，如果要生成全小成的随机，请变通处理一下toLowerCase()。
      * 
      * @author      ZhengWei(HY)
      * @createDate  2018-05-23
@@ -180,20 +191,60 @@ public final class StringHelp
      */
     public final static String random(int i_Length ,boolean i_HaveNumber)
     {
+        return random(i_Length ,i_HaveNumber ,false);
+    }
+    
+    
+    
+    /**
+     * 随机生成指定长度的数字与字母混合的字符串
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2018-05-23
+     * @version     v1.0
+     *              v2.0  2026-04-03  添加：包含小写字母
+     *
+     * @param i_Length      随机生成的字符串长度
+     * @param i_HaveNumber  随机生成的字符串中是否内含数字
+     * @param i_Lowercase   随机生成的字符串中是否内含小写字母
+     * @return
+     */
+    public final static String random(int i_Length ,boolean i_HaveNumber ,boolean i_Lowercase)
+    {
         StringBuilder v_Buffer = new StringBuilder();
         
         if ( i_HaveNumber )
         {
-            for (int i=1; i<=i_Length; i++)
+            if ( i_Lowercase )
             {
-                v_Buffer.append($ABC36.charAt(Help.random(0 ,35)));
+                for (int i=1; i<=i_Length; i++)
+                {
+                    v_Buffer.append($ABCabc62.charAt(Help.random(0 ,61)));
+                }
+            }
+            else
+            {
+                for (int i=1; i<=i_Length; i++)
+                {
+                    v_Buffer.append($ABC36.charAt(Help.random(0 ,35)));
+                }
             }
         }
         else
         {
-            for (int i=1; i<=i_Length; i++)
+            if ( i_Lowercase )
             {
-                v_Buffer.append($ABC.charAt(Help.random(0 ,25)));
+                for (int i=1; i<=i_Length; i++)
+                {
+                    v_Buffer.append($ABCabc52.charAt(Help.random(0 ,51)));
+                }
+            }
+            else
+            {
+                for (int i=1; i<=i_Length; i++)
+                {
+                    v_Buffer.append($ABC.charAt(Help.random(0 ,25)));
+                }
             }
         }
         

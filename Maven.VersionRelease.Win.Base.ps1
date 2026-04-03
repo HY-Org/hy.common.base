@@ -41,7 +41,8 @@ $targetPomFiles = Get-ChildItem -Path $targetDir -Filter "pom.xml" -Recurse |
         # 条件1：排除源pom.xml文件
         $_.FullName -ne $sourcePomPath -and 
         # 条件2：排除当前目录下的所有pom.xml
-        $_.FullName -notlike "$currentDirPrefix*"
+        $_.FullName -notlike "$currentDirPrefix*" -and
+        $_.FullName -notlike "*\target\*"
     }
 
 if ($targetPomFiles.Count -eq 0) {

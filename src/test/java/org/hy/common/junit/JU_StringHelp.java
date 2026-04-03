@@ -274,6 +274,8 @@ public class JU_StringHelp
         System.out.println("数字+字母混合：" + StringHelp.random(36));
         
         System.out.println("纯字母随机："    + StringHelp.random(36 ,false));
+        
+        System.out.println("数字+大小写字母混合："    + StringHelp.random(62 ,true ,true));
     }
     
     
