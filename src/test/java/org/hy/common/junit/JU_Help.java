@@ -360,6 +360,43 @@ public class JU_Help
     
     
     
+    @Test
+    public void test_toSortStringInt()
+    {
+        Map<String ,String> v_Datas = new HashMap<String ,String>();
+        String []           v_Keys  = {"X1" ,"X10" ,"X2" ,"M3" ,"M30" ,"M4" ,"B5" ,"B500" ,"B50" ,"B5000" ,"B51" ,"B501" ,"B510"};
+        
+        for (int i=0; i<v_Keys.length; i++)
+        {
+            v_Datas.put(v_Keys[i] ,"ABC" + i);
+        }
+        
+        System.out.println("\n-- 常规文本的正排序Map.key");
+        Help.print(Help.toSort( v_Datas));
+        System.out.println("\n-- 末尾自然数大小正排序Map.key");
+        Help.print(Help.toSortStringInt(v_Datas));
+        
+        
+        System.out.println("\n-- 常规文本的倒排序Map.key");
+        Help.print(Help.toReverse(v_Datas));
+        System.out.println("\n-- 末尾自然数大小倒排序Map.key");
+        Help.print(Help.toReverseStringInt(v_Datas));
+        
+        
+        System.out.println("\n-- 末尾自然数大小正排序List");
+        Help.print(Help.toSortStringInt(v_Keys));
+        System.out.println("\n-- 末尾自然数大小倒排序List");
+        Help.print(Help.toReverseStringInt(v_Keys));
+        
+        
+        System.out.println("\n-- 末尾自然数大小正排序Map.value");
+        Help.print(Help.toSortByMapStringInt(v_Datas));
+        System.out.println("\n-- 末尾自然数大小倒排序Map.value");
+        Help.print(Help.toReverseByMapStringInt(v_Datas));
+    }
+    
+    
+    
     public void test_toList()
     {
         List<JU_XJSON> v_Datas = new ArrayList<JU_XJSON>();

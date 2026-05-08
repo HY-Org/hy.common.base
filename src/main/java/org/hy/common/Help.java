@@ -44,6 +44,7 @@ import org.hy.common.app.Param;
 import org.hy.common.comparate.MethodComparator;
 import org.hy.common.comparate.ObjectComparator;
 import org.hy.common.comparate.SerializableComparator;
+import org.hy.common.comparate.StringIntComparator;
 
 
 
@@ -94,6 +95,8 @@ import org.hy.common.comparate.SerializableComparator;
  *                           2. 修改：NVL(i_Value ,i_ElseValue)的逻辑判定，不再判定i_ElseValue是否为NULL
  *               2023-12-29  1. 添加：时间类型的 max(...) 和 min(...)
  *               2024-01-29  1. 添加：自主选定任务（或自主认领任务）的算法
+ *               2026-05-08  1. 添加：Map集合排序，对于结尾是数字的字符串，按自然数比较大小。
+ *                           2. 添加：List集合排序，对于结尾是数字的字符串，按自然数比较大小。
  */
 public class Help
 {
@@ -1254,6 +1257,25 @@ public class Help
     public final static String random(int i_Length ,boolean i_HaveNumber)
     {
         return StringHelp.random(i_Length ,i_HaveNumber);
+    }
+    
+    
+    
+    /**
+     * 随机生成指定长度的数字与字母混合的字符串
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-04-03
+     * @version     v1.0
+     *
+     * @param i_Length      随机生成的字符串长度
+     * @param i_HaveNumber  随机生成的字符串中是否内含数字
+     * @param i_Lowercase   随机生成的字符串中是否内含小写字母
+     * @return
+     */
+    public final static String random(int i_Length ,boolean i_HaveNumber ,boolean i_Lowercase)
+    {
+        return StringHelp.random(i_Length ,i_HaveNumber ,i_Lowercase);
     }
     
     
@@ -6790,6 +6812,24 @@ public class Help
     
     
     /**
+     * 以数字结尾的自然数大小排序（正序）
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-05-08
+     * @version     v1.0
+     *
+     * @param i_Values
+     * @return
+     */
+    public final static <T> List<T> toSortStringInt(List<T> io_Values)
+    {
+        Collections.sort(io_Values ,StringIntComparator.$NaturalOrder);
+        return io_Values;
+    }
+    
+    
+    
+    /**
      * 简单的单维比较排序（正序）
      * 
      * @author      ZhengWei(HY)
@@ -6822,6 +6862,38 @@ public class Help
     
     
     /**
+     * 以数字结尾的自然数大小排序（正序）
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-05-08
+     * @version     v1.0
+     *
+     * @param i_Values
+     * @return
+     */
+    @SafeVarargs
+    public final static <T> List<T> toSortStringInt(T ... i_Values)
+    {
+        if ( Help.isNull(i_Values) )
+        {
+            return new ArrayList<T>(0);
+        }
+        
+        List<T> v_Values = new ArrayList<T>(i_Values.length);
+        
+        for (T v_Item : i_Values)
+        {
+            v_Values.add(v_Item);
+        }
+        
+        Collections.sort(v_Values ,StringIntComparator.$NaturalOrder);
+        
+        return v_Values;
+    }
+    
+    
+    
+    /**
      * 简单的单维比较排序（倒序）。为了好记方便，并无特别操作
      * 
      * @author      ZhengWei(HY)
@@ -6834,6 +6906,24 @@ public class Help
     public final static <T extends Comparable<? super T>> List<T> toReverse(List<T> io_Values)
     {
         Collections.sort(io_Values ,Collections.reverseOrder());
+        return io_Values;
+    }
+    
+    
+    
+    /**
+     * 以数字结尾的自然数大小排序（倒序）
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-05-08
+     * @version     v1.0
+     *
+     * @param i_Values
+     * @return
+     */
+    public final static <T> List<T> toReverseStringInt(List<T> io_Values)
+    {
+        Collections.sort(io_Values ,StringIntComparator.$ReverseOrder);
         return io_Values;
     }
     
@@ -6865,6 +6955,38 @@ public class Help
         }
         
         Collections.sort(v_Values ,Collections.reverseOrder());
+        
+        return v_Values;
+    }
+    
+    
+    
+    /**
+     * 以数字结尾的自然数大小排序（倒序）
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-05-08
+     * @version     v1.0
+     *
+     * @param i_Values
+     * @return
+     */
+    @SafeVarargs
+    public final static <T> List<T> toReverseStringInt(T ... i_Values)
+    {
+        if ( Help.isNull(i_Values) )
+        {
+            return new ArrayList<T>(0);
+        }
+        
+        List<T> v_Values = new ArrayList<T>(i_Values.length);
+        
+        for (T v_Item : i_Values)
+        {
+            v_Values.add(v_Item);
+        }
+        
+        Collections.sort(v_Values ,StringIntComparator.$ReverseOrder);
         
         return v_Values;
     }
@@ -7514,6 +7636,90 @@ public class Help
     
     
     /**
+     * 对Map集合的Keys升序排序生成一个新的LinkedMap（对于末尾是数字的按自然数排序）
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-05-08
+     * @version     v1.0
+     *
+     * @param <T1>
+     * @param <T2>
+     * @param i_Map
+     * @return
+     */
+    public final static <T1 ,T2> Map<T1 ,T2> toSortStringInt(Map<T1 ,T2> i_Map)
+    {
+        return toSortReverseStringInt(i_Map ,1);
+    }
+    
+    
+    
+    /**
+     * 对Map集合的Keys降序排序生成一个新的LinkedMap（对于末尾是数字的按自然数排序）
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-05-08
+     * @version     v1.0
+     *
+     * @param <T1>
+     * @param <T2>
+     * @param i_Map
+     * @return
+     */
+    public final static <T1 ,T2> Map<T1 ,T2> toReverseStringInt(Map<T1 ,T2> i_Map)
+    {
+        return toSortReverseStringInt(i_Map ,-1);
+    }
+    
+    
+    
+    /**
+     * 对Map集合的Keys排序生成一个新的LinkedMap（对于末尾是数字的按自然数排序）
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-05-08
+     * @version     v1.0
+     *
+     * @param <T1>
+     * @param <T2>
+     * @param i_Map
+     * @param i_Direction  排序方向。>= 0 表示升序。 < 0表示降序
+     * @return
+     */
+    private final static <T1 ,T2> Map<T1 ,T2> toSortReverseStringInt(Map<T1 ,T2> i_Map ,int i_Direction)
+    {
+        Map<T1 ,T2> v_Ret = null;
+        
+        if ( !Help.isNull(i_Map) )
+        {
+            List<T1> v_Keys = toListKeys(i_Map);
+            v_Ret = new LinkedHashMap<T1 ,T2>(i_Map.size());
+            
+            if ( i_Direction >= 0 )
+            {
+                Collections.sort(v_Keys ,StringIntComparator.$NaturalOrder);
+            }
+            else
+            {
+                Collections.sort(v_Keys ,StringIntComparator.$ReverseOrder);
+            }
+            
+            for (T1 v_Key : v_Keys)
+            {
+                v_Ret.put(v_Key ,i_Map.get(v_Key));
+            }
+        }
+        else
+        {
+            v_Ret = i_Map;
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
      * 对Map分区集合的Keys升序生成一个新的TablePartitionLink
      * 
      * @author      ZhengWei(HY)
@@ -7863,6 +8069,115 @@ public class Help
             else
             {
                 Help.toReverse(v_Item.getValue());
+            }
+            
+            for (K v_Key : v_Item.getValue())
+            {
+                v_Ret.put(v_Key ,v_Item.getKey());
+            }
+        }
+        
+        
+        v_SortDatas.clear();
+        v_SortDatas = null;
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 对Map集合的Values排序生成一个新的LinkedMap。（对于末尾是数字的按自然数排序）
+     * 
+     * 当Map.value相同时，Map.key也按规则排序后返回。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-05-08
+     * @version     v1.0
+     *
+     * @param i_Map
+     * @return
+     */
+    public final static <K ,V> Map<K ,V> toSortByMapStringInt(Map<K ,V> i_Map)
+    {
+        return toSortReverseByMapStringInt(i_Map ,1);
+    }
+    
+    
+    
+    /**
+     * 对Map集合的Values排序生成一个新的LinkedMap。（对于末尾是数字的按自然数排序）
+     * 
+     * 当Map.value相同时，Map.key也按规则排序后返回。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-05-08
+     * @version     v1.0
+     *
+     * @param i_Map
+     * @return
+     */
+    public final static <K ,V> Map<K ,V> toReverseByMapStringInt(Map<K ,V> i_Map)
+    {
+        return toSortReverseByMapStringInt(i_Map ,-1);
+    }
+    
+    
+    
+    /**
+     * 对Map集合的Values排序生成一个新的LinkedMap
+     * 
+     * 当Map.value相同时，Map.key也按规则排序后返回。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-05-08
+     * @version     v1.0
+     *
+     * @param i_Map
+     * @param i_Direction   排序方向。>= 0 表示升序。 < 0表示降序
+     * @return
+     */
+    private final static <K ,V> Map<K ,V> toSortReverseByMapStringInt(Map<K ,V> i_Map ,int i_Direction)
+    {
+        Map<V ,List<K>> v_SortDatas = new Hashtable<V ,List<K>>();
+        for (Map.Entry<K ,V> v_Item : i_Map.entrySet())
+        {
+            List<K> v_Values = v_SortDatas.get(v_Item.getValue());
+            
+            if ( v_Values == null )
+            {
+                v_Values = new ArrayList<K>();
+                v_Values.add(v_Item.getKey());
+                
+                v_SortDatas.put(v_Item.getValue() ,v_Values);
+            }
+            else
+            {
+                v_Values.add(v_Item.getKey());
+            }
+        }
+        
+        Map<K ,V>       v_Ret     = new LinkedHashMap<K ,V>();
+        Map<V ,List<K>> v_NewSort = null;
+        
+        if ( i_Direction >= 0 )
+        {
+            v_NewSort = Help.toSortStringInt(v_SortDatas);
+        }
+        else
+        {
+            v_NewSort = Help.toReverseStringInt(v_SortDatas);
+        }
+        
+        for (Map.Entry<V ,List<K>> v_Item : v_NewSort.entrySet())
+        {
+            if ( i_Direction >= 0 )
+            {
+                Help.toSortStringInt(v_Item.getValue());
+            }
+            else
+            {
+                Help.toReverseStringInt(v_Item.getValue());
             }
             
             for (K v_Key : v_Item.getValue())
