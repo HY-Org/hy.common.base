@@ -48,6 +48,8 @@ import java.util.TimeZone;
  *                                添加：支持2024-05-30T01:01:01+08:00                          格式的转时间。即ZonedDateTime的格式
  *              v4.2 2025-02-21   添加：支持2025-02-21 01:01:01.123456789格式的转时间
  *                                添加：纳秒相关的格式转换
+ *              v4.3 2026-05-21   添加：支持 yyyy-MM-dd HH:mm:ss.nnnnnnnnn + "Z"
+ *                                添加：支持 yyyy-MM-ddTHH:mm:ss.SSSSSSSSS + "Z"
  */
 public final class Date extends java.util.Date
 {
@@ -711,6 +713,21 @@ public final class Date extends java.util.Date
                 }
                 else if ( v_DateStr.length() == $FORMAT_Nano.length() )
                 {
+                    if ( v_DateStr.indexOf("T") > 0 )
+                    {
+                        LocalDateTime v_LocalDateTime = LocalDateTime.parse(v_DateStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                        v_Date = new Date(v_LocalDateTime);
+                    }
+                    else
+                    {
+                        DateTimeFormatter v_Formatter = DateTimeFormatter.ofPattern($FORMAT_Nano_9n);
+                        LocalDateTime v_LocalDateTime = LocalDateTime.parse(v_DateStr, v_Formatter);
+                        v_Date = new Date(v_LocalDateTime);
+                    }
+                }
+                else if ( v_DateStr.length() == $FORMAT_Nano.length() + 1 && v_DateStr.toUpperCase().endsWith("Z") )
+                {
+                    v_DateStr = v_DateStr.substring(0 ,v_DateStr.length() - 1);
                     if ( v_DateStr.indexOf("T") > 0 )
                     {
                         LocalDateTime v_LocalDateTime = LocalDateTime.parse(v_DateStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME);

@@ -1,6 +1,8 @@
 package org.hy.common.junit;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -474,6 +476,16 @@ public class JU_StringHelp
         System.out.println(StringHelp.getUUID(   v_UUID));
         System.out.println(StringHelp.getUUID9n( v_UUID));
         System.out.println(StringHelp.getUUIDNum(v_UUID));
+    }
+    
+    
+    
+    @Test
+    public void getAuthToken() 
+    {
+        String v_Auth = "zhengwei:xKP9x%qWCV";
+        String v_AuthToken = Base64.getEncoder().encodeToString(v_Auth.getBytes(StandardCharsets.UTF_8));
+        System.out.println(v_AuthToken);
     }
     
 }
