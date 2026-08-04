@@ -29,6 +29,59 @@ public class JU_Help
  
     
     @Test
+    public void test_ModbusFloat()
+    {
+        // temperatureHight=16625, temperatureLow=1652
+        // temperatureHight=16624, temperatureLow=62029
+        int v_Hight = 16625;
+        int v_Low   = 62029;
+        
+        System.out.println(toFloat(v_Hight ,v_Low));
+        System.out.println(toFloat(v_Low   ,v_Hight));
+        System.out.println(toFloatIEEE754(v_Hight ,v_Low));
+        System.out.println(toFloatIEEE754(v_Low   ,v_Hight));
+    }
+    
+    
+    
+    /**
+     * 高低位两整数转为浮点数。算法：高低位合并 + 缩放还原
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-09-17
+     * @version     v1.0
+     *
+     * @param i_High  高位数值
+     * @param i_Low   低位数值
+     * @return
+     */
+    public static Float toFloat(int i_High ,int i_Low)
+    {
+        return (((long) i_High << 16) | i_Low) * 1F;
+    }
+    
+    
+    
+    /**
+     * 直接用两个 16 位寄存器，拼接成一个 32 位 IEEE 754 单精度浮点数（float），不需要自己除以比例因子。算法：IEEE 754 标准浮点解析
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2025-10-13
+     * @version     v1.0
+     *
+     * @param i_High  高位数值
+     * @param i_Low   低位数值
+     * @return
+     */
+    public static Float toFloatIEEE754(int i_High ,int i_Low)
+    {
+        int v_Combined = (i_High << 16) | (i_Low & 0xFFFF);
+        return Float.intBitsToFloat(v_Combined);
+    }
+    
+    
+    
+    @Test
     public void test_claimTask()
     {
         List<String> v_Workers = new ArrayList<String>();
@@ -289,6 +342,82 @@ public class JU_Help
     @Test
     public void test_toSort()
     {
+        int           v_WeekNo = 7;
+        List<String> v_Ints   = new ArrayList<String>();
+        if ( true )
+        {
+            v_Ints.add((8 - v_WeekNo) + "周一");
+        }
+        if ( true )
+        {
+            if ( v_WeekNo < 2 )
+            {
+                v_Ints.add((2 - v_WeekNo) + "周二");
+            }
+            else
+            {
+                v_Ints.add((8 - v_WeekNo + 1) + "周二");
+            }
+        }
+        if ( true )
+        {
+            if ( v_WeekNo < 3 )
+            {
+                v_Ints.add((3 - v_WeekNo) + "周三");
+            }
+            else
+            {
+                v_Ints.add((8 - v_WeekNo + 2) + "周三");
+            }
+        }
+        if ( true )
+        {
+            if ( v_WeekNo < 4 )
+            {
+                v_Ints.add((4 - v_WeekNo) + "周四");
+            }
+            else
+            {
+                v_Ints.add((8 - v_WeekNo + 3) + "周四");
+            }
+        }
+        if ( true )
+        {
+            if ( v_WeekNo < 5 )
+            {
+                v_Ints.add((5 - v_WeekNo) + "周五");
+            }
+            else
+            {
+                v_Ints.add((8 - v_WeekNo + 4) + "周五");
+            }
+        }
+        if ( true )
+        {
+            if ( v_WeekNo < 6 )
+            {
+                v_Ints.add((6 - v_WeekNo) + "周六");
+            }
+            else
+            {
+                v_Ints.add((8 - v_WeekNo + 5) + "周六");
+            }
+        }
+        if ( true )
+        {
+            if ( v_WeekNo < 7 )
+            {
+                v_Ints.add((7 - v_WeekNo) + "周日");
+            }
+            else
+            {
+                v_Ints.add((8 - v_WeekNo + 6) + "周日");
+            }
+        }
+        v_Ints = Help.toSort(v_Ints);
+        Help.print(v_Ints);
+        
+        
         List<JU_XJSON> v_Datas = new ArrayList<JU_XJSON>();
         
         v_Datas.add(new JU_XJSON("00" ,"1"   ,1));

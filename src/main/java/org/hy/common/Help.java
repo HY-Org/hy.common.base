@@ -97,6 +97,7 @@ import org.hy.common.comparate.StringIntComparator;
  *               2024-01-29  1. 添加：自主选定任务（或自主认领任务）的算法
  *               2026-05-08  1. 添加：Map集合排序，对于结尾是数字的字符串，按自然数比较大小。
  *                           2. 添加：List集合排序，对于结尾是数字的字符串，按自然数比较大小。
+ *               2026-08-04  1. 添加：伪装成数组的对象转集合
  */
 public class Help
 {
@@ -4991,6 +4992,45 @@ public class Help
     public final static <T> List<T> toList(T ... i_Array)
     {
         return new ArrayList<T>(Arrays.asList(i_Array));
+    }
+    
+    
+    
+    /**
+     * 数组转集合。
+     * 
+     * 一切为了方便。
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-08-04
+     * @version     v1.0
+     *
+     * @param i_Array  伪装成对象的数组
+     * @return
+     */
+    public final static List<Object> toListByArray(Object i_Array)
+    {
+        if ( i_Array == null )
+        {
+            return null;
+        }
+        
+        if ( i_Array.getClass().isArray() )
+        {
+            List<Object> v_Datas  = new ArrayList<Object>();
+            int          v_Length = Array.getLength(i_Array);
+            
+            for (int i=0; i<v_Length; i++)
+            {
+                v_Datas.add(Array.get(i_Array ,i));
+            }
+            
+            return v_Datas;
+        }
+        else
+        {
+            return null;
+        }
     }
     
     

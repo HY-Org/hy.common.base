@@ -301,4 +301,136 @@ public class JU_Date
         System.out.println(SolarTerm.getSoralTerm(new Date("2022-01-05")));
     }
     
+    
+    
+    @Test
+    public void test_calcEffectiveWorkTimeLen()
+    {
+        Date v_STime = new Date("2026-06-19 08:00:00");
+        Date v_ETime = new Date("2026-06-19 17:30:00");
+        int v_EWorkTimeLen = this.calcEffectiveWorkTimeLen(v_STime ,v_ETime);
+        System.out.println("打卡标准：" + v_STime.getFull() + " ~ " + v_ETime.getFull() + " : " + v_EWorkTimeLen);
+        
+        v_STime = new Date("2026-06-19 07:30:00");
+        v_ETime = new Date("2026-06-19 17:35:00");
+        v_EWorkTimeLen = this.calcEffectiveWorkTimeLen(v_STime ,v_ETime);
+        System.out.println("常规打卡：" + v_STime.getFull() + " ~ " + v_ETime.getFull() + " : " + v_EWorkTimeLen);
+        
+        v_STime = new Date("2026-06-19 08:05:00");
+        v_ETime = new Date("2026-06-19 17:35:00");
+        v_EWorkTimeLen = this.calcEffectiveWorkTimeLen(v_STime ,v_ETime);
+        System.out.println("早上迟到：" + v_STime.getFull() + " ~ " + v_ETime.getFull() + " : " + v_EWorkTimeLen);
+        
+        v_STime = new Date("2026-06-19 07:30:00");
+        v_ETime = new Date("2026-06-19 17:25:00");
+        v_EWorkTimeLen = this.calcEffectiveWorkTimeLen(v_STime ,v_ETime);
+        System.out.println("下班早退：" + v_STime.getFull() + " ~ " + v_ETime.getFull() + " : " + v_EWorkTimeLen);
+        
+        v_STime = new Date("2026-06-19 07:30:00");
+        v_ETime = new Date("2026-06-19 12:05:00");
+        v_EWorkTimeLen = this.calcEffectiveWorkTimeLen(v_STime ,v_ETime);
+        System.out.println("下午外出：" + v_STime.getFull() + " ~ " + v_ETime.getFull() + " : " + v_EWorkTimeLen);
+        
+        v_STime = new Date("2026-06-19 08:05:00");
+        v_ETime = new Date("2026-06-19 12:05:00");
+        v_EWorkTimeLen = this.calcEffectiveWorkTimeLen(v_STime ,v_ETime);
+        System.out.println("下外迟到：" + v_STime.getFull() + " ~ " + v_ETime.getFull() + " : " + v_EWorkTimeLen);
+        
+        v_STime = new Date("2026-06-19 07:30:00");
+        v_ETime = new Date("2026-06-19 11:55:00");
+        v_EWorkTimeLen = this.calcEffectiveWorkTimeLen(v_STime ,v_ETime);
+        System.out.println("下外早退：" + v_STime.getFull() + " ~ " + v_ETime.getFull() + " : " + v_EWorkTimeLen);
+        
+        v_STime = new Date("2026-06-19 13:20:00");
+        v_ETime = new Date("2026-06-19 17:35:00");
+        v_EWorkTimeLen = this.calcEffectiveWorkTimeLen(v_STime ,v_ETime);
+        System.out.println("上午外出：" + v_STime.getFull() + " ~ " + v_ETime.getFull() + " : " + v_EWorkTimeLen);
+        
+        v_STime = new Date("2026-06-19 13:35:00");
+        v_ETime = new Date("2026-06-19 17:35:00");
+        v_EWorkTimeLen = this.calcEffectiveWorkTimeLen(v_STime ,v_ETime);
+        System.out.println("上外迟到：" + v_STime.getFull() + " ~ " + v_ETime.getFull() + " : " + v_EWorkTimeLen);
+        
+        v_STime = new Date("2026-06-19 13:25:00");
+        v_ETime = new Date("2026-06-19 17:25:00");
+        v_EWorkTimeLen = this.calcEffectiveWorkTimeLen(v_STime ,v_ETime);
+        System.out.println("上外早退：" + v_STime.getFull() + " ~ " + v_ETime.getFull() + " : " + v_EWorkTimeLen);
+    }
+    
+    
+    
+    /**
+     * 时间有效工作时长
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-06-18
+     * @version     v1.0
+     *
+     * @param i_STime  上班时间
+     * @param i_ETime  下班时间
+     * @return
+     */
+    private int calcEffectiveWorkTimeLen(Date i_STime ,Date i_ETime)
+    {
+        Date v_STime   = new Date(i_STime);
+        Date v_ETime   = new Date(i_ETime);
+        int  v_TimeLen = 0;
+        
+        // 上班时间归整到8:00或13:30
+        if ( v_STime.getHours() <= 7 )
+        {
+            v_STime.setHours(8);
+            v_STime = v_STime.getFirstTimeOfHour();
+        }
+        else if ( v_STime.getHours() >= 12 && v_STime.getHours() < 13 )
+        {
+            v_STime.setHours(13);
+            v_STime.setMinutes(30);
+            v_STime = v_STime.getFirstTimeOfMinute();
+        }
+        else if ( v_STime.getHours() >= 13 && v_STime.getHours() < 14 )
+        {
+            if ( v_STime.getMinutes() < 30 )
+            {
+                v_STime.setHours(13);
+                v_STime.setMinutes(30);
+                v_STime = v_STime.getFirstTimeOfMinute();
+            }
+        }
+        
+        // 下班时间归整到12:00
+        if ( v_ETime.getHours() >= 12 && v_ETime.getHours() < 13 )
+        {
+            v_ETime.setHours(12);
+            v_ETime = v_ETime.getFirstTimeOfHour();
+        }
+        else if ( v_ETime.getHours() >= 13 && v_ETime.getHours() < 14 )
+        {
+            if ( v_ETime.getMinutes() < 30 )
+            {
+                v_ETime.setHours(12);
+                v_ETime = v_ETime.getFirstTimeOfHour();
+            }
+        }
+        
+        // 开始小于结束时，按0统计
+        if ( v_ETime.differ(v_STime) <= 0 )
+        {
+            return 0;
+        }
+        // 午休时间打卡，按0统计
+        else if ( v_STime.getHours() >= 12 && v_ETime.getHours() <= 13 && v_ETime.getMinutes() < 30 )
+        {
+            return 0;
+        }
+        
+        // 打卡时间段跨过午休时间，减去午休时长
+        if ( v_STime.getHours() < 12 && v_ETime.getHours() >= 13 )
+        {
+            v_TimeLen -= 90;
+        }
+        
+        return v_TimeLen + (int) Math.floor(v_ETime.differ(v_STime) / 1000D / 60D);
+    }
+    
 }
