@@ -93,13 +93,19 @@ public final class Date extends java.util.Date
     public  static final String               $FORMAT_US          = "EEE MMM dd HH:mm:ss zzz yyyy";
     
     /** 一周的第一天，按星期天为第一天 */
-    public  static final int                  WEEK_FIRST_EN  = 0;
+    public  static final int                  WEEK_FIRST_EN       = 0;
     
     /** 一周的第一天，按星期一为第一天 */
-    public  static final int                  WEEK_FIRST_CN  = 1;
+    public  static final int                  WEEK_FIRST_CN       = 1;
     
     /** 月份最后一天是多少 */
-    private static final int []               MONTH_LASTDAY  = {31 ,28 ,31 ,30 ,31 ,30 ,31 ,31 ,30 ,31 ,30 ,31};
+    public  static       String []            WEEK_NAME_EN        = {"周日" ,"周一" ,"周二" ,"周三" ,"周四" ,"周五" ,"周六"};
+    
+    /** 周几的名称 */
+    public  static       String []            WEEK_NAME_CN        = {""  ,"周一" ,"周二" ,"周三" ,"周四" ,"周五" ,"周六" ,"周日"};
+    
+    /** 月份最后一天是多少 */
+    private static final int []               MONTH_LASTDAY       = {31 ,28 ,31 ,30 ,31 ,30 ,31 ,31 ,30 ,31 ,30 ,31};
     
     
     
@@ -1748,6 +1754,47 @@ public final class Date extends java.util.Date
         }
         
         return this.getDate(v_MoveDay * v_MoveDirection);
+    }
+    
+    
+    
+    /**
+     * 按中华的规则返回周几的名称。如，周一、周六、周日
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-08-10
+     * @version     v1.0
+     *
+     * @return
+     */
+    public String getWeekName()
+    {
+        return WEEK_NAME_CN[this.getWeek()];
+    }
+    
+    
+    
+    /**
+     * 返回周几的名称。如，周一、周六、周日
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-08-10
+     * @version     v1.0
+     *
+     * @param i_WeekFirstDay  一周的第一天，按星期天为第一天
+     *                        一周的第一天，按星期一为第一天
+     * @return
+     */
+    public String getWeekName(int i_WeekFirstDay)
+    {
+        if ( i_WeekFirstDay == WEEK_FIRST_CN )
+        {
+            return WEEK_NAME_CN[this.getWeek(i_WeekFirstDay)];
+        }
+        else
+        {
+            return WEEK_NAME_EN[this.getWeek(i_WeekFirstDay)];
+        }
     }
     
     
