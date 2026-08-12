@@ -75,58 +75,61 @@ import com.fasterxml.uuid.Generators;
 public final class StringHelp
 {
     /** MD5加密(V2版)的加密类型：全数字形式 */
-    public  static final int       $MD5_Type_Num  = 1;
+    public  static final int       $MD5_Type_Num   = 1;
     
     /** MD5加密(V2版)的加密类型：数字字母混合的形式，但无特殊字符 */
-    public  static final int       $MD5_Type_Hex  = 2;
+    public  static final int       $MD5_Type_Hex   = 2;
     
     /** 字符集编码类型 */
-    public  static       String [] $CharEncodings = {"UTF-8" ,"ISO-8859-1" ,"ASCII" ,"UNICODE" ,"GBK" ,"GB2312" ,"GB18030"};
+    public  static       String [] $CharEncodings  = {"UTF-8" ,"ISO-8859-1" ,"ASCII" ,"UNICODE" ,"GBK" ,"GB2312" ,"GB18030"};
     
     
     
-    private static final String    $ABC           = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String    $ABC            = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     
-    private static final String    $abc           = $ABC.toLowerCase();
+    private static final String    $abc            = $ABC.toLowerCase();
     
-    private static final String    $ABC36         = "0123456789" + $ABC;
+    private static final String    $ABC36          = "0123456789" + $ABC;
     
-    private static final String    $ABCabc52      = $ABC + $abc;
+    private static final String    $ABCabc52       = $ABC + $abc;
     
-    private static final String    $ABCabc62      = $ABC36 + $abc;
+    private static final String    $ABCabc62       = $ABC36 + $abc;
     
-    private static final char      last2byte      = (char) Integer.parseInt("00000011", 2);
-    private static final char      last4byte      = (char) Integer.parseInt("00001111", 2);
-    private static final char      last6byte      = (char) Integer.parseInt("00111111", 2);
-    private static final char      lead6byte      = (char) Integer.parseInt("11111100", 2);
-    private static final char      lead4byte      = (char) Integer.parseInt("11110000", 2);
-    private static final char      lead2byte      = (char) Integer.parseInt("11000000", 2);
-    private static final char []   encodeTable    = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', '/'};
-    private static final char []   encodeTable_V2 = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private static final char      last2byte       = (char) Integer.parseInt("00000011", 2);
+    private static final char      last4byte       = (char) Integer.parseInt("00001111", 2);
+    private static final char      last6byte       = (char) Integer.parseInt("00111111", 2);
+    private static final char      lead6byte       = (char) Integer.parseInt("11111100", 2);
+    private static final char      lead4byte       = (char) Integer.parseInt("11110000", 2);
+    private static final char      lead2byte       = (char) Integer.parseInt("11000000", 2);
+    private static final char []   encodeTable     = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', '/'};
+    private static final char []   encodeTable_V2  = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
     
     /** 匹配XML标记或Html标记的正则表达式 */
-    private static final String    $XMLSign       = "(< *XMLSignName(( *)|( [ \\S\\s]*))>[.\\S\\s]*<\\/ *XMLSignName *>)|(< *XMLSignName(( *)|( [ \\S\\s]*))\\/>)";
+    private static final String    $XMLSign        = "(< *XMLSignName(( *)|( [ \\S\\s]*))>[.\\S\\s]*<\\/ *XMLSignName *>)|(< *XMLSignName(( *)|( [ \\S\\s]*))\\/>)";
     
     /** 保存XML特殊字符转换信息 */
     private static InterconnectMap<String, String> $XML_EnCodes = null;
     
     /** 匹配Email地址的正则表达式 */
-    private static final String    $EMail         = "\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
+    private static final String    $EMail          = "\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
     
     /** 解释方法的正则表达式。分割 xxx(...) 的形式 */
-    private static final String    $Method        = "\\w+\\([^(?!((\\()(\\))))]+\\)";
+    private static final String    $Method         = "\\w+\\([^(?!((\\()(\\))))]+\\)";
     
     /** 解释圆括号的正则表达式。分割(...) 的形式，但不含 ( 和 ) */
-    private static final String    $Parentheses   = "\\([^(?!((\\()(\\))))]*\\)";
+    private static final String    $Parentheses    = "\\([^(?!((\\()(\\))))]*\\)";
     
     /** 将字符串类型的数字类型。支持千分位、货币符号 */
-    private static final String [] $Currency      = new String[] {"," ,"，" ,"¥" ,"$" ,"€"};
+    private static final String [] $Currency       = new String[] {"," ,"，" ,"¥" ,"$" ,"€"};
     
     /** 常用的替换常量，如将关键字替换为空字符 */
-    public  static final String [] $ReplaceNil    = new String[] {""};
+    public  static final String [] $ReplaceNil     = new String[] {""};
     
     /** 常用的替换常量，如将关键字替换为空格 */
-    public  static final String [] $ReplaceSpace  = new String[] {" "};
+    public  static final String [] $ReplaceSpace   = new String[] {" "};
+    
+    /** 常用的替换常量，如将关键字替换控制符 */
+    public  static final String [] $ReplaceControl = new String[] {"\t" ,"\r" ,"\n"};
     
     
     
