@@ -2,6 +2,7 @@ package org.hy.common;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -5334,16 +5335,172 @@ public final class StringHelp
     /**
      * 编程语言的基本数据类型的转字符串。可以配合 Help.toObject() 等方法使用，实现字符串形式的序列化和反序列化
      * 
+     * 如果 i_Data 是数组类型（或List、Set、Map类型），将按数组（或List、Set、Map类型）转字符串，其规则如下
+     * 将集合转换为字符串。转换后的字符串有两种形式（自动判断形式）（按逗号分隔）
+     *   形式1：'A' ,'B' ,'C'
+     *   形式2：1   ,2   ,3
+     * 
+     * 自动判断形式
+     *   1. 元素类型为字符串的，生成形式1，按单引号括起来
+     *   2. 元素类型为数字类的，生成形式2
+     * 
      * @author      ZhengWei(HY)
      * @createDate  2021-09-27
      * @version     v1.0
+     *              v2.0  2026-08-27  添加：Object的元类型是数组时，按数组转字符
      * 
      * @param i_Data
      * @return
      */
     public final static String toString(Object i_Data)
     {
-        return String.valueOf(i_Data);
+        if ( i_Data != null )
+        {
+            if ( i_Data.getClass().isArray() )
+            {
+                Object v_FirstValue = Array.get(i_Data ,0);
+                if ( null == v_FirstValue )
+                {
+                    return toString(i_Data ,"'" ,",");
+                }
+                else if ( MethodReflect.isExtendImplement(v_FirstValue ,Number.class) )
+                {
+                    return toString(i_Data ,""  ,",");
+                }
+                else
+                {
+                    return toString(i_Data ,"'" ,",");
+                }
+            }
+            else if ( MethodReflect.isExtendImplement(i_Data ,List.class) )
+            {
+                return toString((List<?>)i_Data);
+            }
+            else if ( MethodReflect.isExtendImplement(i_Data ,Set.class) )
+            {
+                return toString((Set<?>)i_Data);
+            }
+            else if ( MethodReflect.isExtendImplement(i_Data ,Collection.class) )
+            {
+                return toString((Collection<?>)i_Data);
+            }
+            else if ( MethodReflect.isExtendImplement(i_Data ,Map.class)  )
+            {
+                return toString((Map<? ,?>)i_Data);
+            }
+            else
+            {
+                return String.valueOf(i_Data);
+            }
+        }
+        else
+        {
+            return "";
+        }
+    }
+    
+    
+    
+    /**
+     * 将集合转换为字符串。转换后的字符串有两种形式（按逗号分隔）
+     *   形式1：'A' ,'B' ,'C'
+     *   形式2：1   ,2   ,3
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2016-08-27
+     * @version     v1.0
+     *
+     * @param i_Datas
+     * @param i_StringSign  字符串标示。如，单引号'
+     * @return
+     */
+    public final static String toString(Object i_Data ,String i_StringSign)
+    {
+        if ( i_Data != null )
+        {
+            if ( i_Data.getClass().isArray() )
+            {
+                return toString(i_Data ,i_StringSign ,",");
+            }
+            else if ( MethodReflect.isExtendImplement(i_Data ,List.class) )
+            {
+                return toString((List<?>)i_Data);
+            }
+            else if ( MethodReflect.isExtendImplement(i_Data ,Set.class) )
+            {
+                return toString((Set<?>)i_Data);
+            }
+            else if ( MethodReflect.isExtendImplement(i_Data ,Collection.class) )
+            {
+                return toString((Collection<?>)i_Data);
+            }
+            else if ( MethodReflect.isExtendImplement(i_Data ,Map.class) )
+            {
+                return toString((Map<? ,?>)i_Data);
+            }
+            else
+            {
+                return toString(i_Data ,i_StringSign ,",");
+            }
+        }
+        else
+        {
+            return "";
+        }
+    }
+    
+    
+    
+    /**
+     * 将集合转换为字符串。转换后的字符串有两种形式
+     *   形式1：'A' ,'B' ,'C'
+     *   形式2：1   ,2   ,3
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2016-08-27
+     * @version     v1.0
+     *
+     * @param i_Datas
+     * @param i_StringSign  字符串标示。如，单引号'
+     * @param i_Split       元素分隔符。如，逗号，
+     * @return
+     */
+    public final static String toString(Object i_Data ,String i_StringSign ,String i_Split)
+    {
+        if ( i_Data != null ) 
+        {
+            if ( i_Data.getClass().isArray() )
+            {
+                List<Object> v_List = Help.toListByArray(i_Data);
+                String       v_Ret  = StringHelp.toString(v_List ,i_StringSign ,i_Split);
+                v_List.clear();
+                return v_Ret;
+            }
+            else if ( i_Data instanceof List )
+            {
+                return toString((List<?>)i_Data ,i_StringSign ,i_Split);
+            }
+            else if ( i_Data instanceof Set )
+            {
+                return toString((Set<?>)i_Data ,i_StringSign ,i_Split);
+            }
+            else if ( i_Data instanceof Collection )
+            {
+                return toString((Collection<?>)i_Data ,i_StringSign ,i_Split);
+            }
+            else if ( i_Data instanceof Map )
+            {
+                return toString((Map<? ,?>)i_Data ,i_StringSign ,i_Split);
+            }
+            else
+            {
+                return String.valueOf(i_Data);
+            }
+        }
+        else
+        {
+            return "";
+        }
     }
     
     
