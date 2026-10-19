@@ -32,6 +32,34 @@ public class JU_StringHelp
 {
     
     @Test
+    public void test_splitTextNumber()
+    {
+        Help.print(StringHelp.splitTextNumber("ABC" ,0 ,1));
+        Help.print(StringHelp.splitTextNumber("ABC" ,0 ,-1));
+        Help.print(StringHelp.splitTextNumber("123" ,0 ,1));
+        Help.print(StringHelp.splitTextNumber("123" ,0 ,-1));
+        Help.print(StringHelp.splitTextNumber("ABC123" ,0 ,1));
+        Help.print(StringHelp.splitTextNumber("ABC123" ,0 ,-1));
+        Help.print(StringHelp.splitTextNumber("ABC123DEF" ,2 ,1));
+        Help.print(StringHelp.splitTextNumber("ABC123DEF" ,2 ,-1));
+        Help.print(StringHelp.splitTextNumber("ABC123DEF" ,0 ,1));
+        Help.print(StringHelp.splitTextNumber("ABC123DEF" ,0 ,-1));
+    }
+    
+    
+    
+    @Test
+    public void test_IsNumber()
+    {
+        System.out.println(StringHelp.isNumber("-"));
+        System.out.println(StringHelp.isNumber("+"));
+        System.out.println(StringHelp.isNumber("."));
+        System.out.println(StringHelp.isNumber("e"));
+    }
+    
+    
+    
+    @Test
     public void test_toNumberIEEE754()
     {
         System.out.println(StringHelp.toNumberIEEE754Big("41D71EB8"));

@@ -3,8 +3,11 @@ package org.hy.common.junit;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hy.common.Date;
+import org.hy.common.Help;
 import org.hy.common.Lunar;
 import org.hy.common.SolarTerm;
 import org.hy.common.StringHelp;
@@ -75,6 +78,32 @@ public class JU_Date
         {
             System.out.println(new Date(v_Data).getFullMilli() + "\t\t" + v_Data);
         }
+    }
+    
+    
+    
+    /**
+     * 测试10月1号有什么问题
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-10-08
+     * @version     v1.0
+     *
+     */
+    @Test
+    public void test_2026_10_01()
+    {
+        List<Date> v_Ret        = new ArrayList<Date>();
+        Date       v_LastSunday = new Date("2026-10-01").getFirstTimeOfDay().getFirstDayOfWeek().getDate(-1);
+        v_Ret.add(v_LastSunday);
+        
+        for (int x=1; x<=1; x++)
+        {
+            v_LastSunday = v_LastSunday.getFirstDayOfWeek().getDate(-1);
+            v_Ret.add(v_LastSunday);
+        }
+        
+        Help.print(v_Ret);
     }
     
     

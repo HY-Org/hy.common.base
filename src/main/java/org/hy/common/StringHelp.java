@@ -3952,6 +3952,199 @@ public final class StringHelp
     
     
     /**
+     * 从大字符串是分割出数字
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-10-19
+     * @version     v1.0
+     *
+     * @param i_Info  被分割的大字符串（格式为：文本+数字）
+     * @return
+     */
+    public final static List<Object> splitTextNumber(String i_Info)
+    {
+        return splitTextNumber(i_Info ,2 ,1);
+    }
+    
+    
+    
+    /**
+     * 从大字符串是分割出数字（从右则开始计数）
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-10-19
+     * @version     v1.0
+     *
+     * @param i_Info      被分割的大字符串
+     * @param i_MaxCount  最大计数。即，返回值的最大长度。小于等于0表示：无限制分割。
+     * @return
+     */
+    public final static List<Object> splitTextNumber(String i_Info ,int i_MaxCount)
+    {
+        return splitTextNumber(i_Info ,i_MaxCount ,1);
+    }
+    
+    
+    
+    /**
+     * 从大字符串是分割出数字
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-10-19
+     * @version     v1.0
+     *
+     * @param i_Info      被分割的大字符串
+     * @param i_MaxCount  最大计数。即，返回值的最大长度。小于等于0表示：无限制分割。
+     * @param i_Way       计数方向。小于0，从左则开始计数；大于等于0，从右则开始计数
+     * @return
+     */
+    public final static List<Object> splitTextNumber(String i_Info ,int i_MaxCount ,int i_Way)
+    {
+        int           v_MaxLen = i_Info.length();
+        List<Object>  v_Ret    = new ArrayList<Object>();
+        StringBuilder v_Text   = null;
+        StringBuilder v_Num    = null;
+        int           v_Type   = 0;     // -1文本；0初始值；1数字
+        
+        // 从右则开始计数
+        if ( i_Way >= 0 )
+        {
+            for (int x=v_MaxLen; x>0; x--)
+            {
+                String v_One = i_Info.substring(x - 1 ,x);
+                
+                // 追加数字
+                if ( StringHelp.isNumber(v_One) )
+                {
+                    // 首个数字时
+                    if ( v_Type == -1 )
+                    {
+                        v_Ret.add(0 ,v_Text.toString());
+                        v_Num  = new StringBuilder();
+                        v_Text = null;
+                        if ( v_Ret.size() + 1 == i_MaxCount )
+                        {
+                            // 预计大于最大计数时，其它字符整体按文本追加
+                            v_Ret.add(0 ,i_Info.substring(0 ,x));
+                            break;
+                        }
+                    }
+                    else if ( v_Type == 0 )
+                    {
+                        v_Num = new StringBuilder();
+                    }
+                    
+                    v_Num.insert(0 ,v_One);
+                    v_Type = 1;
+                }
+                // 追加文本
+                else
+                {
+                    // 首个文本时
+                    if ( v_Type == 1 )
+                    {
+                        v_Ret.add(0 ,Long.valueOf(v_Num.toString()));
+                        v_Num  = null;
+                        v_Text = new StringBuilder();
+                        if ( v_Ret.size() + 1 == i_MaxCount )
+                        {
+                            // 预计大于最大计数时，其它字符整体按文本追加
+                            v_Ret.add(0 ,i_Info.substring(0 ,x));
+                            break;
+                        }
+                    }
+                    else if ( v_Type == 0 )
+                    {
+                        v_Text = new StringBuilder();
+                    }
+                    
+                    v_Text.insert(0 ,v_One);
+                    v_Type = -1;
+                }
+            }
+            
+            if ( v_Num != null && v_Num.length() > 0 )
+            {
+                v_Ret.add(0 ,Long.valueOf(v_Num.toString()));
+            }
+            if ( v_Text != null && v_Text.length() > 0 )
+            {
+                v_Ret.add(0 ,v_Text.toString());
+            }
+        }
+        // 从左则开始计数
+        else
+        {
+            for (int x=0; x<v_MaxLen; x++)
+            {
+                String v_One = i_Info.substring(x ,x + 1);
+                
+                // 追加数字
+                if ( StringHelp.isNumber(v_One) )
+                {
+                    // 首个数字时
+                    if ( v_Type == -1 )
+                    {
+                        v_Ret.add(v_Text.toString());
+                        v_Num  = new StringBuilder();
+                        v_Text = null;
+                        if ( v_Ret.size() + 1 == i_MaxCount )
+                        {
+                            // 预计大于最大计数时，其它字符整体按文本追加
+                            v_Ret.add(i_Info.substring(x ,v_MaxLen));
+                            break;
+                        }
+                    }
+                    else if ( v_Type == 0 )
+                    {
+                        v_Num = new StringBuilder();
+                    }
+                    
+                    v_Num.append(v_One);
+                    v_Type = 1;
+                }
+                // 追加文本
+                else
+                {
+                    // 首个文本时
+                    if ( v_Type == 1 )
+                    {
+                        v_Ret.add(Long.valueOf(v_Num.toString()));
+                        v_Num  = null;
+                        v_Text = new StringBuilder();
+                        if ( v_Ret.size() + 1 == i_MaxCount )
+                        {
+                            // 预计大于最大计数时，其它字符整体按文本追加
+                            v_Ret.add(i_Info.substring(x ,v_MaxLen));
+                            break;
+                        }
+                    }
+                    else if ( v_Type == 0 )
+                    {
+                        v_Text = new StringBuilder();
+                    }
+                    
+                    v_Text.append(v_One);
+                    v_Type = -1;
+                }
+            }
+            
+            if ( v_Num != null && v_Num.length() > 0 )
+            {
+                v_Ret.add(Long.valueOf(v_Num.toString()));
+            }
+            if ( v_Text != null && v_Text.length() > 0 )
+            {
+                v_Ret.add(v_Text.toString());
+            }
+        }
+        
+        return v_Ret;
+    }
+    
+    
+    
+    /**
      * 将一个大字符串分割为多个小的字符串。分割条件是长度
      * 
      * 如将1234567890每2个字符分割为5个小段，变成 {"12" ,"34" ,"56" ,"78" ,"90"}
