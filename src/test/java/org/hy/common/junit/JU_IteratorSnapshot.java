@@ -34,20 +34,31 @@ public class JU_IteratorSnapshot
         v_Datas.add("G");
         
         IteratorSnapshot<String> v_Iterator = new IteratorSnapshot<String>(v_Datas.iterator());
-        this.println(v_Iterator);
-        this.println(v_Iterator);
-        this.println(v_Iterator);
-        System.out.println("多次读取后1");
         
+        System.out.println("快照读取第1次");
+        this.println(v_Iterator);
+        
+        System.out.println("快照读取第2次");
+        v_Iterator.hasNext();
+        this.println(v_Iterator);
+        
+        System.out.println("快照读取第3次");
+        v_Iterator.hasNext();
+        this.println(v_Iterator);
+        
+        System.out.println("真读取1个元素");
         v_Iterator.trueMode();
         v_Iterator.next();
+        
+        System.out.println("快照读取第4次");
         v_Iterator.snapshotMode();
-        
         this.println(v_Iterator);
-        System.out.println("多次读取后2");
         
+        System.out.println("真读取遍历全部第1次");
         v_Iterator.trueMode();
         this.println(v_Iterator);
+        
+        System.out.println("真读取遍历全部第2次");
         this.println(v_Iterator);
     }
     
