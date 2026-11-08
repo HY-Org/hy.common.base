@@ -1,6 +1,6 @@
-Manifest-Version: 1.0.215
+Manifest-Version: 1.0.216
 Created-By: HY.ZhengWei@qq.com  2008
-Specification-Version: 1.0.215  2026-11-02
+Specification-Version: 1.0.216  2026-11-08
 SourceCode: https://github.com/HY-ZhengWei/hy.common.base
 SourceCodeChina: https://gitee.com/HY-ZhengWei/hy.common.base
 Build-JDK: 17

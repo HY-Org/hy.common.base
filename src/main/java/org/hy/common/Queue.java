@@ -2,6 +2,7 @@ package org.hy.common;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.atomic.AtomicLong;
 
 
 
@@ -24,6 +25,8 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  *           v1.3  2018-08-24  1.添加：remove()方法添加返回值，表示是否删除成功。
  *           v1.4  2023-04-28  1.添加：iterator()获取迭代器，大数量频繁操作时，比 toArray 安全
  *           v2.0  2026-02-15  1.优化：ConcurrentLinkedDeque替换LinkedList，增强线程安全
+ *           v2.1  2026-11-08  1.优化：去除 synchronized 改用 AtomicLong，发挥 ConcurrentLinkedDeque 的性能
+ *                             1.修正：iterator()方法返回迭代器支持remove()，会从内部删除元素，但不会减少queueSize，因此会造成计数永久错误
  */
 public class Queue<O> implements java.io.Serializable
 {
@@ -46,10 +49,10 @@ public class Queue<O> implements java.io.Serializable
     private ConcurrentLinkedDeque<O> linkedList;
     
     /** 独立出大小是为性能与速度 */
-    private long                     queueSize;
+    private AtomicLong               queueSize;
     
     /** 曾经进入过队列的对象次数 */
-    private long                     putedCount;
+    private AtomicLong               putedCount;
     
     /** 队列类型 */
     private QueueType                queueType;
@@ -69,14 +72,14 @@ public class Queue<O> implements java.io.Serializable
             throw new NullPointerException("QueueType is null.");
         }
         
-        this.queueSize  = 0;
-        this.putedCount = 0;
+        this.queueSize  = new AtomicLong(0);
+        this.putedCount = new AtomicLong(0);
         this.linkedList = new ConcurrentLinkedDeque<O>();
         this.queueType  = i_QueueType;
     }
     
     
-    public synchronized void put(O i_Object)
+    public void put(O i_Object)
     {
         if ( QueueType.$First_IN_First_OUT == this.queueType )
         {
@@ -87,8 +90,8 @@ public class Queue<O> implements java.io.Serializable
             this.linkedList.addLast(i_Object);
         }
         
-        this.queueSize++;
-        this.putedCount++;
+        this.queueSize .incrementAndGet();
+        this.putedCount.incrementAndGet();
     }
     
     
@@ -97,17 +100,15 @@ public class Queue<O> implements java.io.Serializable
      * 
      * @return
      */
-    public synchronized O get()
+    public O get()
     {
-        if ( this.queueSize <= 0 )
+        O v_Ret = this.linkedList.pollLast();
+        if (v_Ret != null)
         {
-            return null;
+            this.queueSize.decrementAndGet();
         }
-        else
-        {
-            this.queueSize--;
-            return this.linkedList.removeLast();
-        }
+        
+        return v_Ret;
     }
     
     
@@ -179,25 +180,44 @@ public class Queue<O> implements java.io.Serializable
      */
     public Iterator<O> iterator()
     {
-        return this.linkedList.iterator();
+        Iterator<O> v_Iterator = null;
+        if ( QueueType.$First_IN_First_OUT == this.queueType )
+        {
+            v_Iterator = this.linkedList.iterator();
+        }
+        else
+        {
+            v_Iterator = this.linkedList.descendingIterator();
+        }
+        
+        return new IteratorReadOnly<O>(v_Iterator);
     }
     
     
     
-    public synchronized boolean isEmpty()
+    /**
+     * 是否为空
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2011-05-08
+     * @version     v1.0
+     *
+     * @return
+     */
+    public boolean isEmpty()
     {
-        return this.linkedList.isEmpty();
+        return this.queueSize.get() <= 0;
     }
     
     
     /**
-     * 比 isEmpty() 高效
+     * 队列大小
      * 
      * @return
      */
     public long size()
     {
-        return this.queueSize;
+        return this.queueSize.get();
     }
     
     
@@ -206,12 +226,11 @@ public class Queue<O> implements java.io.Serializable
      * 
      * @param i_Object
      */
-    public synchronized boolean remove(O i_Object)
+    public boolean remove(O i_Object)
     {
         if ( this.linkedList.remove(i_Object) )
         {
-            this.queueSize--;
-            this.putedCount--;
+            this.queueSize.decrementAndGet();
             return true;
         }
         
@@ -222,11 +241,10 @@ public class Queue<O> implements java.io.Serializable
     /**
      * 清空队列中所有对象
      */
-    public synchronized void clear()
+    public void clear()
     {
         this.linkedList.clear();
-        this.putedCount = this.putedCount - this.queueSize;
-        this.queueSize  = 0;
+        this.queueSize.set(0);
     }
     
     
@@ -237,7 +255,7 @@ public class Queue<O> implements java.io.Serializable
      */
     public long getPutedCount()
     {
-        return this.putedCount;
+        return this.putedCount.get();
     }
     
     
@@ -248,15 +266,23 @@ public class Queue<O> implements java.io.Serializable
      */
     public long getOutedCount()
     {
-        return this.putedCount - this.queueSize;
+        return this.putedCount.get() - this.queueSize.get();
     }
     
     
+    /**
+     * 获取队列类型
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2011-05-08
+     * @version     v1.0
+     *
+     * @return
+     */
     public QueueType getQueueType()
     {
         return queueType;
     }
-
     
 
     /**
