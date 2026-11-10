@@ -19,6 +19,7 @@ import java.util.List;
  * @createDate  2014-04-17
  *              2017-12-04  1.添加：getAnnotationMethods()方法。
  *              2018-01-29  1.添加：扫描项目所有类时，当发现某一类引用的类不存在时，只错误提示不中断服务。
+ *              2026-11-10  1.添加：单类的注释解释
  */
 public final class ClassReflect
 {
@@ -65,6 +66,46 @@ public final class ClassReflect
         }
         
         return v_Ret;
+    }
+    
+    
+    
+    /**
+     * 单类的注释解释
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-11-10
+     * @version     v1.0
+     *
+     * @param i_Class            Java元类型
+     * @param i_AnnotationClass  注解类型的元类型
+     * @return
+     */
+    public static ClassInfo getAnnotation(Class<?> i_Class ,Class<? extends Annotation> i_AnnotationClass)
+    {
+        // 判断类是否注解
+        if ( !i_Class.isAnnotationPresent(i_AnnotationClass) )
+        {
+            return null;
+        }
+        
+        ClassInfo v_ClassInfo = new ClassInfo(i_Class);
+        
+        // 判断类中的自有方法是否注解
+        List<Method> v_Methods = MethodReflect.getAnnotationMethods(i_Class ,i_AnnotationClass);
+        if ( !Help.isNull(v_Methods) )
+        {
+            v_ClassInfo.setMethods(v_Methods);
+        }
+        
+        // 判断类中的自有属性是否注解
+        List<Field> v_Fields = getAnnotationFields(i_Class ,i_AnnotationClass);
+        if ( !Help.isNull(v_Fields) )
+        {
+            v_ClassInfo.setFields(v_Fields);
+        }
+        
+        return v_ClassInfo;
     }
     
     

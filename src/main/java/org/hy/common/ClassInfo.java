@@ -1,5 +1,6 @@
 package org.hy.common;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -14,8 +15,9 @@ import java.util.List;
  * 主要用于注解分析功能
  * 
  * @author      ZhengWei(HY)
- * @version     v1.0  
  * @createDate  2014-04-17
+ * @version     v1.0  
+ *              v2.0  2026-11-10  添加：  
  */
 public class ClassInfo implements Comparable<ClassInfo>
 {
@@ -39,6 +41,24 @@ public class ClassInfo implements Comparable<ClassInfo>
         }
         
         this.classObj = i_Class;
+    }
+    
+    
+    
+    /**
+     * 获取类级的注释信息。即，Target(ElementType.TYPE）级的
+     * 
+     * @author      ZhengWei(HY)
+     * @createDate  2026-11-10
+     * @version     v1.0
+     *
+     * @param <A>
+     * @param i_AnnotationClass
+     * @return
+     */
+    public <A extends Annotation> A getAnnotation(Class<? extends A> i_AnnotationClass)
+    {
+        return this.classObj.getAnnotation(i_AnnotationClass);
     }
     
     
