@@ -1797,6 +1797,11 @@ public class MethodReflect implements Serializable
             return Help.getValueIgnoreCase(i_MapValues ,i_MethodURL);
         }
         
+        if ( "size".equalsIgnoreCase(v_MethodURLArr[0]) )
+        {
+            return i_MapValues.size();
+        }
+        
         Object v_MapValue = Help.getValueIgnoreCase(i_MapValues ,v_MethodURLArr[0]);
         if ( v_MapValue == null )
         {
@@ -1872,6 +1877,7 @@ public class MethodReflect implements Serializable
         else if ( "size".equalsIgnoreCase(v_MethodURLArr[0]) )
         {
             v_ListValue = i_ListValues.size();
+            return v_ListValue;
         }
         
         if ( v_ListValue == null )
